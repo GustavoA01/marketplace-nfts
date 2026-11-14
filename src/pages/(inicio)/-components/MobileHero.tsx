@@ -1,31 +1,20 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Search, SlidersHorizontal } from "lucide-react";
+import { ArrowRight, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
+import { NFTSearch } from "@/components/NFTSearch";
+import type { CatalogueFiltersProps } from "./CatalogueFilters";
 import { CatalogueFiltersDialog } from "./CatalogueFiltersDialog";
-import {
-  collectionMocks,
-  networkMocks,
-} from "@/data/mocks/temporary/catalogue-filters";
 
-export const MobileHero = () => {
+export const MobileHero = (props: CatalogueFiltersProps) => {
   return (
     <div className="lg:hidden">
       <div className="mb-4 flex gap-2">
-        <div className="relative min-w-0 flex-1">
-          <Search className="absolute top-3 left-3 size-[22px] text-secondary" />
-          <Input
-            id="mobile-home-search"
-            placeholder="Explorar coleções"
-            className="h-[45px] rounded-[10px] border-0 bg-surface-card pr-3 pl-[42px] text-sm font-bold placeholder:text-secondary dark:bg-surface-card"
-          />
-          <label htmlFor="mobile-home-search" className="sr-only">
-            Explorar coleções
-          </label>
-        </div>
+        <NFTSearch
+          value={props.search.q ?? ""}
+          onSearch={(q) => props.onChange({ q })}
+        />
         <CatalogueFiltersDialog
-          collections={collectionMocks}
-          networks={networkMocks}
+          {...props}
           trigger={
             <Button
               type="button"

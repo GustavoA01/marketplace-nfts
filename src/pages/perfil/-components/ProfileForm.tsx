@@ -8,9 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { EnsNameField } from "@/components/EnsNameField";
 import { FormField } from "@/components/FormField";
-import { FormStatusMessage } from "@/components/FormStatusMessage";
 import type { ProfileFormValues } from "@/data/schemas/profile";
-import type { FormStatus } from "@/data/types/form-status";
 import { PasswordField } from "@/components/PasswordField";
 import { AvatarField } from "./AvatarField";
 
@@ -18,13 +16,13 @@ type ProfileFormProps = {
   register: UseFormRegister<ProfileFormValues>;
   errors: FieldErrors<ProfileFormValues>;
   watch: UseFormWatch<ProfileFormValues>;
-  status: FormStatus;
+  isSubmitting: boolean;
   hasAvatar: boolean;
   avatarAlt: string;
   avatarUrl?: string;
   onSubmit: FormEventHandler<HTMLFormElement>;
   onEnsSuffixChange: (value: ".eth" | ".xyz") => void;
-  onAvatarChange: () => void;
+  onAvatarChange: (file: File) => void;
   onAvatarRemove: () => void;
 };
 
@@ -32,7 +30,7 @@ export const ProfileForm = ({
   register,
   errors,
   watch,
-  status,
+  isSubmitting,
   hasAvatar,
   avatarAlt,
   avatarUrl,
@@ -41,7 +39,6 @@ export const ProfileForm = ({
   onAvatarChange,
   onAvatarRemove,
 }: ProfileFormProps) => {
-  const isSubmitting = status === "submitting";
   const ensNameRegister = register("ensName");
 
   return (
@@ -50,7 +47,7 @@ export const ProfileForm = ({
       onSubmit={onSubmit}
       noValidate
     >
-      <h1 className="hidden text-base font-bold leading-4 text-foreground lg:block">
+      <h1 className="hidden text-base leading-4 font-bold text-foreground lg:block">
         Perfil do colecionador
       </h1>
 
@@ -134,14 +131,14 @@ export const ProfileForm = ({
             alt={avatarAlt}
             avatarUrl={avatarUrl}
             disabled={isSubmitting}
-            onChangeClick={onAvatarChange}
+            onFileSelect={onAvatarChange}
             onRemoveClick={onAvatarRemove}
           />
         </div>
       </div>
 
       <div className="flex flex-col gap-5 sm:gap-6">
-        <h2 className="text-sm font-medium leading-4 text-foreground sm:text-base">
+        <h2 className="text-sm leading-4 font-medium text-foreground sm:text-base">
           Alterar senha
         </h2>
 
@@ -193,13 +190,6 @@ export const ProfileForm = ({
           />
         </FormField>
       </div>
-
-      <FormStatusMessage
-        status={status}
-        submittingMessage="Salvando perfil..."
-        errorMessage="Não foi possível salvar o perfil. Tente novamente."
-        successMessage="Perfil atualizado."
-      />
 
       <Button
         type="submit"

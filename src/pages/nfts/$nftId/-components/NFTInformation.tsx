@@ -1,38 +1,56 @@
 import { Heart, Mail, ShoppingCart, Star } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { QuantitySelector } from "@/components/QuantitySelector";
-import type { NFTDetailsPreview } from "@/data/mocks/temporary/nft-details";
+import type { NFTDetail } from "@/data/types/catalogue";
 import { cn } from "@/lib/utils";
 
-export const NFTInformation = ({ nft }: { nft: NFTDetailsPreview }) => {
+type NFTInformationProps = {
+  nft: NFTDetail;
+  selectedEdition: string;
+  quantity: number;
+  onEditionChange: (edition: string) => void;
+  onQuantityChange: (quantity: number) => void;
+};
+
+export const NFTInformation = ({
+  nft,
+  selectedEdition,
+  quantity,
+  onEditionChange,
+  onQuantityChange,
+}: NFTInformationProps) => {
   return (
     <div className="relative -mt-[114px] flex min-w-0 flex-1 flex-col gap-5 rounded-t-[32px] bg-surface-card p-6 lg:mt-0 lg:min-h-[448px] lg:justify-between lg:gap-3 lg:rounded-none lg:bg-transparent lg:p-0">
       <div className="border-b border-border pb-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="text-xl leading-7 font-bold lg:text-[28px] lg:leading-9">
-            {nft.title}
+            {nft.name}
           </h1>
-          <span className="flex items-center gap-1 rounded-full border border-primary px-2 text-sm text-text-secondary lg:hidden">
-            <Star className="size-3 fill-primary text-primary" />
-            {nft.rating} ({nft.reviews})
-          </span>
+          {nft.rating !== undefined && (
+            <span className="flex items-center gap-1 rounded-full border border-primary px-2 text-sm text-text-secondary lg:hidden">
+              <Star className="size-3 fill-primary text-primary" />
+              {nft.rating} ({nft.reviews})
+            </span>
+          )}
         </div>
         <div className="mt-3 hidden flex-wrap items-center justify-between gap-3 lg:flex">
           <span className="text-[22px] leading-4 font-bold text-text-accent">
             {nft.price} ETH
           </span>
-          <span className="flex items-center gap-1 text-[13px]">
-            {[0, 1, 2, 3, 4].map((index) => (
-              <Star
-                key={index}
-                className={cn(
-                  "size-[15px] fill-primary text-primary",
-                  index === 4 && "fill-secondary text-secondary",
-                )}
-              />
-            ))}
-            {nft.reviews} avaliações de colecionadores
-          </span>
+          {nft.reviews !== undefined && (
+            <span className="flex items-center gap-1 text-[13px]">
+              {[0, 1, 2, 3, 4].map((index) => (
+                <Star
+                  key={index}
+                  className={cn(
+                    "size-[15px] fill-primary text-primary",
+                    index === 4 && "fill-secondary text-secondary",
+                  )}
+                />
+              ))}
+              {nft.reviews} avaliações de colecionadores
+            </span>
+          )}
         </div>
       </div>
       <div>
@@ -45,15 +63,23 @@ export const NFTInformation = ({ nft }: { nft: NFTDetailsPreview }) => {
       </div>
       <div>
         <h2 className="mb-3 text-[15px] leading-4 font-bold">Edição:</h2>
+        {!nft.editions.length && (
+          <p role="status" className="text-sm text-text-secondary">
+            Não há edições disponíveis.
+          </p>
+        )}
         <div className="flex flex-wrap gap-1.5">
           {nft.editions.map((edition) => (
             <Button
               key={edition}
+              aria-pressed={edition === selectedEdition}
+              disabled={nft.availableQuantity < 1}
+              onClick={() => onEditionChange(edition)}
               type="button"
               variant="outline"
               className={cn(
                 "h-7 rounded-full border-border px-2 text-sm leading-4 font-normal text-text-secondary dark:bg-transparent",
-                edition === nft.selectedEdition &&
+                edition === selectedEdition &&
                   "border-primary text-text-accent",
               )}
             >
@@ -63,10 +89,17 @@ export const NFTInformation = ({ nft }: { nft: NFTDetailsPreview }) => {
         </div>
       </div>
       <div className="hidden flex-wrap items-center justify-between gap-3 lg:flex">
-        <QuantitySelector value={1} size="large" />
+        <QuantitySelector
+          value={quantity}
+          max={nft.availableQuantity}
+          size="large"
+          onDecrease={() => onQuantityChange(quantity - 1)}
+          onIncrease={() => onQuantityChange(quantity + 1)}
+        />
         <div className="flex gap-2">
           <Button
             type="button"
+            disabled={nft.availableQuantity < 1 || !selectedEdition}
             className="h-10 w-[130px] rounded-md text-sm font-bold"
           >
             COMPRAR
@@ -81,6 +114,11 @@ export const NFTInformation = ({ nft }: { nft: NFTDetailsPreview }) => {
           </Button>
         </div>
       </div>
+      <p role="status" className="text-sm text-text-secondary">
+        {nft.availableQuantity > 0
+          ? `${nft.availableQuantity} unidades disponíveis`
+          : "NFT esgotado"}
+      </p>
       <div className="space-y-3 text-[15px] text-secondary">
         <p>ID do token: {nft.token}</p>
         <p>Coleção: {nft.collection}</p>
@@ -96,7 +134,12 @@ export const NFTInformation = ({ nft }: { nft: NFTDetailsPreview }) => {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3 text-sm text-text-secondary">
             Qtd.
-            <QuantitySelector value={1} />
+            <QuantitySelector
+              value={quantity}
+              max={nft.availableQuantity}
+              onDecrease={() => onQuantityChange(quantity - 1)}
+              onIncrease={() => onQuantityChange(quantity + 1)}
+            />
           </div>
           <span className="text-xl font-bold text-text-accent">
             {nft.price} ETH
@@ -105,6 +148,7 @@ export const NFTInformation = ({ nft }: { nft: NFTDetailsPreview }) => {
         <div className="flex gap-3">
           <Button
             type="button"
+            disabled={nft.availableQuantity < 1 || !selectedEdition}
             className="h-[60px] flex-1 rounded-full text-base font-bold"
           >
             Comprar NFT

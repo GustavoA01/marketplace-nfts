@@ -63,7 +63,13 @@ export const getSessionUser = (sessionId?: string): AuthUser | null => {
     deleteSession(session.id);
     return null;
   }
-  return { id: user.id, username: user.username, email: user.email };
+  return {
+    id: user.id,
+    username: user.username,
+    email: user.email,
+    displayName: user.displayName,
+    avatarUrl: user.avatarUrl,
+  };
 };
 
 export const resetSessions = () => saveSessions([]);

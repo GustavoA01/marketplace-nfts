@@ -1,8 +1,8 @@
 import { Card } from "@/components/ui/Card";
 
-type FeaturedNFTProps = { image: string };
+type FeaturedNFTProps = { image: string; description: string };
 
-export const FeaturedNFT = ({ image }: FeaturedNFTProps) => {
+export const FeaturedNFT = ({ image, description }: FeaturedNFTProps) => {
   return (
     <Card className="relative h-[470px] gap-4 overflow-hidden rounded-none bg-linear-to-b from-primary/10 to-primary/3 pt-6 pb-1 ring-0">
       <h3 className="px-5 text-2xl leading-8 font-bold text-text-accent">
@@ -13,7 +13,7 @@ export const FeaturedNFT = ({ image }: FeaturedNFTProps) => {
       </p>
       <img
         src={image}
-        alt="NFT em destaque: macaco com chapéu e moletom roxo"
+        alt={description}
         width={310}
         height={368}
         loading="lazy"

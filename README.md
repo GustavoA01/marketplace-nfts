@@ -34,7 +34,7 @@ O grupo `(inicio)` organiza a página inicial sem adicionar um segmento à URL.
 - React e TypeScript para as páginas; Vite para desenvolvimento e build.
 - TanStack Router com rotas por arquivo em `src/pages`.
 - TanStack Query com provider e cliente em `src/lib/query-client.ts`.
-- Axios com cliente REST em `src/lib/http.ts`, sem chamadas implementadas.
+- Axios com cliente REST em `src/lib/http.ts` e serviços de autenticação e NFTs em `src/services`.
 - Socket.IO com cliente em `src/lib/socket.ts`, sem conexão automática ou eventos.
 - Tailwind CSS e componentes oficiais shadcn/ui em `src/components/ui`. Os estilos auxiliares gerados estão em `src/styles/shadcn.css`; o CLI pode ser executado com `npx shadcn@latest add <componente>`.
 - MSW configurado em `src/data/mocks`, ativado por `VITE_ENABLE_MOCKS=true`. O worker está em `public/mockServiceWorker.js`. O cadastro já possui handler funcional; os demais recursos estão em implementação. A flag também deve estar ativa no build de demonstração.
@@ -107,3 +107,7 @@ Tentar cadastrar novamente o mesmo e-mail retorna conflito 409 e uma mensagem no
 Entre com `luna@example.com` ou `theo@example.com` e senha fictícia `Colecionador123!`. O nome aparece no Header e a sessão continua após refresh. O botão Sair no perfil/carteiras encerra a sessão.
 
 Perfil, carteiras, pagamento e confirmação exigem login. O destino é preservado para retorno após autenticação. A sessão dura 30 minutos; uma sessão inválida ou expirada recebe 401 na simulação. `resetUsers()` e `resetSessions()` restauram as respectivas bases para testes. Não há AuthProvider adicional: `useSession()` compartilha a query da sessão com o QueryClientProvider existente.
+
+## Catálogo e detalhes dos NFTs
+
+Catálogo e detalhe consultam a API simulada com Axios e TanStack Query. Busca, filtros, ordenação e paginação são mantidos na URL com TanStack Router. Veja [contratos, cache, cenários de falha e validação](./NFT_CATALOGUE.md).

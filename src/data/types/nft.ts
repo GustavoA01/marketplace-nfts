@@ -9,3 +9,17 @@ export type NFTPreview = {
   rare?: boolean;
   favorite?: "outline" | "filled";
 };
+
+export type NFT = NFTPreview & {
+  name: string;
+  price: string;
+  category: string;
+  network: string;
+  createdAt: string;
+  trending: boolean;
+  description: string;
+  collection: string;
+  creator: string;
+  editions: string[];
+  availableQuantity: number;
+};

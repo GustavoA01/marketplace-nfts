@@ -1,15 +1,17 @@
-import type { NFTDetailsPreview } from "@/data/mocks/temporary/nft-details";
+import type { NFTDetail } from "@/data/types/catalogue";
 
-export const NFTDescription = ({ nft }: { nft: NFTDetailsPreview }) => {
+export const NFTDescription = ({ nft }: { nft: NFTDetail }) => {
   return (
     <section className="mt-12 px-6 lg:mt-24 lg:px-0">
       <div className="flex flex-wrap gap-x-8 gap-y-3 border-b border-border text-[17px] leading-5">
         <h2 className="border-b-[3px] border-primary pb-3 font-bold text-text-accent">
           Detalhes do NFT
         </h2>
-        <span className="pb-3">
-          Avaliações de colecionadores ({nft.reviews})
-        </span>
+        {nft.reviews !== undefined && (
+          <span className="pb-3">
+            Avaliações de colecionadores ({nft.reviews})
+          </span>
+        )}
       </div>
       <div className="mt-3 space-y-6 text-sm leading-6 text-text-secondary">
         {nft.paragraphs.map((paragraph) => (

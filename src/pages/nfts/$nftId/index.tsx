@@ -1,61 +1,126 @@
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { isAxiosError } from "axios";
+import { Button } from "@/components/ui/Button";
 import { NFTRecommendations } from "@/components/NFTRecommendations";
 import { PurchaseBreadcrumb } from "@/components/PurchaseBreadcrumb";
-import { catalogueMocks } from "@/data/mocks/temporary/catalogue";
-import { nftDetailsMock } from "@/data/mocks/temporary/nft-details";
+import { queryKeys } from "@/data/query-keys";
+import { getNFT } from "@/services/nfts/detail";
+import { getNFTs } from "@/services/nfts/list";
 import { NFTGallery } from "./-components/NFTGallery";
 import { NFTInformation } from "./-components/NFTInformation";
 import { NFTDescription } from "./-components/NFTDescription";
+import { NFTDetailSkeleton } from "./-components/NFTDetailSkeleton";
 
 const Page = () => {
   const { nftId } = Route.useParams();
-  const selected = catalogueMocks.find(
-    (nft) =>
-      nft.id === nftId || (nftId === "1" && nft.id === "emerald-ape-042"),
-  );
-
-  if (!selected?.name)
+  const [selections, setSelections] = useState<
+    Record<string, { edition: string; quantity: number }>
+  >({});
+  const query = useQuery({
+    queryKey: queryKeys.nfts.detail(nftId),
+    queryFn: ({ signal }) => getNFT(nftId, signal),
+    retry: (attempt, error) =>
+      !(isAxiosError(error) && error.response?.status === 404) && attempt < 1,
+  });
+  const nft = query.data;
+  const relatedSearch = { q: nft?.collection };
+  const related = useQuery({
+    queryKey: queryKeys.nfts.list(relatedSearch),
+    queryFn: ({ signal }) => getNFTs(relatedSearch, signal),
+    enabled: Boolean(nft),
+  });
+  if (query.isPending) return <NFTDetailSkeleton />;
+  if (query.isError) {
+    const notFound =
+      isAxiosError(query.error) && query.error.response?.status === 404;
     return (
-      <div className="p-6">
-        <h1 className="text-2xl font-bold">NFT não encontrado</h1>
-        <Link to="/" className="mt-4 inline-block text-primary">
+      <div className="space-y-5 p-6" role="alert">
+        <h1 className="text-2xl font-bold">
+          {notFound
+            ? "NFT não encontrado"
+            : "Não foi possível carregar este NFT"}
+        </h1>
+        {!notFound && (
+          <Button
+            type="button"
+            onClick={() => void query.refetch()}
+            disabled={query.isFetching}
+          >
+            Tentar novamente
+          </Button>
+        )}
+        <Link to="/" hash="catalogo" className="block text-primary underline">
           Voltar ao catálogo
         </Link>
       </div>
     );
-
-  const nft =
-    selected.id === "emerald-ape-042"
-      ? nftDetailsMock
-      : {
-          ...nftDetailsMock,
-          title: selected.name,
-          price: selected.price ?? "0.00",
-          image: selected.image,
-          mobileImage: selected.image,
-        };
-
+  }
+  const selectedEdition =
+    selections[nftId]?.edition ?? query.data.defaultEdition ?? "";
+  const quantity = Math.max(
+    1,
+    Math.min(selections[nftId]?.quantity ?? 1, query.data.availableQuantity),
+  );
+  const onSelectionChange = (
+    patch: Partial<{ edition: string; quantity: number }>,
+  ) => {
+    setSelections((previous) => ({
+      ...previous,
+      [nftId]: { edition: selectedEdition, quantity, ...patch },
+    }));
+  };
+  const recommendations =
+    related.data?.items.filter((item) => item.id !== nftId).slice(0, 5) ?? [];
   return (
-    <div className="mb-16 lg:mb-24">
+    <div className="mb-16 lg:mb-24" aria-busy={query.isFetching}>
       <div className="hidden lg:block">
         <PurchaseBreadcrumb compact mobileTitle="Detalhes do NFT" />
       </div>
+      {query.isFetching && (
+        <p role="status" className="sr-only">
+          Atualizando NFT
+        </p>
+      )}
       <div className="flex flex-col lg:flex-row lg:gap-8">
         <NFTGallery
-          image={nft.image}
-          mobileImage={nft.mobileImage}
-          name={nft.title}
+          key={nftId}
+          gallery={query.data.gallery}
+          name={query.data.name}
         />
-        <NFTInformation nft={nft} />
+        <NFTInformation
+          nft={query.data}
+          selectedEdition={selectedEdition}
+          quantity={quantity}
+          onEditionChange={(edition) => onSelectionChange({ edition })}
+          onQuantityChange={(value) =>
+            onSelectionChange({
+              quantity: Math.max(
+                1,
+                Math.min(value, query.data.availableQuantity),
+              ),
+            })
+          }
+        />
       </div>
-      <NFTDescription nft={nft} />
+      <NFTDescription nft={query.data} />
       <div className="px-6 lg:px-0">
-        <NFTRecommendations
-          title="Mais desta coleção"
-          items={catalogueMocks
-            .filter((item) => item.name && item.id !== selected.id)
-            .slice(2, 7)}
-        />
+        {related.isError ? (
+          <div role="alert" className="mt-12 space-y-3">
+            <p>Não foi possível carregar outros NFTs desta coleção.</p>
+            <Button variant="outline" onClick={() => void related.refetch()}>
+              Tentar novamente
+            </Button>
+          </div>
+        ) : (
+          recommendations.length > 0 && (
+            <NFTRecommendations
+              title="Mais desta coleção"
+              items={recommendations}
+            />
+          )
+        )}
       </div>
     </div>
   );

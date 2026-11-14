@@ -1,13 +1,15 @@
 import { Image } from "lucide-react";
+import { useRef } from "react";
 import { Button } from "@/components/ui/Button";
 import { FieldLabel } from "@/components/FieldLabel";
+import { cn } from "@/lib/utils";
 
 type AvatarFieldProps = {
   hasAvatar: boolean;
   alt: string;
   avatarUrl?: string;
   disabled?: boolean;
-  onChangeClick: () => void;
+  onFileSelect: (file: File) => void;
   onRemoveClick: () => void;
 };
 
@@ -16,20 +18,23 @@ export const AvatarField = ({
   alt,
   avatarUrl,
   disabled = false,
-  onChangeClick,
+  onFileSelect,
   onRemoveClick,
 }: AvatarFieldProps) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   return (
     <div className="flex w-full flex-col gap-2.5">
       <FieldLabel>Avatar</FieldLabel>
       <div className="flex items-center gap-4 sm:gap-6">
-        <div className="flex size-11 items-center justify-center rounded-full border border-border bg-surface-raised p-2.5 sm:size-12.5 sm:p-3">
+        <div
+          className={cn(
+            "flex size-11 items-center justify-center overflow-hidden rounded-full border border-border bg-surface-raised sm:size-12.5",
+            !(hasAvatar && avatarUrl) && "p-2.5 sm:p-3",
+          )}
+        >
           {hasAvatar && avatarUrl ? (
-            <img
-              src={avatarUrl}
-              alt={alt}
-              className="size-5 rounded-full object-cover sm:size-6"
-            />
+            <img src={avatarUrl} alt={alt} className="size-full object-cover" />
           ) : (
             <Image
               className="size-5 text-secondary sm:size-6"
@@ -39,10 +44,22 @@ export const AvatarField = ({
           )}
         </div>
         <div className="flex items-center gap-3 sm:gap-5">
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            disabled={disabled}
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file) onFileSelect(file);
+              event.target.value = "";
+            }}
+          />
           <Button
             type="button"
             disabled={disabled}
-            onClick={onChangeClick}
+            onClick={() => inputRef.current?.click()}
             className="h-9 w-20 rounded-[3px] font-mono text-xs font-bold text-ink sm:h-10 sm:w-24.5 sm:text-sm"
           >
             Alterar

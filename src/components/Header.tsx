@@ -1,13 +1,26 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { useState } from "react";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { LogIn, Search, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { Dialog, DialogTrigger } from "@/components/ui/Dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/Dialog";
+import { NFTSearch } from "@/components/NFTSearch";
+import { normalizeCatalogueSearch } from "@/data/schemas/catalogue";
 import { navigation } from "@/data/constants/navigation";
 import { AuthDialog } from "@/features/Auth/container/AuthDialog";
 import { useSession } from "@/features/Auth/hooks/useSession";
 import { cn } from "@/lib/utils";
 
 export const Header = () => {
+  const [searchOpen, setSearchOpen] = useState(false);
+  const navigate = useNavigate();
+  const currentSearch = useRouterState({
+    select: (state) => state.location.search,
+  });
   const { data: user, isPending } = useSession();
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
@@ -46,14 +59,41 @@ export const Header = () => {
             ))}
           </nav>
           <div className="flex h-8.75 shrink-0 items-center gap-4 lg:gap-7">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="size-5 rounded-sm border-0"
-            >
-              <Search className="size-5" strokeWidth={1.6} />
-            </Button>
+            <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
+              <DialogTrigger
+                render={
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="size-5 rounded-sm border-0"
+                  />
+                }
+              >
+                <Search className="size-5" strokeWidth={1.6} />
+                <span className="sr-only">Buscar NFTs</span>
+              </DialogTrigger>
+              <DialogContent className="gap-5 p-6">
+                <DialogTitle>Buscar NFTs</DialogTitle>
+                <NFTSearch
+                  value={
+                    typeof currentSearch.q === "string" ? currentSearch.q : ""
+                  }
+                  onSearch={(q) => {
+                    void navigate({
+                      to: "/",
+                      hash: "catalogo",
+                      search: (previous) =>
+                        normalizeCatalogueSearch({ ...previous, q, page: 1 }),
+                    });
+                    setSearchOpen(false);
+                  }}
+                />
+                <p className="text-sm text-text-secondary">
+                  Busque por nome, coleção ou criador e pressione Enter.
+                </p>
+              </DialogContent>
+            </Dialog>
 
             <Button
               variant="ghost"
@@ -74,12 +114,26 @@ export const Header = () => {
               <Button
                 variant="default"
                 size="icon"
-                className="size-8.75 rounded-full text-base font-bold"
+                className="size-8.75 overflow-hidden rounded-full p-0 text-base font-bold"
                 nativeButton={false}
                 render={<Link to="/perfil" />}
               >
-                <span aria-hidden>{user.username.charAt(0).toUpperCase()}</span>
-                <span className="sr-only">{user.username}</span>
+                {user.avatarUrl ? (
+                  <img
+                    src={user.avatarUrl}
+                    alt=""
+                    className="size-full object-cover"
+                  />
+                ) : (
+                  <span aria-hidden>
+                    {(user.displayName || user.username)
+                      .charAt(0)
+                      .toUpperCase()}
+                  </span>
+                )}
+                <span className="sr-only">
+                  {user.displayName || user.username}
+                </span>
               </Button>
             ) : (
               <Dialog>

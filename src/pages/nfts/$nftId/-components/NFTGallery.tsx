@@ -1,3 +1,5 @@
+import { useState } from "react";
+import type { NFTDetail } from "@/data/types/catalogue";
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft, Heart, Search } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -8,22 +10,26 @@ import {
   DialogTrigger,
 } from "@/components/ui/Dialog";
 
-type NFTGalleryProps = { image: string; mobileImage: string; name: string };
+type NFTGalleryProps = { gallery: NFTDetail["gallery"]; name: string };
 
-export const NFTGallery = ({ image, mobileImage, name }: NFTGalleryProps) => {
+export const NFTGallery = ({ gallery, name }: NFTGalleryProps) => {
+  const [selected, setSelected] = useState(0);
+  const { image, mobileImage, description } = gallery[selected] ?? gallery[0];
   return (
     <div className="relative flex min-w-0 flex-col gap-4 lg:w-143.25 lg:shrink-0 lg:flex-row lg:items-center lg:gap-7">
       <div className="hidden w-25 shrink-0 flex-col gap-4 lg:flex">
-        {[0, 1, 2, 3].map((index) => (
+        {gallery.map((item, index) => (
           <Button
             key={index}
             type="button"
+            aria-pressed={selected === index}
+            onClick={() => setSelected(index)}
             variant="ghost"
-            className="h-25 w-25 overflow-hidden border-0 rounded-lg p-0"
+            className="h-25 w-25 aria-pressed:ring-2 aria-pressed:ring-primary overflow-hidden border-0 rounded-lg p-0"
           >
             <img
-              src={image}
-              alt={`${name}, imagem ${index + 1}`}
+              src={item.image}
+              alt={item.description}
               width={100}
               height={100}
               className="size-25 rounded-lg object-cover"
@@ -36,7 +42,7 @@ export const NFTGallery = ({ image, mobileImage, name }: NFTGalleryProps) => {
           <source media="(max-width: 1023px)" srcSet={mobileImage} />
           <img
             src={image}
-            alt={name}
+            alt={description}
             width={404}
             height={404}
             fetchPriority="high"
@@ -79,7 +85,7 @@ export const NFTGallery = ({ image, mobileImage, name }: NFTGalleryProps) => {
             <DialogTitle className="sr-only">{name}</DialogTitle>
             <img
               src={image}
-              alt={name}
+              alt={description}
               width={700}
               height={700}
               className="max-h-[75svh] rounded-2xl object-contain"

@@ -1,25 +1,8 @@
-import { http } from "msw";
+import { http } from "msw/http";
+import { listNFTsHandler } from "./nfts/list";
+import { nftDetailHandler } from "./nfts/detail";
 
 export const nftsHandlers = [
-  http.get("/api/nfts", () => {
-    return new Response(
-      JSON.stringify([
-        { id: 1, name: "NFT 1" },
-        { id: 2, name: "NFT 2" },
-      ]),
-      {
-        status: 200,
-      },
-    );
-  }),
-  http.get("/api/nfts/:id", ({ params }) => {
-    return new Response(
-      JSON.stringify({
-        id: params.id,
-      }),
-      {
-        status: 200,
-      },
-    );
-  }),
+  http.get("/api/nfts", listNFTsHandler),
+  http.get("/api/nfts/:id", nftDetailHandler),
 ];

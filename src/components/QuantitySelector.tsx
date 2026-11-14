@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 
 type QuantitySelectorProps = {
   value: number;
+  min?: number;
+  max?: number;
   size?: "small" | "large";
   onDecrease?: () => void;
   onIncrease?: () => void;
@@ -11,6 +13,8 @@ type QuantitySelectorProps = {
 
 export const QuantitySelector = ({
   value,
+  min = 1,
+  max = Infinity,
   size = "small",
   onDecrease,
   onIncrease,
@@ -26,6 +30,7 @@ export const QuantitySelector = ({
         type="button"
         size="icon"
         onClick={onDecrease}
+        disabled={value <= min}
         className={cn(
           "size-7 rounded-full p-0",
           size === "large" && "size-12.5",
@@ -46,6 +51,7 @@ export const QuantitySelector = ({
         type="button"
         size="icon"
         onClick={onIncrease}
+        disabled={value >= max}
         className={cn(
           "size-7 rounded-full p-0",
           size === "large" && "size-12.5",

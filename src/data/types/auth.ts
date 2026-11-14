@@ -4,6 +4,8 @@ export type AuthUser = {
   id: string;
   username: string;
   email: string;
+  displayName: string;
+  avatarUrl: string | null;
 };
 
 export type RegisterResponse = { user: AuthUser };
