@@ -1,3 +1,4 @@
+import { clearAuthCookie } from "./auth-cookie";
 import { queryKeys } from "@/data/query-keys";
 import {
   QueryClient,
@@ -17,6 +18,7 @@ const handleUnauthorized = (error: unknown, key?: QueryKey) => {
     error.response?.status === 401 &&
     !isCredentialRequest
   ) {
+    clearAuthCookie();
     queryClient.setQueryData(queryKeys.auth.session, null);
   }
 };

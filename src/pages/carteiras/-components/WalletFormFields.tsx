@@ -14,11 +14,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/Select";
-import type { WalletFormValues } from "@/data/schemas/wallets";
 import {
   networkOptions,
   walletTypeOptions,
-} from "@/data/mocks/temporary/wallets";
+  type WalletFormValues,
+} from "@/data/schemas/wallets";
 
 type WalletFormFieldsProps = {
   idPrefix: string;
@@ -192,7 +192,6 @@ export const WalletFormFields = ({
         <FormField
           label="Código de indicação"
           htmlFor={`${idPrefix}-referralCode`}
-          required
           error={errors.referralCode?.message}
           className="gap-1.5"
         >
@@ -223,7 +222,7 @@ export const WalletFormFields = ({
         </FormField>
 
         <EnsNameField
-          ensName={watch("ensName")}
+          ensName={watch("ensName") ?? ""}
           ensSuffix={watch("ensSuffix")}
           ensNameError={errors.ensName?.message}
           ensSuffixError={errors.ensSuffix?.message}

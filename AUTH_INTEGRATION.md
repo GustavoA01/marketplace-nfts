@@ -54,8 +54,8 @@ Referências: [Web Crypto](https://developer.mozilla.org/en-US/docs/Web/API/Subt
 
 - Login: página e diálogo, validação local, Axios/TanStack Query, conferência de credenciais na base compartilhada e mensagens de sucesso/erro.
 - Cadastro: mesmos recursos, com envio à API simulada e tratamento dos erros retornados.
-- Perfil: dados, ENS, apelido, alteração de senha e mudança visual de avatar; ainda sem salvamento pela API.
-- Carteiras: principal e secundária, estado vazio, adicionar e copiar dados da principal; ainda sem salvamento pela API.
+- Perfil: dados, ENS, apelido, alteração de senha e mudança visual de avatar; integração com a API simulada.
+- Carteiras: principal e secundária integradas à API simulada; detalhes em `WALLETS_INTEGRATION.md`.
 - Navegação de conta e navegação inferior mobile compartilhadas.
 
 A lógica e a composição de perfil e carteiras ficam nos respectivos `index.tsx`, e seus componentes exclusivos nas pastas `-components`. A feature Auth continua compartilhada entre login, cadastro e diálogo do Header.
@@ -82,12 +82,12 @@ Perfil, carteiras, pagamento e confirmação possuem `beforeLoad` com validaçã
 
 Logout navega ao início e publica `null` na query. Login/troca de usuário, logout e perda de sessão cancelam requisições e limpam queries fora da sessão e o cache de mutations. A política atual é conservadora e também remove caches públicos; as bases canônicas dos mocks permanecem. Respostas 401 de outras queries/mutations encerram o estado de autenticação; erros de credenciais no próprio login não apagam uma sessão válida anterior.
 
-O botão Sair usa `useLogout()`. Os formulários de perfil e carteiras ainda exibem dados demonstrativos e não representam integração por usuário desses recursos. Socket.IO e limpeza das suas futuras subscriptions serão implementados na etapa de tempo real.
+O botão Sair usa `useLogout()`. Socket.IO e limpeza das suas futuras subscriptions serão implementados na etapa de tempo real.
 
 ## Próximas etapas
 
-- Integrar perfil, senha, avatar e carteiras à API simulada e aos dados de cada usuário.
-- Implementar catálogo, favoritos, carrinho, cotações e pedidos.
+- Completar favoritos, carrinho, cotações e pedidos.
+- Integrar as carteiras salvas ao pagamento/checkout.
 - Completar cenários determinísticos de falha, Socket.IO, testes Playwright e baselines visuais.
 
 OAuth e blockchain reais não fazem parte da entrega. Atividade, ofertas, downloads e suporte não exigem páginas completas.

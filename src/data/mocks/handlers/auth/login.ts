@@ -4,6 +4,7 @@ import { sessionDurationSeconds } from "@/data/constants/auth";
 import { loginSchema, type LoginFormValues } from "@/data/schemas/auth";
 import type { AuthApiError, LoginResponse } from "@/data/types/auth";
 import { createSession, deleteSession } from "../../database/sessions";
+import { mergeVisitorCart } from "../../database/cart";
 import { authenticateUser } from "../../database/users";
 import { requestSessionId, sessionCookie } from "./utils";
 
@@ -53,6 +54,7 @@ export const loginHandler: HttpResponseResolver<
       );
     }
 
+    mergeVisitorCart(user.id);
     deleteSession(requestSessionId(request));
     const session = createSession(user.id);
 

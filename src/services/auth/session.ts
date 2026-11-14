@@ -1,4 +1,5 @@
 import { isAxiosError } from "axios";
+import { clearAuthCookie } from "@/lib/auth-cookie";
 import { http } from "@/lib/http";
 import type { AuthUser, SessionResponse } from "@/data/types/auth";
 
@@ -11,7 +12,10 @@ export const getSession = async (
     });
     return data.user;
   } catch (error) {
-    if (isAxiosError(error) && error.response?.status === 401) return null;
+    if (isAxiosError(error) && error.response?.status === 401) {
+      clearAuthCookie();
+      return null;
+    }
     throw error;
   }
 };

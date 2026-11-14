@@ -1,6 +1,6 @@
 import { http } from "msw/http";
-import { listNFTsHandler } from "./nfts/list";
-import { nftDetailHandler } from "./nfts/detail";
+import { listNFTsHandler } from "./list";
+import { nftDetailHandler } from "./detail";
 
 export const nftsHandlers = [
   http.get("/api/nfts", listNFTsHandler),

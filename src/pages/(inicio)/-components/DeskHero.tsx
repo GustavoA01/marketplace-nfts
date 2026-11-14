@@ -14,7 +14,7 @@ export const DeskHero = () => {
           da arte digital
         </h1>
 
-        <p className="mt-1 max-w-[557px] text-sm leading-6 text-text-secondary">
+        <p className="mt-1 max-w-139.25 text-sm leading-6 text-text-secondary">
           Descubra NFTs selecionados de criadores emergentes e consagrados.
           Colecione arte digital rara, apoie artistas e tenha uma parte da
           cultura da internet.

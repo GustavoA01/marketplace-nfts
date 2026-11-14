@@ -1,6 +1,16 @@
 import type { PriceSummary } from "@/data/types/purchase";
 
-export const OrderTotals = ({ summary }: { summary: PriceSummary }) => {
+type OrderTotalsProps = {
+  summary: PriceSummary;
+  discountUnit?: "ETH";
+  discountLabel?: string;
+};
+
+export const OrderTotals = ({
+  summary,
+  discountUnit,
+  discountLabel = "Desconto do lançamento",
+}: OrderTotalsProps) => {
   return (
     <div className="space-y-3 text-[15px]">
       <div className="flex justify-between gap-4">
@@ -8,8 +18,11 @@ export const OrderTotals = ({ summary }: { summary: PriceSummary }) => {
         <span className="text-lg leading-5">{summary.subtotal} ETH</span>
       </div>
       <div className="flex justify-between gap-4">
-        <span>Desconto do lançamento</span>
-        <span>(-) {summary.discount}</span>
+        <span>{discountLabel}</span>
+        <span>
+          (-) {summary.discount}
+          {discountUnit && ` ${discountUnit}`}
+        </span>
       </div>
       <div className="space-y-1.5">
         <div className="flex justify-between gap-4">

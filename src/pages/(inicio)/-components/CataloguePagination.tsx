@@ -13,11 +13,13 @@ export const CataloguePagination = ({
   onChange,
 }: CataloguePaginationProps) => {
   if (totalPages < 2) return null;
+
   const first = Math.max(1, Math.min(page - 2, totalPages - 4));
   const pages = Array.from(
     { length: Math.min(5, totalPages) },
     (_, index) => first + index,
   );
+
   return (
     <nav className="flex justify-end gap-2">
       <Button

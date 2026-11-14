@@ -27,6 +27,7 @@ export type NFTListResponse = {
 
 export type NFTDetail = NFT & {
   defaultEdition: string;
+  editionAvailability: Record<string, number>;
   gallery: { image: string; mobileImage: string; description: string }[];
   token: string;
   attributes: string;

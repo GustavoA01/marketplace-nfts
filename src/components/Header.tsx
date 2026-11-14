@@ -1,3 +1,5 @@
+import { useQuery } from "@tanstack/react-query";
+import { cartQueryOptions } from "@/lib/cart-query";
 import { useState } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { LogIn, Search, ShoppingCart } from "lucide-react";
@@ -22,6 +24,10 @@ export const Header = () => {
     select: (state) => state.location.search,
   });
   const { data: user, isPending } = useSession();
+  const { data: cart } = useQuery({
+    ...cartQueryOptions(user?.id),
+    enabled: user !== undefined,
+  });
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   });
@@ -103,8 +109,9 @@ export const Header = () => {
               render={<Link to="/carrinho" />}
             >
               <ShoppingCart className="size-6" strokeWidth={1.6} />
+              <span className="sr-only">Carrinho</span>
               <span className="absolute top-0 right-0 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] leading-none font-medium text-ink ring-2 ring-background">
-                0
+                {cart?.totalQuantity ?? 0}
               </span>
             </Button>
 

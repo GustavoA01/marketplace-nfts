@@ -1,16 +1,6 @@
 import type { WalletFormValues } from "@/data/schemas/wallets";
 
-export const networkOptions = [
-  { value: "ethereum", label: "Ethereum" },
-  { value: "polygon", label: "Polygon" },
-  { value: "solana", label: "Solana" },
-] as const;
-
-export const walletTypeOptions = [
-  { value: "metamask", label: "MetaMask" },
-  { value: "walletconnect", label: "WalletConnect" },
-  { value: "coinbase", label: "Coinbase Wallet" },
-] as const;
+export { networkOptions, walletTypeOptions } from "@/data/schemas/wallets";
 
 export const mainWalletMock: WalletFormValues = {
   displayName: "Luna Colecionadora",

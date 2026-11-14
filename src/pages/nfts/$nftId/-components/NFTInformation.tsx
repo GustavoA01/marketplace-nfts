@@ -8,6 +8,11 @@ type NFTInformationProps = {
   nft: NFTDetail;
   selectedEdition: string;
   quantity: number;
+  maxQuantity: number;
+  disabled: boolean;
+  isAdding: boolean;
+  onBuy: () => void;
+  onAddToCart: () => void;
   onEditionChange: (edition: string) => void;
   onQuantityChange: (quantity: number) => void;
 };
@@ -16,6 +21,11 @@ export const NFTInformation = ({
   nft,
   selectedEdition,
   quantity,
+  maxQuantity,
+  disabled,
+  isAdding,
+  onBuy,
+  onAddToCart,
   onEditionChange,
   onQuantityChange,
 }: NFTInformationProps) => {
@@ -73,7 +83,7 @@ export const NFTInformation = ({
             <Button
               key={edition}
               aria-pressed={edition === selectedEdition}
-              disabled={nft.availableQuantity < 1}
+              disabled={disabled || !nft.editionAvailability[edition]}
               onClick={() => onEditionChange(edition)}
               type="button"
               variant="outline"
@@ -84,6 +94,7 @@ export const NFTInformation = ({
               )}
             >
               {edition}
+              {!nft.editionAvailability[edition] && " (esgotada)"}
             </Button>
           ))}
         </div>
@@ -91,7 +102,8 @@ export const NFTInformation = ({
       <div className="hidden flex-wrap items-center justify-between gap-3 lg:flex">
         <QuantitySelector
           value={quantity}
-          max={nft.availableQuantity}
+          max={maxQuantity}
+          disabled={disabled || maxQuantity < 1}
           size="large"
           onDecrease={() => onQuantityChange(quantity - 1)}
           onIncrease={() => onQuantityChange(quantity + 1)}
@@ -99,10 +111,11 @@ export const NFTInformation = ({
         <div className="flex gap-2">
           <Button
             type="button"
-            disabled={nft.availableQuantity < 1 || !selectedEdition}
+            disabled={disabled || maxQuantity < 1 || !selectedEdition}
+            onClick={onBuy}
             className="h-10 w-[130px] rounded-md text-sm font-bold"
           >
-            COMPRAR
+            {isAdding ? "Adicionando..." : "COMPRAR"}
           </Button>
           <Button
             type="button"
@@ -115,8 +128,8 @@ export const NFTInformation = ({
         </div>
       </div>
       <p role="status" className="text-sm text-text-secondary">
-        {nft.availableQuantity > 0
-          ? `${nft.availableQuantity} unidades disponíveis`
+        {maxQuantity > 0
+          ? `${maxQuantity} unidades disponíveis nesta edição`
           : "NFT esgotado"}
       </p>
       <div className="space-y-3 text-[15px] text-secondary">
@@ -136,7 +149,8 @@ export const NFTInformation = ({
             Qtd.
             <QuantitySelector
               value={quantity}
-              max={nft.availableQuantity}
+              max={maxQuantity}
+              disabled={disabled || maxQuantity < 1}
               onDecrease={() => onQuantityChange(quantity - 1)}
               onIncrease={() => onQuantityChange(quantity + 1)}
             />
@@ -148,15 +162,18 @@ export const NFTInformation = ({
         <div className="flex gap-3">
           <Button
             type="button"
-            disabled={nft.availableQuantity < 1 || !selectedEdition}
+            disabled={disabled || maxQuantity < 1 || !selectedEdition}
+            onClick={onBuy}
             className="h-[60px] flex-1 rounded-full text-base font-bold"
           >
-            Comprar NFT
+            {isAdding ? "Adicionando..." : "Comprar NFT"}
           </Button>
           <Button
             type="button"
             variant="outline"
             size="icon"
+            disabled={disabled || maxQuantity < 1 || !selectedEdition}
+            onClick={onAddToCart}
             className="size-[60px] rounded-full bg-surface-dark text-secondary"
           >
             <ShoppingCart className="size-5" />

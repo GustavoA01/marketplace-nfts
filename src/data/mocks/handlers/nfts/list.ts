@@ -16,7 +16,7 @@ const countOptions = (field: "category" | "network"): CatalogueOption[] => {
   const counts = new Map<string, number>();
   for (const nft of nfts)
     counts.set(nft[field], (counts.get(nft[field]) ?? 0) + 1);
-  return [...counts].map(([name, count]) => ({ name, count }));
+  return Array.from(counts, ([name, count]) => ({ name, count }));
 };
 
 export const listNFTsHandler: HttpResponseResolver = async ({ request }) => {

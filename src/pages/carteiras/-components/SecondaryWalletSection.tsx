@@ -113,7 +113,7 @@ export const SecondaryWalletSection = ({
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="h-9 w-full max-w-34 rounded-[3px] font-mono text-xs font-bold text-ink sm:h-10 sm:text-sm"
+            className="h-9 w-full rounded-full font-mono text-xs font-bold text-ink sm:h-10 sm:max-w-34 sm:rounded-[3px] sm:text-sm"
           >
             {isSubmitting ? "Salvando..." : "Salvar carteira"}
           </Button>

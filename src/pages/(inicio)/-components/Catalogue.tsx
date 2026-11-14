@@ -51,7 +51,7 @@ export const Catalogue = ({
     >
       <h2 className="sr-only">Catálogo de NFTs</h2>
       <div className="flex items-start gap-12">
-        <aside className="hidden w-[310px] shrink-0 flex-col gap-6 xl:flex">
+        <aside className="hidden w-77.5 shrink-0 flex-col gap-6 xl:flex">
           <CatalogueFilters {...props} />
           {featured && (
             <FeaturedNFT

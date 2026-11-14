@@ -5,15 +5,15 @@ import { journalMock } from "@/data/mocks/temporary/home-content";
 
 export const Journal = () => {
   return (
-    <section className="mt-24 mb-[72px]">
+    <section className="mt-24 mb-18">
       <h2 className="text-center text-[28px] leading-9 font-bold">
         Diário da Cunhagem
       </h2>
-      <p className="mt-3 text-center text-sm leading-[18px] text-text-secondary">
+      <p className="mt-3 text-center text-sm leading-4.5 text-text-secondary">
         Histórias, guias e insights para colecionadores sobre o universo da
         propriedade digital.
       </p>
-      <div className="mt-10 grid max-w-[1144px] grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-10 grid max-w-286 grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
         {journalMock.map((article) => (
           <Card
             key={article.id}

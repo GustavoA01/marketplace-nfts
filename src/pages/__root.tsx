@@ -29,7 +29,7 @@ const RootLayout = () => {
     if (user === undefined) return;
     const hadUser = previousUserId.current !== undefined;
     previousUserId.current = user?.id;
-    if (!user && hadUser) void clearUserCache();
+    if (!user && hadUser && !isLoggingOut) void clearUserCache(true);
     if (user === null && isPrivate && !isLoggingOut) {
       void navigate({
         to: "/login",

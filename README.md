@@ -111,3 +111,11 @@ Perfil, carteiras, pagamento e confirmação exigem login. O destino é preserva
 ## Catálogo e detalhes dos NFTs
 
 Catálogo e detalhe consultam a API simulada com Axios e TanStack Query. Busca, filtros, ordenação e paginação são mantidos na URL com TanStack Router. Veja [contratos, cache, cenários de falha e validação](./NFT_CATALOGUE.md).
+
+## Carrinho
+
+Detalhe e carrinho estão integrados à API simulada: adicionar, alterar quantidade, remover, persistir e unir os itens do visitante ao fazer login. Os carrinhos e os caches são separados por usuário. A remoção possui atualização otimista com rollback. Veja [contratos, estoque, cenários, reset e próximos passos](./CART_API.md).
+
+## Cotação e cupom
+
+O resumo do carrinho consulta subtotal, desconto, taxa estimada e total na API. Use `KURIO10` para aplicar 10% de desconto e `EXPIRADO` para exercitar erro de validade. A seleção persiste após refresh e os valores são recalculados ao alterar os itens. Veja [contratos, validade e cenários](./QUOTES_API.md). Pagamento e pedidos ainda precisam ser integrados.

@@ -25,6 +25,8 @@ const sortOptions = [
 
 export const CatalogueToolbar = (props: CatalogueFiltersProps) => {
   const { search, onChange } = props;
+  const validValues = ["recent", "price-asc", "price-desc"];
+
   return (
     <div className="flex flex-col gap-5 md:flex-row md:flex-wrap md:items-start md:justify-between md:gap-x-4">
       <div className="-mx-1 flex gap-6 overflow-x-auto px-1 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] md:gap-5 md:overflow-visible [&::-webkit-scrollbar]:hidden">
@@ -53,12 +55,7 @@ export const CatalogueToolbar = (props: CatalogueFiltersProps) => {
           value={search.sort ?? "recent"}
           items={sortOptions}
           onValueChange={(value) => {
-            if (
-              value === "recent" ||
-              value === "price-asc" ||
-              value === "price-desc"
-            )
-              onChange({ sort: value });
+            if (value && validValues.includes(value)) onChange({ sort: value });
           }}
         >
           <SelectTrigger className="h-auto max-w-53.75 gap-1 rounded-none border-0 bg-transparent p-0 text-[15px] shadow-none dark:bg-transparent dark:hover:bg-transparent">
