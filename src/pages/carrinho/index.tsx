@@ -7,8 +7,8 @@ import {
   mobileCartItemsMock,
   cartSummaryMock,
   mobileCartSummaryMock,
-} from "@/mocks/temporary/purchase";
-import { catalogueMocks } from "@/mocks/temporary/catalogue";
+} from "@/data/mocks/temporary/purchase";
+import { catalogueMocks } from "@/data/mocks/temporary/catalogue";
 import { NFTRecommendations } from "@/components/NFTRecommendations";
 
 const Page = () => (

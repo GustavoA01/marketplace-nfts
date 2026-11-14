@@ -1,3 +1,4 @@
+import { requireSession } from "@/features/Auth/utils/navigation";
 import { createFileRoute } from "@tanstack/react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -11,7 +12,7 @@ import { ProfileForm } from "./-components/ProfileForm";
 import {
   collectorAvatarMock,
   collectorProfileMock,
-} from "@/mocks/temporary/collector-profile";
+} from "@/data/mocks/temporary/collector-profile";
 
 const Page = () => {
   const [status, setStatus] = useState<FormStatus>("idle");
@@ -73,4 +74,7 @@ const Page = () => {
   );
 };
 
-export const Route = createFileRoute("/perfil/")({ component: Page });
+export const Route = createFileRoute("/perfil/")({
+  beforeLoad: requireSession,
+  component: Page,
+});

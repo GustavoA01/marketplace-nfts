@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { homePromosMock } from "@/mocks/temporary/home-content";
+import { homePromosMock } from "@/data/mocks/temporary/home-content";
 
 export const HomePromos = () => {
   return (

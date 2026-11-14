@@ -6,7 +6,7 @@ import { CatalogueFiltersDialog } from "./CatalogueFiltersDialog";
 import {
   collectionMocks,
   networkMocks,
-} from "@/mocks/temporary/catalogue-filters";
+} from "@/data/mocks/temporary/catalogue-filters";
 
 export const MobileHero = () => {
   return (

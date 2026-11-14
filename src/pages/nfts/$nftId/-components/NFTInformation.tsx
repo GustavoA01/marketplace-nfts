@@ -1,7 +1,7 @@
 import { Heart, Mail, ShoppingCart, Star } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { QuantitySelector } from "@/components/QuantitySelector";
-import type { NFTDetailsPreview } from "@/mocks/temporary/nft-details";
+import type { NFTDetailsPreview } from "@/data/mocks/temporary/nft-details";
 import { cn } from "@/lib/utils";
 
 export const NFTInformation = ({ nft }: { nft: NFTDetailsPreview }) => {

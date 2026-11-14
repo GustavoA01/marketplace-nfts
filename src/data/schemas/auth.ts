@@ -1,7 +1,13 @@
 import { z } from "zod";
 
+const emailSchema = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .pipe(z.email("Informe um e-mail válido"));
+
 export const loginSchema = z.object({
-  email: z.email("Informe um e-mail válido"),
+  email: emailSchema,
   password: z.string().min(1, "Informe a senha"),
 });
 
@@ -9,9 +15,10 @@ export const signUpSchema = z
   .object({
     username: z
       .string()
+      .trim()
       .min(3, "O nome de usuário deve ter pelo menos 3 caracteres")
       .max(32, "O nome de usuário deve ter no máximo 32 caracteres"),
-    email: z.email("Informe um e-mail válido"),
+    email: emailSchema,
     password: z.string().min(8, "A senha deve ter pelo menos 8 caracteres"),
     confirmPassword: z.string().min(1, "Confirme a senha"),
   })

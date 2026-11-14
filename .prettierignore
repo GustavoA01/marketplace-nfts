@@ -7,3 +7,7 @@ reports/
 .husky/_/
 src/routeTree.gen.ts
 public/
+.tanstack/
+.vite/
+coverage/
+blob-report/

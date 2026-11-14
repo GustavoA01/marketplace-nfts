@@ -4,8 +4,8 @@ import { CatalogueFilters } from "./CatalogueFilters";
 import {
   collectionMocks,
   networkMocks,
-} from "@/mocks/temporary/catalogue-filters";
-import { catalogueMocks } from "@/mocks/temporary/catalogue";
+} from "@/data/mocks/temporary/catalogue-filters";
+import { catalogueMocks } from "@/data/mocks/temporary/catalogue";
 import { CataloguePagination } from "./CataloguePagination";
 import { CatalogueToolbar } from "./CatalogueToolbar";
 import { FeaturedNFT } from "./FeaturedNFT";

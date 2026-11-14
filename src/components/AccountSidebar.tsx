@@ -1,3 +1,4 @@
+import { useLogout } from "@/features/Auth/hooks/useLogout";
 import { Link } from "@tanstack/react-router";
 import {
   Activity,
@@ -54,6 +55,7 @@ type AccountSidebarProps = {
 };
 
 export const AccountSidebar = ({ active }: AccountSidebarProps) => {
+  const { mutate: logout, isPending } = useLogout();
   return (
     <aside className="w-full shrink-0 bg-surface-card py-2 font-mono sm:w-77.5">
       <div className="px-2.5 py-2">
@@ -98,13 +100,12 @@ export const AccountSidebar = ({ active }: AccountSidebarProps) => {
       <div className="mt-1 border-t border-border sm:mt-0">
         <button
           type="button"
-          onClick={() => {
-            console.log("Logout fora do escopo desta etapa");
-          }}
+          onClick={() => logout()}
+          disabled={isPending}
           className="flex h-9 w-full items-center gap-2 px-4 text-sm font-bold leading-[15px] text-text-accent outline-none transition-colors hover:text-primary-light focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring sm:h-10 sm:text-[15px]"
         >
           <LogOut className="size-4.5 sm:size-5" strokeWidth={1.6} />
-          Sair
+          {isPending ? "Saindo..." : "Sair"}
         </button>
       </div>
     </aside>

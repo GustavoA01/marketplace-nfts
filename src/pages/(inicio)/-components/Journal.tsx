@@ -1,7 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { journalMock } from "@/mocks/temporary/home-content";
+import { journalMock } from "@/data/mocks/temporary/home-content";
 
 export const Journal = () => {
   return (

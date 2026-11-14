@@ -1,86 +1,101 @@
-# Integração de autenticação, perfil e carteiras
+# Autenticação, cadastro, perfil e carteiras
 
-Os fluxos de login, cadastro, perfil e carteiras nesta etapa são **somente visuais**. Validação local, alternância de abas, exibição de senha e edição de campos funcionam no cliente. Nenhuma operação conclui com sucesso real: não há autenticação, persistência, conexão de carteira nem salvamento até a futura API simulada (MSW/HTTP).
+O cadastro já utiliza Axios, TanStack Query e MSW para validar e persistir usuários na simulação. Login, consulta e encerramento de sessão também estão integrados. Perfil e carteiras ainda têm dados e salvamentos demonstrativos.
 
-## Telas e interações locais concluídas
+## Como executar o cadastro
 
-- **Login** (`/login` e diálogo no Header): abas Entrar/Criar conta, formulário com RHF+Zod, mostrar/ocultar senha, erros por campo, estado `submitting` breve sem `success`, links sociais e “Esqueceu a senha?” apenas registram no console.
-- **Cadastro** (`/cadastro` e mesma abas do diálogo/painel): mesmos padrões do login, com usuário, e-mail, senha e confirmação.
-- **Perfil do colecionador** (`/perfil`): sidebar de conta, formulário de dados, ENS, apelido, avatar (edição visual local), bloco Alterar senha, validação e status de formulário preparados.
-- **Carteiras** (`/carteiras`): carteira principal com selects e campos do Figma; seção secundária com estado vazio, “Adicionar”, “Igual à carteira principal” (cópia visual dos valores) e formulário de edição; salvamento sem sucesso de API.
+Use `VITE_ENABLE_MOCKS=true` e `VITE_API_URL=/api` em `.env.local`. Reinicie o Vite após configurar o ambiente e abra `/cadastro`, ou a aba Criar conta no diálogo do Header.
 
-## Dados demonstrativos (`src/mocks`)
+O cadastro não autentica automaticamente. Após criar a conta, a interface orienta o usuário a entrar. O login consulta a mesma base do cadastro, verifica a senha e cria uma sessão vinculada ao usuário.
 
-- `src/mocks/temporary/collector-profile.ts` — `collectorProfileMock`, `collectorAvatarMock`
-- `src/mocks/temporary/wallets.ts` — `mainWalletMock`, `secondaryWalletMock` (`null`), `networkOptions`, `walletTypeOptions`
+## De onde vem a lista de usuários
 
-Schemas: `src/data/schemas/auth.ts`, `profile.ts`, `wallets.ts`. Status: `src/data/types/form-status.ts`.
+- `src/data/mocks/fixtures/users.ts`: dados iniciais de dois usuários fictícios.
+- `src/data/mocks/database/users.ts`: base compartilhada que consulta, cria, persiste e restaura usuários.
+- `src/data/mocks/utils/password.ts`: gera hash e salt de uma senha.
+- `src/data/mocks/handlers/auth.ts`: recebe a requisição, valida os dados e chama `createUser`.
+- `src/services/auth/sign-up.ts`: faz a chamada Axios e retorna a resposta tipada.
+- `src/features/Auth/container/SignUpForm.tsx`: executa a mutation e associa erros da API aos campos.
 
-## Props e callbacks preparados para integração
+O handler não contém uma lista isolada de usuários. Ele consulta a base compartilhada. Essa mesma base poderá ser usada pelo login na próxima etapa.
 
-| Área      | Container                  | Callbacks / estado prontos                                             |
-| --------- | -------------------------- | ---------------------------------------------------------------------- |
-| Auth      | `LoginForm` / `SignUpForm` | `onSubmit`, `status` (`idle` \| `submitting` \| `error` \| `success`)  |
-| Auth      | `AuthDialog` / `AuthPage`  | `onGoogleClick`, `onFacebookClick`; `initialMode` apenas em `AuthPage` |
-| Perfil    | página `/perfil`           | submit com payload tipado, avatar change/remove, `status`              |
-| Carteiras | página `/carteiras`        | submit principal/secundária, adicionar, copiar da principal, `status`  |
-| Sidebar   | `AccountSidebar`           | logout via `console.log` (sem sessão)                                  |
+## Contrato implementado
 
-`FormStatusMessage` já cobre idle/submitting/error/success para a UI futura.
+`POST /api/auth/register` recebe JSON com `username`, `email`, `password` e `confirmPassword`.
 
-## O que a futura API deverá fornecer
+| Status | Resultado                                                    |
+| ------ | ------------------------------------------------------------ |
+| 201    | Conta criada; retorna `{ user: { id, username, email } }`    |
+| 400    | JSON malformado                                              |
+| 422    | Dados inválidos; retorna mensagem e erros por campo          |
+| 409    | E-mail já cadastrado; retorna erro associado ao campo e-mail |
+| 503    | Não foi possível salvar o cadastro                           |
 
-- Login / cadastro / logout e sessão (token ou cookie).
-- Recuperação de senha por e-mail (hoje só UI).
-- OAuth Google/Facebook (hoje só UI).
-- GET/PATCH do perfil do colecionador (incluindo avatar).
-- GET/POST/PATCH/DELETE de carteiras principal e secundária; validação on-chain ou de endereço no backend.
-- Mensagens de erro e sucesso reais para preencher `status` e `FormStatusMessage`.
+E-mails são normalizados com remoção de espaços nas extremidades e conversão para minúsculas. A duplicidade é conferida novamente após o hash para impedir que duas requisições simultâneas no mesmo contexto criem contas com o mesmo e-mail.
 
-## Arquivos compartilhados que precisam de ajustes
+O formulário mostra sucesso somente após a resposta 201, bloqueia o botão durante a requisição e exibe erros do servidor. A mutation não realiza retries automáticos.
 
-Não alterados nesta etapa (coordenação com Codex):
+## Persistência e senhas
 
-- `src/main.tsx`, `src/router.ts`, `src/pages/__root.tsx`, `src/routeTree.gen.ts`
-- `src/index.css`, `src/lib/http.ts`, `src/lib/query-client.ts`, `src/lib/socket.ts`
-- `src/mocks/browser.ts`, `src/mocks/handlers.ts`
-- Vite/Playwright, `package.json` / lockfile
-- `Header.tsx`, `Footer.tsx`
+No navegador, os usuários ficam na chave `marketplace-nfts:mock-users:v1` do localStorage e sobrevivem ao refresh. `resetUsers()` restaura as fixtures. Em execução Node sem navegador, a base utiliza memória.
 
-**Ajustes feitos em arquivos compartilhados (após pedido de responsividade mobile):**
+As senhas são representadas por PBKDF2 com SHA-256, 600.000 iterações e salt aleatório por cadastro, usando Web Crypto. Os registros guardam apenas hash e salt; a resposta pública não inclui senha, confirmação, hash ou salt. Esta base é exclusiva da simulação, não um backend de produção.
 
-1. **`src/pages/__root.tsx`** — em `/perfil` e `/carteiras`, oculta o Header no mobile (`lg+` mantém) e aplica `pb-32` para a bottom nav.
-2. **`src/components/Footer.tsx`** (+ `FooterLinkColumn`) — tipografia e grid mais compactos no mobile.
-3. **`src/components/MobileBottomNavigation.tsx`** — bottom nav compartilhada; home utiliza diretamente `MobileBottomNavigation`.
+Credenciais fictícias iniciais para a futura integração de login:
 
-**Ainda pendentes / opcionais:**
+| E-mail           | Senha de demonstração |
+| ---------------- | --------------------- |
+| luna@example.com | Colecionador123!      |
+| theo@example.com | Colecionador123!      |
 
-1. **Header** — após sessão, trocar “Entrar” por acesso a `/perfil`; links diretos `/login` e `/cadastro` se desejado.
-2. **`index.css`** — token opcional `text-coral` (`#f0805f`).
-3. **MSW/handlers** — endpoints de auth, perfil e carteiras.
+Referências: [Web Crypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/deriveBits), [OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#pbkdf2).
 
-## Comandos executados e resultados
+## Interfaces e validações já existentes
 
-```text
-npm run format   # OK
-npm run lint     # OK (oxlint, sem findings)
-npm run build    # OK (vite build && tsc -b)
-```
+- Login: página e diálogo, validação local, Axios/TanStack Query, conferência de credenciais na base compartilhada e mensagens de sucesso/erro.
+- Cadastro: mesmos recursos, com envio à API simulada e tratamento dos erros retornados.
+- Perfil: dados, ENS, apelido, alteração de senha e mudança visual de avatar; ainda sem salvamento pela API.
+- Carteiras: principal e secundária, estado vazio, adicionar e copiar dados da principal; ainda sem salvamento pela API.
+- Navegação de conta e navegação inferior mobile compartilhadas.
 
-## Pendências reais
+A lógica e a composição de perfil e carteiras ficam nos respectivos `index.tsx`, e seus componentes exclusivos nas pastas `-components`. A feature Auth continua compartilhada entre login, cadastro e diálogo do Header.
 
-- Integração HTTP + MSW + TanStack Query (responsável do projeto + Codex).
-- Persistência de sessão, perfil e carteiras.
-- Provedores sociais e recuperação de senha reais.
-- Conexão blockchain / WalletConnect etc.
-- Testes E2E/Playwright e baselines visuais.
-- Após API: setar `status` para `error` ou `success` de verdade (hoje volta a `idle` após brief `submitting`).
-- Itens desabilitados da sidebar (Atividade, Lista de interesse, Ofertas, Arquivos baixados, Suporte).
+## Sessão por cookie
 
-**Lembrete:** login, cadastro, conexão de carteira e salvamento **não** devem ser tratados como concluídos até a resposta da API simulada.
+- `src/data/mocks/database/sessions.ts`: sessões com identificador aleatório, usuário e expiração de 30 minutos; persistência em `marketplace-nfts:mock-sessions:v1` e função `resetSessions()`.
+- `POST /api/auth/login`: retorna o usuário público e define `authToken` com identificador único, `Path=/`, `SameSite=Lax` e `Max-Age=1800`. HTTPS acrescenta `Secure`. O login bem-sucedido substitui a sessão anterior daquele cookie.
+- `GET /api/auth/session`: usa o cookie para consultar a sessão e o usuário; retorna `{ user }` ou 401 quando ausente, inválida ou expirada. Falhas da base retornam 503.
+- `DELETE /api/auth/logout`: invalida a sessão, expira o cookie e retorna 204. Repetir logout sem sessão é permitido.
+- `src/services/auth/session.ts` e `logout.ts`: chamadas Axios. Apenas o 401 da consulta é convertido em visitante (`null`); erro de rede/503 continua sendo erro.
 
-## Organização das páginas
+O MSW simula os cookies no navegador. Isso não equivale à proteção de um cookie HttpOnly emitido por um backend real; esta limitação deve permanecer explícita na entrega. Referência: [cookies no MSW](https://mswjs.io/docs/http/mocking-responses/cookies).
 
-A lógica e a composição de perfil e carteiras ficam em `src/pages/perfil/index.tsx` e `src/pages/carteiras/index.tsx`. Seus componentes exclusivos ficam nas respectivas pastas `-components`. Essas telas não possuem mais features próprias. A feature `Auth` continua compartilhada entre login, cadastro e diálogo do Header.
+## TanStack Query e navegação
 
-A autenticação ainda não dispara callbacks de sucesso. Os formulários apenas validam e controlam o estado local; a futura API simulada deverá determinar o resultado da operação.
+`useSession()` retorna a query cujo `data` é o usuário público, `null` para visitante e `undefined` no carregamento inicial. Header e layout utilizam o mesmo cache pelo QueryClientProvider já existente; não há AuthProvider separado.
+
+As chaves estão em `src/data/query-keys.ts`. A sessão tem staleTime de 30 segundos, reconferência periódica de 30 segundos e reconferência ao retornar o foco à janela. A entrada em rotas privadas sempre consulta novamente a API.
+
+O login atualiza a query da sessão. O Header mostra o username e desmonta o diálogo de autenticação. Login por página retorna ao destino interno informado em `redirect`, com a Home como destino padrão no mobile e `/perfil` no desktop. Endereços externos e retorno para login/cadastro não são aceitos.
+
+Perfil, carteiras, pagamento e confirmação possuem `beforeLoad` com validação de sessão. Visitantes vão para `/login` com o destino preservado. Se a sessão desaparecer durante a navegação, o layout também solicita novo login. Isso preserva o destino, não implementa ainda persistência dos formulários de checkout.
+
+Logout navega ao início e publica `null` na query. Login/troca de usuário, logout e perda de sessão cancelam requisições e limpam queries fora da sessão e o cache de mutations. A política atual é conservadora e também remove caches públicos; as bases canônicas dos mocks permanecem. Respostas 401 de outras queries/mutations encerram o estado de autenticação; erros de credenciais no próprio login não apagam uma sessão válida anterior.
+
+O botão Sair usa `useLogout()`. Os formulários de perfil e carteiras ainda exibem dados demonstrativos e não representam integração por usuário desses recursos. Socket.IO e limpeza das suas futuras subscriptions serão implementados na etapa de tempo real.
+
+## Próximas etapas
+
+- Integrar perfil, senha, avatar e carteiras à API simulada e aos dados de cada usuário.
+- Implementar catálogo, favoritos, carrinho, cotações e pedidos.
+- Completar cenários determinísticos de falha, Socket.IO, testes Playwright e baselines visuais.
+
+OAuth e blockchain reais não fazem parte da entrega. Atividade, ofertas, downloads e suporte não exigem páginas completas.
+
+## Verificação do cadastro
+
+Foram verificadas chamadas HTTP passando pelos handlers MSW: JSON inválido, validação de campos, criação, conflito com usuário inicial, normalização de e-mail, tentativas simultâneas, resposta pública sem credenciais, hash, armazenamento e reset.
+
+Os testes E2E permanentes continuam como etapa separada. Os comandos gerais de verificação são `npm run lint`, `npm run build` e `npm run format:check`.
+
+Também foram verificados login correto/incorreto, cookies distintos, isolamento de sessões, troca de usuário, expiração, logout, limpeza de cache, proteção de rotas e validação do destino de retorno.

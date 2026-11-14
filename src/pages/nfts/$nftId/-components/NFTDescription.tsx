@@ -1,4 +1,4 @@
-import type { NFTDetailsPreview } from "@/mocks/temporary/nft-details";
+import type { NFTDetailsPreview } from "@/data/mocks/temporary/nft-details";
 
 export const NFTDescription = ({ nft }: { nft: NFTDetailsPreview }) => {
   return (

@@ -1,17 +1,24 @@
 import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
 
 type SocialAuthButtonsProps = {
   onGoogleClick?: () => void;
   onFacebookClick?: () => void;
+  padded?: boolean;
 };
 
 export const SocialAuthButtons = ({
-  onGoogleClick,
-  onFacebookClick,
+  onGoogleClick = () => {
+    console.log("Login social Google fora do escopo desta etapa");
+  },
+  onFacebookClick = () => {
+    console.log("Login social Facebook fora do escopo desta etapa");
+  },
+  padded = true,
 }: SocialAuthButtonsProps) => {
   return (
-    <div className="flex w-full flex-col gap-4">
-      <div className="flex items-center gap-3">
+    <div className="flex w-full flex-col gap-3">
+      <div className="flex items-center gap-2.5">
         <span className="h-px flex-1 bg-border" />
         <p className="shrink-0 font-mono text-[13px] leading-4 text-foreground">
           Ou continue com
@@ -19,7 +26,7 @@ export const SocialAuthButtons = ({
         <span className="h-px flex-1 bg-border" />
       </div>
 
-      <div className="flex flex-col gap-4 px-6 sm:px-20">
+      <div className={cn("flex flex-col gap-4", padded && "px-6 sm:px-20")}>
         <Button
           type="button"
           variant="outline"

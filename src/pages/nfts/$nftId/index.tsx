@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { NFTRecommendations } from "@/components/NFTRecommendations";
 import { PurchaseBreadcrumb } from "@/components/PurchaseBreadcrumb";
-import { catalogueMocks } from "@/mocks/temporary/catalogue";
-import { nftDetailsMock } from "@/mocks/temporary/nft-details";
+import { catalogueMocks } from "@/data/mocks/temporary/catalogue";
+import { nftDetailsMock } from "@/data/mocks/temporary/nft-details";
 import { NFTGallery } from "./-components/NFTGallery";
 import { NFTInformation } from "./-components/NFTInformation";
 import { NFTDescription } from "./-components/NFTDescription";

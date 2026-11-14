@@ -8,6 +8,11 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+.tanstack/
+.vite/
+coverage/
+.husky/_/
+*.tsbuildinfo
 dist
 dist-ssr
 *.local
@@ -17,6 +22,8 @@ dist-ssr
 !.vscode/extensions.json
 .idea
 .DS_Store
+Thumbs.db
+Desktop.ini
 *.suo
 *.ntvs*
 *.njsproj
@@ -27,6 +34,6 @@ dist-ssr
 !.env.example
 playwright-report/
 test-results/
-reports/
+blob-report/
 
 src/routeTree.gen.ts

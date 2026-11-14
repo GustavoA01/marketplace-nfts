@@ -2,16 +2,19 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { LogIn, Search, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Dialog, DialogTrigger } from "@/components/ui/Dialog";
-import { cn } from "@/lib/utils";
 import { navigation } from "@/data/constants/navigation";
 import { AuthDialog } from "@/features/Auth/container/AuthDialog";
+import { useSession } from "@/features/Auth/hooks/useSession";
+import { cn } from "@/lib/utils";
 
 export const Header = () => {
+  const { data: user, isPending } = useSession();
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   });
   const isPurchase =
     /^\/(nfts|carrinho|pagamento|confirmacao-pedido)(\/|$)/.test(pathname);
+
   return (
     <header className="pt-6 text-foreground">
       <div className="container mx-auto px-5 sm:px-8 xl:max-w-316">
@@ -65,20 +68,35 @@ export const Header = () => {
               </span>
             </Button>
 
-            <Dialog>
-              <DialogTrigger
-                render={
-                  <Button
-                    type="button"
-                    className="h-8.75 w-25 gap-1 rounded-md px-0 text-base leading-5 font-medium"
-                  />
-                }
+            {isPending ? (
+              <div className="size-8.75 shrink-0" />
+            ) : user ? (
+              <Button
+                variant="default"
+                size="icon"
+                className="size-8.75 rounded-full text-base font-bold"
+                nativeButton={false}
+                render={<Link to="/perfil" />}
               >
-                <LogIn className="size-5" strokeWidth={1.6} />
-                Entrar
-              </DialogTrigger>
-              <AuthDialog />
-            </Dialog>
+                <span aria-hidden>{user.username.charAt(0).toUpperCase()}</span>
+                <span className="sr-only">{user.username}</span>
+              </Button>
+            ) : (
+              <Dialog>
+                <DialogTrigger
+                  render={
+                    <Button
+                      type="button"
+                      className="h-8.75 w-25 gap-1 rounded-md px-0 text-base leading-5 font-medium"
+                    />
+                  }
+                >
+                  <LogIn className="size-5" strokeWidth={1.6} />
+                  Entrar
+                </DialogTrigger>
+                <AuthDialog />
+              </Dialog>
+            )}
           </div>
         </div>
       </div>

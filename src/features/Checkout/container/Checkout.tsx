@@ -15,7 +15,7 @@ import {
   mobileCartSummaryMock,
   checkoutItemsMock,
   collectorWalletsMock,
-} from "@/mocks/temporary/purchase";
+} from "@/data/mocks/temporary/purchase";
 
 export const Checkout = () => {
   return (

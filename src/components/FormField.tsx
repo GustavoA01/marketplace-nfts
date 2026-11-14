@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { FieldError } from "@/components/FieldError";
 import { FieldLabel } from "@/components/FieldLabel";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +26,7 @@ export const FormField = ({
         {label}
       </FieldLabel>
       {children}
-      {error && <p className="font-mono text-xs text-error">{error}</p>}
+      <FieldError message={error} />
     </div>
   );
 };

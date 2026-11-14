@@ -1,3 +1,4 @@
+import { requireSession } from "@/features/Auth/utils/navigation";
 import { createFileRoute } from "@tanstack/react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -9,7 +10,10 @@ import { walletSchema, type WalletFormValues } from "@/data/schemas/wallets";
 import type { FormStatus } from "@/data/types/form-status";
 import { MainWalletForm } from "./-components/MainWalletForm";
 import { SecondaryWalletSection } from "./-components/SecondaryWalletSection";
-import { mainWalletMock, secondaryWalletMock } from "@/mocks/temporary/wallets";
+import {
+  mainWalletMock,
+  secondaryWalletMock,
+} from "@/data/mocks/temporary/wallets";
 
 const emptyWalletValues: WalletFormValues = {
   displayName: "",
@@ -139,4 +143,7 @@ const Page = () => {
   );
 };
 
-export const Route = createFileRoute("/carteiras/")({ component: Page });
+export const Route = createFileRoute("/carteiras/")({
+  beforeLoad: requireSession,
+  component: Page,
+});

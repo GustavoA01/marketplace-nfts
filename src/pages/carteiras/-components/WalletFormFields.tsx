@@ -15,7 +15,10 @@ import {
   SelectValue,
 } from "@/components/ui/Select";
 import type { WalletFormValues } from "@/data/schemas/wallets";
-import { networkOptions, walletTypeOptions } from "@/mocks/temporary/wallets";
+import {
+  networkOptions,
+  walletTypeOptions,
+} from "@/data/mocks/temporary/wallets";
 
 type WalletFormFieldsProps = {
   idPrefix: string;

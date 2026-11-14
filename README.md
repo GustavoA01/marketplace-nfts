@@ -1,7 +1,6 @@
 # Marketplace NFTs
 
-Base React + TypeScript + Vite, sem funcionalidades de negócio e sem navegação entre telas.
-As nove páginas exibem apenas seus títulos em um componente shadcn/ui.
+Base React + TypeScript + Vite
 
 ## Executar no Ubuntu
 
@@ -38,12 +37,12 @@ O grupo `(inicio)` organiza a página inicial sem adicionar um segmento à URL.
 - Axios com cliente REST em `src/lib/http.ts`, sem chamadas implementadas.
 - Socket.IO com cliente em `src/lib/socket.ts`, sem conexão automática ou eventos.
 - Tailwind CSS e componentes oficiais shadcn/ui em `src/components/ui`. Os estilos auxiliares gerados estão em `src/styles/shadcn.css`; o CLI pode ser executado com `npx shadcn@latest add <componente>`.
-- MSW com handlers vazios em `src/mocks`, sem worker iniciado. Para futura ativação, gerar o arquivo do worker com `npx msw init public --save` e iniciar o worker apenas em desenvolvimento.
+- MSW configurado em `src/data/mocks`, ativado por `VITE_ENABLE_MOCKS=true`. O worker está em `public/mockServiceWorker.js`. O cadastro já possui handler funcional; os demais recursos estão em implementação. A flag também deve estar ativa no build de demonstração.
 - Playwright configurado em `playwright.config.ts`, com pasta para futuros testes E2E e visuais (marcar testes visuais com `@visual`). Instalar o navegador com `npx playwright install chromium` antes de executar os testes.
 - Lighthouse instalado para auditorias locais. Com o preview rodando, executar `npm run audit:lighthouse`. Requer Chrome/Chromium instalado; definir `CHROME_PATH` se necessário.
 
-Query, REST, Socket.IO e MSW estão preparados para a próxima etapa; não há consultas, autenticação, compras ou persistência nesta base.
-Ainda não há testes E2E nem baselines visuais, pois as telas são placeholders.
+O cadastro utiliza Axios, TanStack Query e MSW, com persistência local dos usuários simulados. Login e sessão por cookie também estão integrados. Compras, recursos privados de perfil/carteiras e Socket.IO ainda precisam ser concluídos.
+Ainda não há testes E2E permanentes nem baselines visuais.
 
 ## Comandos
 
@@ -56,7 +55,7 @@ npm run test:visual
 npm run audit:lighthouse
 ```
 
-Copie `.env.example` para `.env.local` quando houver serviços reais. Variáveis `VITE_` ficam públicas no navegador e não devem conter segredos.
+Copie `.env.example` para `.env.local` para ativar a API simulada e reinicie o Vite. Variáveis `VITE_` ficam públicas no navegador e não devem conter segredos.
 
 ## Tema
 
@@ -78,7 +77,7 @@ Header e Hero usam Roboto Mono local e assets exportados da cópia do Figma. Os 
 
 ## Catálogo visual
 
-Os dados temporários do catálogo e dos filtros são arrays de objetos em `src/mocks/temporary/catalogue.ts` e `src/mocks/temporary/catalogue-filters.ts`. As imagens exportadas do Figma ficam em `public/mocks`.
+Os dados temporários do catálogo e dos filtros são arrays de objetos em `src/data/mocks/temporary/catalogue.ts` e `src/data/mocks/temporary/catalogue-filters.ts`. As imagens exportadas do Figma ficam em `public/mocks`.
 
 `src/components/NFTCard.tsx` é compartilhado: o mesmo padrão visual aparece no Início e nas recomendações de Detalhes e Carrinho. Ele recebe os dados por props. O fundo retangular das imagens foi preservado conforme as camadas do Figma.
 
@@ -96,3 +95,15 @@ Prettier utiliza ponto e vírgula, aspas duplas e finais de linha LF.
 O Husky configura os hooks por meio do script `prepare` durante a instalação. O pre-commit executa `npm run format:check` e bloqueia o commit se houver arquivos fora do padrão. Execute `npm run format`, revise e adicione as alterações desejadas ao Git antes de tentar novamente.
 
 Assets em public, dependências, artefatos de build, relatórios e a árvore de rotas gerada estão excluídos da formatação.
+
+## Cadastro com MSW
+
+Copie `.env.example` para `.env.local`, mantenha `VITE_ENABLE_MOCKS=true` e reinicie o Vite. Acesse `/cadastro`, preencha os dados e envie o formulário. O cadastro utiliza Axios e TanStack Query; o MSW valida e salva o usuário na base local da simulação.
+
+Tentar cadastrar novamente o mesmo e-mail retorna conflito 409 e uma mensagem no campo. Os cadastros permanecem após refresh. Há dois usuários iniciais: `luna@example.com` e `theo@example.com`, com senha fictícia `Colecionador123!`. Os hashes e salts estão em `src/data/mocks/fixtures/users.ts`; o estado fica em `src/data/mocks/database/users.ts`. Login consulta a mesma base e mantém sessão por cookie; logout encerra a sessão. Consulte `AUTH_INTEGRATION.md` para contratos e limitações.
+
+## Sessão e acesso à conta
+
+Entre com `luna@example.com` ou `theo@example.com` e senha fictícia `Colecionador123!`. O nome aparece no Header e a sessão continua após refresh. O botão Sair no perfil/carteiras encerra a sessão.
+
+Perfil, carteiras, pagamento e confirmação exigem login. O destino é preservado para retorno após autenticação. A sessão dura 30 minutos; uma sessão inválida ou expirada recebe 401 na simulação. `resetUsers()` e `resetSessions()` restauram as respectivas bases para testes. Não há AuthProvider adicional: `useSession()` compartilha a query da sessão com o QueryClientProvider existente.
