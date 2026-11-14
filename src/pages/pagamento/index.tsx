@@ -1,10 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PagePlaceholder } from "@/components/PagePlaceholder";
-
-const Page = () => {
-  return <PagePlaceholder title="Pagamento" />;
-};
+import { Checkout } from "@/features/Checkout/container/Checkout";
 
 export const Route = createFileRoute("/pagamento/")({
-  component: Page,
+  component: Checkout,
 });

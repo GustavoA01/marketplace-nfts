@@ -6,12 +6,14 @@ import type { NFTPreview } from "@/data/types/nft";
 
 type NFTCardProps = {
   nft: NFTPreview;
+  compact?: boolean;
   artworkClassName?: string;
   detailsClassName?: string;
 };
 
 export const NFTCard = ({
   nft,
+  compact = false,
   artworkClassName,
   detailsClassName,
 }: NFTCardProps) => {
@@ -26,6 +28,8 @@ export const NFTCard = ({
           className={cn(
             "relative flex h-50 justify-center overflow-hidden rounded-[20px] bg-linear-to-br from-surface-card to-surface-raised px-1 pt-3 lg:h-75 lg:rounded-none lg:bg-surface-card lg:bg-none lg:pt-6",
             nft.portrait && "lg:pl-5 lg:pr-3 lg:pt-1.5",
+            compact && "lg:h-[255px] lg:pt-5",
+            compact && nft.portrait && "lg:pt-1",
             artworkClassName,
           )}
         >
@@ -38,6 +42,8 @@ export const NFTCard = ({
             className={cn(
               "aspect-square h-fit w-full rounded-2xl object-cover lg:max-w-62.5 lg:rounded-[15px]",
               nft.portrait && "lg:h-71.5 lg:max-w-56 lg:rounded-[13px]",
+              compact && "lg:max-w-[212px]",
+              compact && nft.portrait && "lg:h-[243px] lg:max-w-[190px]",
             )}
           />
           {nft.favorite && (
@@ -58,14 +64,25 @@ export const NFTCard = ({
           <div
             className={cn(
               "flex flex-col gap-1.5 px-2 lg:px-0",
+              compact && "lg:gap-0",
               detailsClassName,
             )}
           >
-            <h3 className="text-[15px] leading-5 font-normal lg:text-base lg:leading-4">
+            <h3
+              className={cn(
+                "text-[15px] leading-5 font-normal lg:text-base lg:leading-4",
+                compact && "lg:text-[15px] lg:leading-5",
+              )}
+            >
               {nft.name}
             </h3>
             {nft.price && (
-              <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-base leading-4 font-bold text-text-accent lg:text-lg">
+              <p
+                className={cn(
+                  "flex flex-wrap items-center gap-x-3 gap-y-1 text-base leading-4 font-bold text-text-accent lg:text-lg",
+                  compact && "lg:text-base",
+                )}
+              >
                 <span>{nft.price} ETH</span>
                 {nft.previousPrice && (
                   <span className="font-normal text-secondary">

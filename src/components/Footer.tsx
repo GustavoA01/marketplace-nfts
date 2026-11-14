@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { FooterLinkColumn } from "@/components/FooterLinkColumn";
 import {
   features,
   profileLinks,
@@ -9,51 +10,22 @@ import {
   socialLinks,
 } from "@/data/constants/footer";
 
-export const FooterLinkColumn = ({
-  title,
-  links,
-}: {
-  title: string;
-  links: readonly { label: string; to: string }[];
-}) => {
-  return (
-    <div className="flex min-w-0 flex-1 flex-col gap-2 font-mono text-foreground">
-      <p className="text-lg font-bold leading-4">{title}</p>
-      <ul className="text-sm leading-6">
-        {links.map(({ label, to }) => (
-          <li key={label}>
-            <Link
-              to={to}
-              className="rounded-sm outline-none transition-colors hover:text-primary-light focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              {label}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
-
 export const Footer = () => {
   return (
     <footer className="mt-auto bg-background font-mono text-foreground">
       <div className="container mx-auto px-5 sm:px-8 xl:max-w-316">
         <div className="bg-surface-card px-4 py-8 sm:px-8">
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-0">
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-stretch lg:justify-between lg:gap-0">
             <div className="grid flex-1 gap-8 sm:grid-cols-3">
               {features.map(({ letter, title, description }, index) => (
-                <div
-                  key={letter}
-                  className="relative flex flex-col gap-3 px-4 sm:px-4"
-                >
+                <div key={letter} className="relative flex flex-col gap-3 px-4">
                   {index > 0 && (
                     <span
                       aria-hidden
                       className="absolute top-0 bottom-0 left-0 hidden w-px bg-primary sm:block"
                     />
                   )}
-                  <div className="flex size-18.5 items-center justify-center rounded-full bg-primary text-2xl font-bold text-ink">
+                  <div className="hidden sm:flex size-18.5 items-center justify-center rounded-full bg-primary text-2xl font-bold text-ink">
                     {letter}
                   </div>
                   <p className="text-[17px] font-bold leading-4">{title}</p>
@@ -64,10 +36,10 @@ export const Footer = () => {
               ))}
             </div>
 
-            <div className="relative flex w-full flex-col gap-3 px-4 lg:w-89.25 lg:shrink-0">
+            <div className="relative flex w-full flex-col justify-start gap-3 px-4 lg:w-89.25 lg:shrink-0">
               <span
                 aria-hidden
-                className="absolute top-0 bottom-0 left-0 hidden w-px bg-primary lg:block"
+                className="absolute inset-y-0 left-0 hidden w-px bg-primary lg:block"
               />
               <div className="flex flex-col gap-4">
                 <p className="text-lg font-bold leading-4">

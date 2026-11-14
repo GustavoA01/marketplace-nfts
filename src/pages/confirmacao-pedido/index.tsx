@@ -1,8 +1,40 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { PagePlaceholder } from "@/components/PagePlaceholder";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/Dialog";
+import { Checkout } from "@/features/Checkout/container/Checkout";
+import {
+  cartSummaryMock,
+  receiptItemsMock,
+  receiptMock,
+} from "@/mocks/temporary/purchase";
+import { OrderReceipt } from "./-components/OrderReceipt";
 
 const Page = () => {
-  return <PagePlaceholder title="Confirmação de pedido" />;
+  const navigate = useNavigate();
+  return (
+    <>
+      <Checkout />
+      <Dialog
+        open
+        onOpenChange={(open) => {
+          if (!open) void navigate({ to: "/pagamento" });
+        }}
+      >
+        <DialogContent
+          showCloseButton={false}
+          className="max-h-[92svh] max-w-[578px] gap-0 overflow-y-auto rounded-none p-0 sm:max-w-[578px]"
+        >
+          <DialogTitle className="sr-only">
+            Prévia de confirmação do pedido
+          </DialogTitle>
+          <OrderReceipt
+            items={receiptItemsMock}
+            summary={cartSummaryMock}
+            receipt={receiptMock}
+          />
+        </DialogContent>
+      </Dialog>
+    </>
+  );
 };
 
 export const Route = createFileRoute("/confirmacao-pedido/")({

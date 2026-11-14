@@ -16,3 +16,8 @@ Evite arquivos muito grandes e separe responsabilidades quando isso melhorar a c
 Use classes usuais do Tailwind e flex quando suficiente; valores específicos são permitidos para reproduzir medidas do Figma.
 Não adicione aria-label sem solicitação; preserve a semântica HTML e alternativas textuais necessárias.
 Use ponto e vírgula e aspas duplas em JavaScript, TypeScript e JSX, conforme .prettierrc.json. Execute npm run format após alterações.
+Mantenha os dados provisórios que serão substituídos pela API em src/mocks/temporary. Preserve a infraestrutura do MSW e os mocks de testes fora dessa pasta.
+A divisão container/components existe apenas em features. Nas páginas, mantenha composição, hooks e lógica no index.tsx; use -components para componentes exclusivos e não crie pastas -container nem wrappers sem responsabilidade. Rotas podem referenciar diretamente o container de uma feature compartilhada.
+Prefira manter funcionalidades exclusivas de uma tela no index.tsx e em -components da própria página. O tamanho de um arquivo, isoladamente, não justifica criar uma feature. Atualmente Auth e Checkout são compartilhados; perfil, carteiras, filtros do início e resumo do carrinho pertencem às respectivas páginas.
+Não crie wrappers que apenas repassem props ou dados estáticos a outro componente. O container de uma feature deve concentrar sua composição ou lógica efetiva; não separe um componente de apresentação inteiro só para cumprir a estrutura de pastas. Componentes simples com estado visual local, como PasswordField, podem ser um único arquivo compartilhado. Evite reexports que apenas renomeiem componentes.
+O Footer deve aparecer apenas na página inicial. Para seções recolhíveis, utilize o Accordion do shadcn/ui.

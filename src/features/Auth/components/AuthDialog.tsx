@@ -13,12 +13,16 @@ type AuthDialogProps = {
   mode: AuthMode;
   onModeChange: (mode: AuthMode) => void;
   children: ReactNode;
+  onGoogleClick?: () => void;
+  onFacebookClick?: () => void;
 };
 
 export const AuthDialog = ({
   mode,
   onModeChange,
   children,
+  onGoogleClick,
+  onFacebookClick,
 }: AuthDialogProps) => {
   const isLogin = mode === "login";
 
@@ -29,7 +33,7 @@ export const AuthDialog = ({
         className="absolute right-0 bottom-0 left-0 h-2.5 bg-primary"
       />
 
-      <DialogHeader className="gap-10 px-12 pt-12">
+      <DialogHeader className="gap-10 px-6 pt-12 sm:px-12">
         <DialogTitle className="sr-only">
           {isLogin ? "Entrar" : "Criar conta"}
         </DialogTitle>
@@ -42,9 +46,12 @@ export const AuthDialog = ({
       </DialogHeader>
 
       <div className="flex flex-col pt-6">
-        <div className="px-20">{children}</div>
+        <div className="px-6 sm:px-20">{children}</div>
         <div className="pt-6">
-          <SocialAuthButtons />
+          <SocialAuthButtons
+            onGoogleClick={onGoogleClick}
+            onFacebookClick={onFacebookClick}
+          />
         </div>
       </div>
     </DialogContent>

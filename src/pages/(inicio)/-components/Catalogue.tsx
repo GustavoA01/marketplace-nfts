@@ -1,14 +1,11 @@
 import { NFTCard } from "@/components/NFTCard";
-import { Button } from "@/components/ui/Button";
+
+import { CatalogueFilters } from "./CatalogueFilters";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/Dialog";
-import { CatalogueFiltersContainer } from "@/features/CatalogueFilters/container/CatalogueFiltersContainer";
-import { catalogueMocks } from "@/mocks/catalogue";
+  collectionMocks,
+  networkMocks,
+} from "@/mocks/temporary/catalogue-filters";
+import { catalogueMocks } from "@/mocks/temporary/catalogue";
 import { CataloguePagination } from "./CataloguePagination";
 import { CatalogueToolbar } from "./CatalogueToolbar";
 import { FeaturedNFT } from "./FeaturedNFT";
@@ -27,27 +24,14 @@ const artworkLayouts = [
 
 export const Catalogue = () => {
   return (
-    <section className="mt-12 mb-24 xl:mt-24">
+    <section id="catalogo" className="mt-4 mb-24 scroll-mt-6 lg:mt-12 xl:mt-24">
       <h2 className="sr-only">Catálogo de NFTs</h2>
-      <div className="mb-6 xl:hidden">
-        <Dialog>
-          <DialogTrigger render={<Button variant="outline">Filtros</Button>} />
-          <DialogContent
-            showCloseButton={false}
-            className="max-h-[85svh] overflow-y-auto rounded-none"
-          >
-            <div className="flex items-center justify-between p-5 pb-0">
-              <DialogTitle>Filtros do catálogo</DialogTitle>
-              <DialogClose render={<Button variant="ghost">Fechar</Button>} />
-            </div>
-            <CatalogueFiltersContainer />
-          </DialogContent>
-        </Dialog>
-      </div>
-
       <div className="flex items-start gap-12">
         <aside className="hidden w-[310px] shrink-0 flex-col gap-6 xl:flex">
-          <CatalogueFiltersContainer />
+          <CatalogueFilters
+            collections={collectionMocks}
+            networks={networkMocks}
+          />
           <FeaturedNFT image={catalogueMocks[1].image} />
         </aside>
 

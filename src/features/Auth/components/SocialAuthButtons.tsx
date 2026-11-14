@@ -19,7 +19,7 @@ export const SocialAuthButtons = ({
         <span className="h-px flex-1 bg-border" />
       </div>
 
-      <div className="flex flex-col gap-4 px-20">
+      <div className="flex flex-col gap-4 px-6 sm:px-20">
         <Button
           type="button"
           variant="outline"

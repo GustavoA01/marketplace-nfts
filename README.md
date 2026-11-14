@@ -78,11 +78,11 @@ Header e Hero usam Roboto Mono local e assets exportados da cópia do Figma. Os 
 
 ## Catálogo visual
 
-Os dados temporários do catálogo e dos filtros são arrays de objetos em `src/mocks/catalogue.ts` e `src/mocks/catalogue-filters.ts`. As imagens exportadas do Figma ficam em `public/mocks`.
+Os dados temporários do catálogo e dos filtros são arrays de objetos em `src/mocks/temporary/catalogue.ts` e `src/mocks/temporary/catalogue-filters.ts`. As imagens exportadas do Figma ficam em `public/mocks`.
 
 `src/components/NFTCard.tsx` é compartilhado: o mesmo padrão visual aparece no Início e nas recomendações de Detalhes e Carrinho. Ele recebe os dados por props. O fundo retangular das imagens foi preservado conforme as camadas do Figma.
 
-Os filtros de apresentação ficam em `src/features/CatalogueFilters/components`, e a entrada que fornece os dados fica em `src/features/CatalogueFilters/container`; a composição da seção, toolbar, banner e paginação fica em `src/pages/(inicio)/-components`. No mobile, o painel abre em um Dialog shadcn/ui.
+Os filtros, a composição do catálogo, toolbar, banner e paginação ficam em `src/pages/(inicio)/-components`, pois são exclusivos dessa página. No mobile, o painel abre em um Dialog shadcn/ui.
 
 A seção ainda não consulta API nem filtra, ordena ou pagina os dados. Os controles são a base visual para a futura integração. A seleção visual de ordenação não altera a lista. O oitavo card não exibe título nem preço porque esses elementos estão ausentes no frame de referência. O controle de ordenação tem espaço adicional para evitar a sobreposição de texto e ícone presente no desenho.
 

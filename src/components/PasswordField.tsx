@@ -1,20 +1,15 @@
 import { Eye, EyeOff } from "lucide-react";
-import type { ComponentProps } from "react";
+import { useState, type ComponentProps } from "react";
 import { Input } from "@/components/ui/Input";
-import { cn } from "cn";
+import { cn } from "@/lib/utils";
 
 type PasswordFieldProps = Omit<ComponentProps<"input">, "type"> & {
   className?: string;
-  visible: boolean;
-  onToggleVisibility: () => void;
 };
 
-export const PasswordField = ({
-  className,
-  visible,
-  onToggleVisibility,
-  ...props
-}: PasswordFieldProps) => {
+export const PasswordField = ({ className, ...props }: PasswordFieldProps) => {
+  const [visible, setVisible] = useState(false);
+
   return (
     <div className="relative w-full">
       <Input
@@ -27,7 +22,7 @@ export const PasswordField = ({
       />
       <button
         type="button"
-        onClick={onToggleVisibility}
+        onClick={() => setVisible((current) => !current)}
         className="absolute top-1/2 right-3 flex -translate-y-1/2 items-center justify-center rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
         aria-label={visible ? "Ocultar senha" : "Mostrar senha"}
       >

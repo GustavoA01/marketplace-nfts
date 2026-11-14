@@ -1,10 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PagePlaceholder } from "@/components/PagePlaceholder";
-
-const Page = () => {
-  return <PagePlaceholder title="Login" />;
-};
+import { AuthPage } from "@/features/Auth/container/AuthPage";
 
 export const Route = createFileRoute("/login/")({
-  component: Page,
+  component: AuthPage,
 });
