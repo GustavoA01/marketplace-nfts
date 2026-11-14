@@ -10,7 +10,10 @@
     "preview": "vite preview",
     "test:e2e": "playwright test",
     "test:visual": "playwright test --grep @visual",
-    "audit:lighthouse": "mkdir -p reports && lighthouse http://127.0.0.1:4173 --output=html --output-path=reports/lighthouse.html --chrome-flags=--headless --only-categories=performance,accessibility,best-practices,seo"
+    "audit:lighthouse": "mkdir -p reports && lighthouse http://127.0.0.1:4173 --output=html --output-path=reports/lighthouse.html --chrome-flags=--headless --only-categories=performance,accessibility,best-practices,seo",
+    "prepare": "husky",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
@@ -41,9 +44,11 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
+    "husky": "^9.1.7",
     "lighthouse": "^13.6.0",
     "msw": "^3.0.5",
     "oxlint": "^1.90.0",
+    "prettier": "^3.10.1",
     "typescript": "~7.0.2",
     "vite": "^8.3.6"
   },

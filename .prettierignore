@@ -1,0 +1,9 @@
+node_modules/
+dist/
+dist-ssr/
+playwright-report/
+test-results/
+reports/
+.husky/_/
+src/routeTree.gen.ts
+public/

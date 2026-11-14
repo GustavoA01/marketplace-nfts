@@ -1,22 +1,26 @@
-import type { ReactNode } from "react"
+import type { ReactNode } from "react";
 import {
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/Dialog"
-import { AuthTabs } from "@/features/Auth/components/AuthTabs"
-import { SocialAuthButtons } from "@/features/Auth/components/SocialAuthButtons"
-import type { AuthMode } from "@/features/Auth/components/AuthTabs"
+} from "@/components/ui/Dialog";
+import { AuthTabs } from "@/features/Auth/components/AuthTabs";
+import { SocialAuthButtons } from "@/features/Auth/components/SocialAuthButtons";
+import type { AuthMode } from "@/features/Auth/components/AuthTabs";
 
 type AuthDialogProps = {
-  mode: AuthMode
-  onModeChange: (mode: AuthMode) => void
-  children: ReactNode
-}
+  mode: AuthMode;
+  onModeChange: (mode: AuthMode) => void;
+  children: ReactNode;
+};
 
-export const AuthDialog = ({ mode, onModeChange, children }: AuthDialogProps) => {
-  const isLogin = mode === "login"
+export const AuthDialog = ({
+  mode,
+  onModeChange,
+  children,
+}: AuthDialogProps) => {
+  const isLogin = mode === "login";
 
   return (
     <DialogContent className="max-w-125 gap-0 pb-10 font-mono sm:max-w-125">
@@ -38,13 +42,11 @@ export const AuthDialog = ({ mode, onModeChange, children }: AuthDialogProps) =>
       </DialogHeader>
 
       <div className="flex flex-col pt-6">
-        <div className="px-20">
-          {children}
-        </div>
+        <div className="px-20">{children}</div>
         <div className="pt-6">
           <SocialAuthButtons />
         </div>
       </div>
     </DialogContent>
-  )
-}
+  );
+};

@@ -18,17 +18,17 @@ O plugin do TanStack Router lê `src/pages` e gera `src/routeTree.gen.ts` ao ini
 As pastas organizam as rotas; `index.tsx` representa a página de cada pasta.
 O grupo `(inicio)` organiza a página inicial sem adicionar um segmento à URL.
 
-| Pasta em src/pages | URL | Tela |
-| --- | --- | --- |
-| (inicio) | / | Início |
-| nfts/$nftId | /nfts/1 | Detalhes do NFT |
-| carrinho | /carrinho | Carrinho de NFTs |
-| pagamento | /pagamento | Pagamento |
-| confirmacao-pedido | /confirmacao-pedido | Confirmação de pedido |
-| login | /login | Login |
-| cadastro | /cadastro | Cadastro |
-| perfil | /perfil | Perfil do colecionador |
-| carteiras | /carteiras | Carteiras |
+| Pasta em src/pages | URL                 | Tela                   |
+| ------------------ | ------------------- | ---------------------- |
+| (inicio)           | /                   | Início                 |
+| nfts/$nftId        | /nfts/1             | Detalhes do NFT        |
+| carrinho           | /carrinho           | Carrinho de NFTs       |
+| pagamento          | /pagamento          | Pagamento              |
+| confirmacao-pedido | /confirmacao-pedido | Confirmação de pedido  |
+| login              | /login              | Login                  |
+| cadastro           | /cadastro           | Cadastro               |
+| perfil             | /perfil             | Perfil do colecionador |
+| carteiras          | /carteiras          | Carteiras              |
 
 ## Stack e preparação
 
@@ -85,3 +85,14 @@ Os dados temporários do catálogo e dos filtros são arrays de objetos em `src/
 Os filtros de apresentação ficam em `src/features/CatalogueFilters/components`, e a entrada que fornece os dados fica em `src/features/CatalogueFilters/container`; a composição da seção, toolbar, banner e paginação fica em `src/pages/(inicio)/-components`. No mobile, o painel abre em um Dialog shadcn/ui.
 
 A seção ainda não consulta API nem filtra, ordena ou pagina os dados. Os controles são a base visual para a futura integração. A seleção visual de ordenação não altera a lista. O oitavo card não exibe título nem preço porque esses elementos estão ausentes no frame de referência. O controle de ordenação tem espaço adicional para evitar a sobreposição de texto e ícone presente no desenho.
+
+## Formatação e pre-commit
+
+Prettier utiliza ponto e vírgula, aspas duplas e finais de linha LF.
+
+- `npm run format`: formata todos os arquivos suportados do projeto.
+- `npm run format:check`: verifica a formatação de todos os arquivos suportados.
+
+O Husky configura os hooks por meio do script `prepare` durante a instalação. O pre-commit executa `npm run format:check` e bloqueia o commit se houver arquivos fora do padrão. Execute `npm run format`, revise e adicione as alterações desejadas ao Git antes de tentar novamente.
+
+Assets em public, dependências, artefatos de build, relatórios e a árvore de rotas gerada estão excluídos da formatação.

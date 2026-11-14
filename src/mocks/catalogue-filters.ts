@@ -8,10 +8,10 @@ export const collectionMocks = [
   { name: "Jogos", count: 19 },
   { name: "Assinaturas", count: 13 },
   { name: "Utilidade", count: 18 },
-]
+];
 
 export const networkMocks = [
   { name: "Ethereum", count: 119 },
   { name: "Polygon", count: 78 },
   { name: "Solana", count: 86 },
-]
+];

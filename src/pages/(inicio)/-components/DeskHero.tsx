@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/Button"
+import { Button } from "@/components/ui/Button";
 
 export const DeskHero = () => {
   return (
@@ -20,7 +20,10 @@ export const DeskHero = () => {
           cultura da internet.
         </p>
 
-        <Button type="button" className="mt-8 h-10 w-35 rounded-md px-0 text-base leading-5 font-bold uppercase">
+        <Button
+          type="button"
+          className="mt-8 h-10 w-35 rounded-md px-0 text-base leading-5 font-bold uppercase"
+        >
           Explorar
         </Button>
 
@@ -38,5 +41,5 @@ export const DeskHero = () => {
         className="aspect-square w-full rounded-3xl object-cover md:w-80 md:shrink-0 xl:w-[450px]"
       />
     </section>
-  )
-}
+  );
+};

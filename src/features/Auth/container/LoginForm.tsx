@@ -1,9 +1,9 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { Button } from "@/components/ui/Button"
-import { Input } from "@/components/ui/Input"
-import { loginSchema, type LoginFormValues } from "@/data/schemas/auth"
-import { PasswordField } from "@/features/Auth/container/PasswordField"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { loginSchema, type LoginFormValues } from "@/data/schemas/auth";
+import { PasswordField } from "@/features/Auth/container/PasswordField";
 
 export const LoginForm = () => {
   const {
@@ -12,11 +12,11 @@ export const LoginForm = () => {
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-  })
+  });
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data)
-  })
+    console.log(data);
+  });
 
   return (
     <form className="flex w-full flex-col gap-3" onSubmit={onSubmit}>
@@ -62,5 +62,5 @@ export const LoginForm = () => {
         Entrar
       </Button>
     </form>
-  )
-}
+  );
+};

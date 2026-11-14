@@ -1,22 +1,27 @@
-import { Eye, EyeOff } from "lucide-react"
-import type { ComponentProps } from "react"
-import { Input } from "@/components/ui/Input"
-import { cn } from "cn"
+import { Eye, EyeOff } from "lucide-react";
+import type { ComponentProps } from "react";
+import { Input } from "@/components/ui/Input";
+import { cn } from "cn";
 
 type PasswordFieldProps = Omit<ComponentProps<"input">, "type"> & {
-  className?: string
-  visible: boolean
-  onToggleVisibility: () => void
-}
+  className?: string;
+  visible: boolean;
+  onToggleVisibility: () => void;
+};
 
-export const PasswordField = ({ className, visible, onToggleVisibility, ...props }: PasswordFieldProps) => {
+export const PasswordField = ({
+  className,
+  visible,
+  onToggleVisibility,
+  ...props
+}: PasswordFieldProps) => {
   return (
     <div className="relative w-full">
       <Input
         type={visible ? "text" : "password"}
         className={cn(
           "h-10 rounded-[5px] border-border bg-transparent px-4 pr-10 font-mono text-sm placeholder:text-secondary",
-          className
+          className,
         )}
         {...props}
       />
@@ -33,5 +38,5 @@ export const PasswordField = ({ className, visible, onToggleVisibility, ...props
         )}
       </button>
     </div>
-  )
-}
+  );
+};

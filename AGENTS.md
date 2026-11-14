@@ -15,3 +15,4 @@ Não coloque lógica ou chamadas de hooks de negócio nos componentes de apresen
 Evite arquivos muito grandes e separe responsabilidades quando isso melhorar a clareza. Não há limite rígido de linhas; mantenha componentes simples, como o Header, em um único arquivo quando fizer sentido.
 Use classes usuais do Tailwind e flex quando suficiente; valores específicos são permitidos para reproduzir medidas do Figma.
 Não adicione aria-label sem solicitação; preserve a semântica HTML e alternativas textuais necessárias.
+Use ponto e vírgula e aspas duplas em JavaScript, TypeScript e JSX, conforme .prettierrc.json. Execute npm run format após alterações.

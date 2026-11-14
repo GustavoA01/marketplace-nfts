@@ -1,6 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { DeskHero } from './-components/DeskHero'
-import { Catalogue } from './-components/Catalogue'
+import { createFileRoute } from "@tanstack/react-router";
+import { DeskHero } from "./-components/DeskHero";
+import { Catalogue } from "./-components/Catalogue";
 
 const Page = () => {
   return (
@@ -8,9 +8,9 @@ const Page = () => {
       <DeskHero />
       <Catalogue />
     </>
-  )
-}
+  );
+};
 
-export const Route = createFileRoute('/(inicio)/')({
+export const Route = createFileRoute("/(inicio)/")({
   component: Page,
-})
+});

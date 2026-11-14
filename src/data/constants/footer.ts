@@ -17,7 +17,7 @@ export const features = [
     description:
       "Receba calendários de cunhagem, novidades de listas de acesso e análises do mercado.",
   },
-] as const
+] as const;
 
 export const profileLinks = [
   { label: "Meu perfil", to: "/perfil" },
@@ -25,7 +25,7 @@ export const profileLinks = [
   { label: "Atividade", to: "/perfil" },
   { label: "Estúdio do criador", to: "/criadores" },
   { label: "Lista de interesse", to: "/perfil" },
-] as const
+] as const;
 
 export const helpLinks = [
   { label: "Central de ajuda", to: "/aprenda" },
@@ -33,7 +33,7 @@ export const helpLinks = [
   { label: "Carteira e segurança", to: "/carteiras" },
   { label: "Política do mercado", to: "/mercado" },
   { label: "Denunciar item", to: "/aprenda" },
-] as const
+] as const;
 
 export const collectionLinks = [
   { label: "Arte digital", to: "/mercado" },
@@ -41,12 +41,12 @@ export const collectionLinks = [
   { label: "Música", to: "/mercado" },
   { label: "Arte 3D", to: "/mercado" },
   { label: "Utilidade", to: "/mercado" },
-] as const
+] as const;
 
-export  const socialLinks = [
+export const socialLinks = [
   { label: "Facebook", src: "/icons/facebook.svg" },
   { label: "Instagram", src: "/icons/instagram.svg" },
   { label: "Twitter", src: "/icons/twitter.svg" },
   { label: "LinkedIn", src: "/icons/linkedin.svg" },
   { label: "YouTube", src: "/icons/youtube.svg" },
-] as const
+] as const;

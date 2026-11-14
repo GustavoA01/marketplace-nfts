@@ -1,15 +1,17 @@
-import { Card, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Card, CardHeader, CardTitle } from "@/components/ui/Card";
 
 type PagePlaceholderProps = {
-  title: string
-}
+  title: string;
+};
 
 export const PagePlaceholder = ({ title }: PagePlaceholderProps) => {
   return (
     <Card className="mx-auto w-full max-w-3xl">
       <CardHeader>
-        <CardTitle><h1>{title}</h1></CardTitle>
+        <CardTitle>
+          <h1>{title}</h1>
+        </CardTitle>
       </CardHeader>
     </Card>
-  )
-}
+  );
+};

@@ -1,9 +1,9 @@
-import { Link } from "@tanstack/react-router"
-import { LogIn, Search, ShoppingCart } from "lucide-react"
-import { Button } from "@/components/ui/Button"
-import { Dialog, DialogTrigger } from "@/components/ui/Dialog"
-import { navigation } from "@/data/constants/navigation"
-import { AuthDialog } from "@/features/Auth/container/AuthDialog"
+import { Link } from "@tanstack/react-router";
+import { LogIn, Search, ShoppingCart } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Dialog, DialogTrigger } from "@/components/ui/Dialog";
+import { navigation } from "@/data/constants/navigation";
+import { AuthDialog } from "@/features/Auth/container/AuthDialog";
 
 export const Header = () => {
   return (
@@ -29,7 +29,12 @@ export const Header = () => {
             ))}
           </nav>
           <div className="flex h-8.75 shrink-0 items-center gap-4 lg:gap-7">
-            <Button type="button" variant="ghost" size="icon" className="size-5 rounded-sm border-0">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="size-5 rounded-sm border-0"
+            >
               <Search className="size-5" strokeWidth={1.6} />
             </Button>
 
@@ -64,5 +69,5 @@ export const Header = () => {
         </div>
       </div>
     </header>
-  )
-}
+  );
+};

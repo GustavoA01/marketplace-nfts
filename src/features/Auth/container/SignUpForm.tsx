@@ -1,9 +1,9 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { Button } from "@/components/ui/Button"
-import { Input } from "@/components/ui/Input"
-import { signUpSchema, type SignUpFormValues } from "@/data/schemas/auth"
-import { PasswordField } from "@/features/Auth/container/PasswordField"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { signUpSchema, type SignUpFormValues } from "@/data/schemas/auth";
+import { PasswordField } from "@/features/Auth/container/PasswordField";
 
 export const SignUpForm = () => {
   const {
@@ -12,11 +12,11 @@ export const SignUpForm = () => {
     formState: { errors },
   } = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
-  })
+  });
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data)
-  })
+    console.log(data);
+  });
 
   return (
     <form className="flex w-full flex-col gap-3" onSubmit={onSubmit}>
@@ -81,5 +81,5 @@ export const SignUpForm = () => {
         Criar conta
       </Button>
     </form>
-  )
-}
+  );
+};

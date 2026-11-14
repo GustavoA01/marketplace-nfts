@@ -1,19 +1,19 @@
-import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"
-import { X } from "lucide-react"
-import { cn } from "cn"
-import type { ComponentProps } from "react"
+import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
+import { X } from "lucide-react";
+import { cn } from "cn";
+import type { ComponentProps } from "react";
 
 const Dialog = ({ ...props }: DialogPrimitive.Root.Props) => {
-  return <DialogPrimitive.Root data-slot="dialog" {...props} />
-}
+  return <DialogPrimitive.Root data-slot="dialog" {...props} />;
+};
 
 const DialogTrigger = ({ ...props }: DialogPrimitive.Trigger.Props) => {
-  return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />
-}
+  return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />;
+};
 
 const DialogPortal = ({ ...props }: DialogPrimitive.Portal.Props) => {
-  return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />
-}
+  return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />;
+};
 
 const DialogClose = ({ className, ...props }: DialogPrimitive.Close.Props) => {
   return (
@@ -22,8 +22,8 @@ const DialogClose = ({ className, ...props }: DialogPrimitive.Close.Props) => {
       className={cn(className)}
       {...props}
     />
-  )
-}
+  );
+};
 
 const DialogOverlay = ({
   className,
@@ -34,12 +34,12 @@ const DialogOverlay = ({
       data-slot="dialog-overlay"
       className={cn(
         "fixed inset-0 z-50 bg-ink/70 transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0",
-        className
+        className,
       )}
       {...props}
     />
-  )
-}
+  );
+};
 
 const DialogContent = ({
   className,
@@ -47,7 +47,7 @@ const DialogContent = ({
   showCloseButton = true,
   ...props
 }: DialogPrimitive.Popup.Props & {
-  showCloseButton?: boolean
+  showCloseButton?: boolean;
 }) => {
   return (
     <DialogPortal>
@@ -56,7 +56,7 @@ const DialogContent = ({
         data-slot="dialog-content"
         className={cn(
           "fixed top-1/2 left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-125 -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-lg bg-surface-card text-foreground shadow-lg outline-none transition-all duration-200 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0",
-          className
+          className,
         )}
         {...props}
       >
@@ -72,8 +72,8 @@ const DialogContent = ({
         )}
       </DialogPrimitive.Popup>
     </DialogPortal>
-  )
-}
+  );
+};
 
 const DialogHeader = ({ className, ...props }: ComponentProps<"div">) => {
   return (
@@ -82,8 +82,8 @@ const DialogHeader = ({ className, ...props }: ComponentProps<"div">) => {
       className={cn("flex flex-col gap-2 text-center", className)}
       {...props}
     />
-  )
-}
+  );
+};
 
 const DialogFooter = ({ className, ...props }: ComponentProps<"div">) => {
   return (
@@ -92,8 +92,8 @@ const DialogFooter = ({ className, ...props }: ComponentProps<"div">) => {
       className={cn("flex flex-col gap-2", className)}
       {...props}
     />
-  )
-}
+  );
+};
 
 const DialogTitle = ({ className, ...props }: DialogPrimitive.Title.Props) => {
   return (
@@ -102,8 +102,8 @@ const DialogTitle = ({ className, ...props }: DialogPrimitive.Title.Props) => {
       className={cn("font-mono text-lg font-semibold", className)}
       {...props}
     />
-  )
-}
+  );
+};
 
 const DialogDescription = ({
   className,
@@ -115,8 +115,8 @@ const DialogDescription = ({
       className={cn("font-mono text-sm text-muted-foreground", className)}
       {...props}
     />
-  )
-}
+  );
+};
 
 export {
   Dialog,
@@ -129,4 +129,4 @@ export {
   DialogPortal,
   DialogTitle,
   DialogTrigger,
-}
+};

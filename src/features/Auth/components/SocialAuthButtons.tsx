@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/Button"
+import { Button } from "@/components/ui/Button";
 
 type SocialAuthButtonsProps = {
-  onGoogleClick?: () => void
-  onFacebookClick?: () => void
-}
+  onGoogleClick?: () => void;
+  onFacebookClick?: () => void;
+};
 
 export const SocialAuthButtons = ({
   onGoogleClick,
@@ -40,5 +40,5 @@ export const SocialAuthButtons = ({
         </Button>
       </div>
     </div>
-  )
-}
+  );
+};

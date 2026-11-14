@@ -1,11 +1,11 @@
-import { cn } from "cn"
+import { cn } from "cn";
 
-export type AuthMode = "login" | "signup"
+export type AuthMode = "login" | "signup";
 
 type AuthTabsProps = {
-  mode: AuthMode
-  onModeChange: (mode: AuthMode) => void
-}
+  mode: AuthMode;
+  onModeChange: (mode: AuthMode) => void;
+};
 
 export const AuthTabs = ({ mode, onModeChange }: AuthTabsProps) => {
   return (
@@ -15,7 +15,7 @@ export const AuthTabs = ({ mode, onModeChange }: AuthTabsProps) => {
         onClick={() => onModeChange("login")}
         className={cn(
           "rounded-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
-          mode === "login" ? "text-text-accent" : "text-foreground"
+          mode === "login" ? "text-text-accent" : "text-foreground",
         )}
       >
         Entrar
@@ -26,11 +26,11 @@ export const AuthTabs = ({ mode, onModeChange }: AuthTabsProps) => {
         onClick={() => onModeChange("signup")}
         className={cn(
           "rounded-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
-          mode === "signup" ? "text-text-accent" : "text-foreground"
+          mode === "signup" ? "text-text-accent" : "text-foreground",
         )}
       >
         Criar conta
       </button>
     </div>
-  )
-}
+  );
+};

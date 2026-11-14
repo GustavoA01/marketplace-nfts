@@ -1,6 +1,6 @@
-import { createRootRoute, Outlet } from '@tanstack/react-router'
-import { Footer } from '@/components/Footer'
-import { Header } from '@/components/Header'
+import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
 
 const RootLayout = () => {
   return (
@@ -11,10 +11,10 @@ const RootLayout = () => {
       </main>
       <Footer />
     </div>
-  )
-}
+  );
+};
 
 export const Route = createRootRoute({
   component: RootLayout,
   notFoundComponent: () => <h1>Página não encontrada</h1>,
-})
+});
