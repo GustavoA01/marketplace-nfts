@@ -1,8 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Hero } from './-components/DeskHero'
+import { DeskHero } from './-components/DeskHero'
+import { Catalogue } from './-components/Catalogue'
 
 const Page = () => {
-  return <Hero />
+  return (
+    <>
+      <DeskHero />
+      <Catalogue />
+    </>
+  )
 }
 
 export const Route = createFileRoute('/(inicio)/')({

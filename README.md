@@ -63,3 +63,25 @@ Copie `.env.example` para `.env.local` quando houver serviços reais. Variáveis
 A paleta está em `src/index.css`, com tokens CSS e utilitários Tailwind como `bg-primary`, `bg-primary-light`, `bg-surface-card`, `border-border-soft` e `text-success`. O tema escuro usa Ink como fundo principal; Background Elevated fica disponível como token independente. Primary, Primary Light e Primary Dark seguem os valores fornecidos; as demais cores foram amostradas do centro dos círculos da imagem de referência.
 
 Funções e componentes seguem o padrão arrow function.
+
+## Organização
+
+- `src/components`: componentes compartilhados entre páginas.
+- `src/pages/(inicio)/-components`: componentes exclusivos do Início. O prefixo `-` exclui esses arquivos do roteamento automático.
+- `src/features/<NomeDaFeature>/container`: lógica, hooks e composição de funcionalidades maiores.
+- `src/features/<NomeDaFeature>/components`: apresentação por props, sem regras de negócio.
+- `hooks`, `tests` e `utils`: pastas opcionais dentro de cada feature, conforme a necessidade.
+
+Cada feature possui container e components; componentes simples fora de features não exigem essa estrutura. Componentes usam PascalCase e arrow functions; evite arquivos muito grandes e divida responsabilidades quando necessário, sem limite rígido de linhas.
+
+Header e Hero usam Roboto Mono local e assets exportados da cópia do Figma. Os textos auxiliares do Hero seguem 14px conforme o arquivo de design. A largura máxima de 1264px inclui 64px de padding horizontal, preservando os 1200px de conteúdo do frame desktop junto à classe container.
+
+## Catálogo visual
+
+Os dados temporários do catálogo e dos filtros são arrays de objetos em `src/mocks/catalogue.ts` e `src/mocks/catalogue-filters.ts`. As imagens exportadas do Figma ficam em `public/mocks`.
+
+`src/components/NFTCard.tsx` é compartilhado: o mesmo padrão visual aparece no Início e nas recomendações de Detalhes e Carrinho. Ele recebe os dados por props. O fundo retangular das imagens foi preservado conforme as camadas do Figma.
+
+Os filtros de apresentação ficam em `src/features/CatalogueFilters/components`, e a entrada que fornece os dados fica em `src/features/CatalogueFilters/container`; a composição da seção, toolbar, banner e paginação fica em `src/pages/(inicio)/-components`. No mobile, o painel abre em um Dialog shadcn/ui.
+
+A seção ainda não consulta API nem filtra, ordena ou pagina os dados. Os controles são a base visual para a futura integração. A seleção visual de ordenação não altera a lista. O oitavo card não exibe título nem preço porque esses elementos estão ausentes no frame de referência. O controle de ordenação tem espaço adicional para evitar a sobreposição de texto e ícone presente no desenho.

@@ -1,68 +1,65 @@
 import { Link } from "@tanstack/react-router"
 import { LogIn, Search, ShoppingCart } from "lucide-react"
-import { Button } from "@/components/ui/button"
-
-const navigation = [
-  { label: "Início", to: "/" },
-  { label: "Mercado", to: "/mercado" },
-  { label: "Criadores", to: "/criadores" },
-  { label: "Aprenda", to: "/aprenda" },
-] as const
+import { Button } from "@/components/ui/Button"
+import { Dialog, DialogTrigger } from "@/components/ui/Dialog"
+import { navigation } from "@/data/constants/navigation"
+import { AuthDialog } from "@/features/Auth/container/AuthDialog"
 
 export const Header = () => {
   return (
-    <header className="mt-6 bg-background text-foreground">
-      <div className="container mx-auto px-5 sm:px-8">
-        <div className="flex min-h-11.25 flex-wrap items-center justify-between gap-x-6 border-b border-border">
+    <header className="pt-6 text-foreground">
+      <div className="container mx-auto px-5 sm:px-8 xl:max-w-316">
+        <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3 border-b border-border md:h-11.25 md:flex-nowrap">
           <Link
             to="/"
-            className="w-fit rounded-sm font-mono text-sm font-bold tracking-[0.14em] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background"
+            className="flex h-9 w-fit shrink-0 items-center rounded-sm text-sm leading-5 font-bold tracking-widest outline-none focus-visible:ring-2 focus-visible:ring-ring xl:w-40"
           >
             KURIO
           </Link>
-
-          <nav className="flex h-11.25 gap-4 sm:gap-8">
+          <nav className="flex h-11.25 shrink-0 gap-4 lg:gap-10">
             {navigation.map(({ label, to }) => (
               <Link
                 key={to}
                 to={to}
                 activeOptions={{ exact: to === "/" }}
-                className="inline-flex h-11.25 items-center border-b-2 border-transparent font-mono text-md  text-foreground transition-colors outline-none hover:text-primary-light focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring data-[status=active]:border-primary data-[status=active]:font-semibold data-[status=active]:text-primary"
+                className="inline-flex h-11.25 items-start border-b-3 border-transparent text-base leading-5.25 whitespace-nowrap transition-colors outline-none hover:text-text-accent focus-visible:ring-2 focus-visible:ring-ring data-[status=active]:border-primary data-[status=active]:font-bold data-[status=active]:text-text-accent"
               >
                 {label}
               </Link>
             ))}
           </nav>
-
-          <div className="flex h-11.25 items-center gap-2 sm:gap-4">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="rounded-sm hover:bg-surface-raised"
-            >
+          <div className="flex h-8.75 shrink-0 items-center gap-4 lg:gap-7">
+            <Button type="button" variant="ghost" size="icon" className="size-5 rounded-sm border-0">
               <Search className="size-5" strokeWidth={1.6} />
             </Button>
 
             <Button
               variant="ghost"
               size="icon"
-              className="relative rounded-sm hover:bg-surface-raised"
+              className="relative h-6 w-7.75 justify-start rounded-sm"
+              nativeButton={false}
               render={<Link to="/carrinho" />}
             >
-              <ShoppingCart className="size-5" strokeWidth={1.6} />
-              <span className="absolute top-0.5 right-0 flex size-3.5 items-center justify-center rounded-full bg-primary font-mono text-[9px] font-semibold text-primary-foreground">
+              <ShoppingCart className="size-6" strokeWidth={1.6} />
+              <span className="absolute top-0 right-0 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] leading-none font-medium text-ink ring-2 ring-background">
                 0
               </span>
             </Button>
 
-            <Button
-              type="button"
-              className="h-8 gap-1.5 rounded-sm px-2.5 font-mono text-md tracking-[0.02em]"
-            >
-              <LogIn className="size-4" strokeWidth={1.6} />
-              Entrar
-            </Button>
+            <Dialog>
+              <DialogTrigger
+                render={
+                  <Button
+                    type="button"
+                    className="h-8.75 w-25 gap-1 rounded-md px-0 text-base leading-5 font-medium"
+                  />
+                }
+              >
+                <LogIn className="size-5" strokeWidth={1.6} />
+                Entrar
+              </DialogTrigger>
+              <AuthDialog />
+            </Dialog>
           </div>
         </div>
       </div>
