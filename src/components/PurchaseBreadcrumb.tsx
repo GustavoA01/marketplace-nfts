@@ -38,7 +38,7 @@ export const PurchaseBreadcrumb = ({
           size="icon"
           nativeButton={false}
           render={<Link to={backTo} />}
-          className="size-[35px] rounded-full bg-surface-raised text-secondary"
+          className="size-8.75 rounded-full bg-surface-raised text-secondary"
         >
           <ChevronLeft className="size-5" />
           <span className="sr-only">Voltar</span>

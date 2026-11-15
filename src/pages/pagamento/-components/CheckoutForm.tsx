@@ -47,7 +47,7 @@ export const CheckoutForm = ({
         className="flex min-h-7.25 items-center text-[15px] font-normal"
       >
         {label}
-        <span className="text-[22px] leading-[29px] text-[#F0805F]">*</span>
+        <span className="text-[22px] leading-7.25 text-[#F0805F]">*</span>
       </Label>
       <Input
         id={`checkout-${field}`}
@@ -140,7 +140,9 @@ export const CheckoutForm = ({
             </SelectContent>
           </Select>
         </div>
+
         {collector("profileName", "Nome do perfil")}
+
         {readonly(
           "address",
           "Endereço da carteira",
@@ -240,6 +242,7 @@ export const CheckoutForm = ({
           />
         </div>
       )}
+
       <div className="mt-6 max-w-87.5">
         <Label
           htmlFor="checkout-note"

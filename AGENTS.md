@@ -1,25 +1,16 @@
-Não adicione comentários ao código.
-Siga o padrão do projeto e boas práticas de programação.
-Utilize os componentes de src/components/ui (shadcn/ui).
-Prefira ícones do lucide-react quando existirem; use SVGs locais só para marcas ou assets sem equivalente.
-As rotas são geradas pelo TanStack Router a partir de src/pages.
-Não edite src/routeTree.gen.ts manualmente.
-Utilize arrow functions para funções e componentes.
-Nomeie arquivos de componentes TSX em PascalCase, como Header.tsx e DeskHero.tsx. Preserve os nomes convencionais dos arquivos de entrada e rotas do TanStack Router.
+# Orientações de manutenção
 
-Organize componentes compartilhados entre páginas em src/components.
-Organize componentes exclusivos de uma página na pasta -components dessa página; o prefixo evita que o TanStack Router os registre como rotas.
-Organize funcionalidades maiores e preferencialmente compartilhadas em src/features/<NomeDaFeature>, com nomes em PascalCase (CamelCase iniciado em maiúscula), como CatalogueFilters e Auth.
-Cada feature deve conter as pastas container e components no mesmo nível. container é a entrada da feature e concentra obtenção de dados, lógica e chamadas de hooks. components contém os componentes de apresentação, que recebem dados e callbacks por props, sem regras de negócio. hooks, tests e utils podem existir no mesmo nível quando necessários.
-Não coloque lógica ou chamadas de hooks de negócio nos componentes de apresentação. Componentes simples fora de features não precisam de containers; dentro de features, preserve a divisão container/components. Crie hooks, tests e utils somente quando necessários.
-Evite arquivos muito grandes e separe responsabilidades quando isso melhorar a clareza. Não há limite rígido de linhas; mantenha componentes simples, como o Header, em um único arquivo quando fizer sentido.
-Use classes usuais do Tailwind e flex quando suficiente; valores específicos são permitidos para reproduzir medidas do Figma.
-Não adicione aria-label sem solicitação; preserve a semântica HTML e alternativas textuais necessárias.
-Use ponto e vírgula e aspas duplas em JavaScript, TypeScript e JSX, conforme .prettierrc.json. Execute npm run format após alterações.
-Mantenha os dados provisórios que serão substituídos pela API em src/data/mocks/temporary. Preserve a infraestrutura do MSW e os mocks de testes fora dessa pasta.
-A divisão container/components existe apenas em features. Nas páginas, mantenha composição, hooks e lógica no index.tsx; use -components para componentes exclusivos e não crie pastas -container nem wrappers sem responsabilidade. Rotas podem referenciar diretamente o container de uma feature compartilhada.
-Prefira manter funcionalidades exclusivas de uma tela no index.tsx e em -components da própria página. O tamanho de um arquivo, isoladamente, não justifica criar uma feature. Atualmente Auth e Checkout são compartilhados; perfil, carteiras, filtros do início e resumo do carrinho pertencem às respectivas páginas.
-Não crie wrappers que apenas repassem props ou dados estáticos a outro componente. O container de uma feature deve concentrar sua composição ou lógica efetiva; não separe um componente de apresentação inteiro só para cumprir a estrutura de pastas. Componentes simples com estado visual local, como PasswordField, podem ser um único arquivo compartilhado. Evite reexports que apenas renomeiem componentes.
-O Footer deve aparecer apenas na página inicial. Para seções recolhíveis, utilize o Accordion do shadcn/ui.
-
-Separe funções e blocos de responsabilidades com linhas em branco para manter a leitura clara.
+- Siga os padrões existentes e não adicione comentários ao código.
+- Use arrow functions e nomes PascalCase para componentes TSX. Preserve os nomes convencionais de entradas e rotas do TanStack Router.
+- Use os componentes shadcn/ui de `src/components/ui`, os tokens do tema e ícones lucide-react quando disponíveis.
+- Preserve semântica HTML, labels, foco visível e acessibilidade dos componentes.
+- Use classes usuais do Tailwind; prefira flex quando suficiente. Medidas específicas são permitidas para reproduzir o Figma.
+- Mantenha funções e blocos de responsabilidade separados por linhas em branco. Divida arquivos quando isso melhorar a clareza, sem impor um limite rígido de linhas.
+- Mantenha componentes compartilhados em `src/components` e componentes exclusivos em `src/pages/<pagina>/-components`.
+- Nas páginas, concentre composição e lógica no `index.tsx`; não crie containers que apenas repassem props ou wrappers sem responsabilidade.
+- Reserve `src/features/<NomeDaFeature>` para funcionalidades compartilhadas ou transversais. Use `container` para lógica/composição e `components` para apresentação por props; adicione hooks e utils conforme a necessidade.
+- Não edite `src/routeTree.gen.ts` manualmente; a árvore é gerada pelo TanStack Router.
+- Centralize REST nos serviços Axios e estado remoto no TanStack Query. Preserve isolamento por usuário, cancelamento de consultas e consistência entre REST e Socket.IO.
+- Mantenha respostas e cenários simulados na camada MSW. Preserve os dados visuais provisórios em `src/data/mocks/temporary`, separados da infraestrutura e dos mocks de testes.
+- Use ponto e vírgula e aspas duplas conforme o Prettier. Execute `npm run format` após alterações e verificações adequadas ao escopo.
+- Mantenha o README voltado a setup e avaliação. Documente contratos, cache, sessão, limitações e decisões de UX em `ARCHITECTURE.md`, evitando notas paralelas desatualizadas.

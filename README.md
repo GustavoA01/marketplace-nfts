@@ -1,140 +1,140 @@
-# Marketplace NFTs
+# Kurio — Marketplace de NFTs
 
-Marketplace de NFTs com React, TypeScript, Vite e API simulada com MSW.
+Aplicação React e TypeScript para descoberta de NFTs, compra e conta do colecionador, com layouts desktop e mobile baseados no Figma. A API REST, autenticação, carteiras, pagamentos e eventos Socket.IO são simulados na camada de rede com MSW.
 
-## Executar no Ubuntu
+## Executar localmente
+
+Requisitos: Node.js 24 ou superior e npm.
+
+A partir da raiz do repositório:
 
 ```bash
-cd ~/Projetos/marketplace-nfts
-nvm use
 npm ci
 cp .env.example .env.local
 npm run dev
 ```
 
-## Páginas
+Abra o endereço informado pelo Vite.
 
-O plugin do TanStack Router lê `src/pages` e gera `src/routeTree.gen.ts` ao iniciar o Vite.
-As pastas organizam as rotas; `index.tsx` representa a página de cada pasta.
-O grupo `(inicio)` organiza a página inicial sem adicionar um segmento à URL.
+| Variável            | Valor de demonstração | Finalidade                                                                        |
+| ------------------- | --------------------- | --------------------------------------------------------------------------------- |
+| `VITE_ENABLE_MOCKS` | `true`                | Habilita as APIs e os eventos simulados. Deve estar ativa também durante o build. |
+| `VITE_API_URL`      | `/api`                | Prefixo das chamadas REST.                                                        |
+| `VITE_SOCKET_URL`   | Vazio                 | Usada para um servidor externo somente com os mocks desligados.                   |
 
-| Pasta em src/pages | URL                   | Tela                   |
-| ------------------ | --------------------- | ---------------------- |
-| (inicio)           | /                     | Início                 |
-| nfts/$nftId        | /nfts/emerald-ape-042 | Detalhes do NFT        |
-| carrinho           | /carrinho             | Carrinho de NFTs       |
-| pagamento          | /pagamento            | Pagamento              |
-| confirmacao-pedido | /confirmacao-pedido   | Confirmação de pedido  |
-| login              | /login                | Login                  |
-| cadastro           | /cadastro             | Cadastro               |
-| perfil             | /perfil               | Perfil do colecionador |
-| carteiras          | /carteiras            | Carteiras              |
-| favoritos          | /favoritos            | Favoritos              |
+## Credenciais fictícias
 
-## Stack e preparação
+| E-mail             | Senha              | Estado inicial                          |
+| ------------------ | ------------------ | --------------------------------------- |
+| `luna@example.com` | `Colecionador123!` | Possui uma carteira principal Ethereum. |
+| `theo@example.com` | `Colecionador123!` | Sem carteiras cadastradas.              |
 
-- React e TypeScript para as páginas; Vite para desenvolvimento e build.
-- TanStack Router com rotas por arquivo em `src/pages`.
-- TanStack Query com provider e cliente em `src/lib/query-client.ts`.
-- Axios com cliente REST em `src/lib/http.ts` e serviços de autenticação e NFTs em `src/services`.
-- Socket.IO com cliente em `src/lib/socketio.ts`, eventos de NFT/pedido, isolamento por sessão e reconciliação REST. O MSW simula o protocolo pela mesma origem, sem servidor adicional.
-- Tailwind CSS e componentes oficiais shadcn/ui em `src/components/ui`. Os estilos auxiliares gerados estão em `src/styles/shadcn.css`; o CLI pode ser executado com `npx shadcn@latest add <componente>`.
-- MSW configurado em `src/data/mocks`, ativado por `VITE_ENABLE_MOCKS=true`. O worker está em `public/mockServiceWorker.js`. Conta, catálogo, favoritos, carrinho, cotações, perfil, carteiras e pedidos possuem handlers com estado consistente. A flag também deve estar ativa no build de demonstração.
-- Playwright configurado em `playwright.config.ts`, com testes E2E em `tests/e2e` e relatório HTML/traces. Baselines visuais ainda precisam ser adicionadas (marcar testes visuais com `@visual`). Instalar o navegador com `npx playwright install chromium` antes de executar os testes.
-- Lighthouse instalado para auditorias locais. Com o preview rodando, executar `npm run audit:lighthouse`. Requer Chrome/Chromium instalado; definir `CHROME_PATH` se necessário.
+Também é possível criar uma conta em `/cadastro`. Novas contas começam sem carteiras. Usuários e alterações permanecem após refresh na mesma origem do navegador.
 
-O cadastro utiliza Axios, TanStack Query e MSW, com persistência local dos usuários simulados. Login e sessão por cookie também estão integrados. Compras, perfil/carteiras e eventos Socket.IO estão integrados. Veja as decisões e limitações em [ARCHITECTURE.md](./ARCHITECTURE.md).
-Há testes E2E permanentes de favoritos para desktop e mobile. A cobertura dos demais fluxos e as baselines visuais continuam pendentes.
+## Roteiro de avaliação
 
-## Comandos
+1. No início (`/`), utilize busca, filtros, ordenação e paginação e abra um NFT. O detalhe também aceita acesso direto, por exemplo `/nfts/emerald-ape-042`.
+2. Selecione edição e quantidade e clique em Comprar. No carrinho, altere quantidades, remova itens e experimente os cupons abaixo.
+3. Clique em Conectar e finalizar. Se necessário, faça login para continuar no pagamento.
+4. Selecione/conecte uma carteira compatível, confira os dados e os valores e marque a revisão antes de confirmar a compra.
+5. Aguarde o resultado do pedido. A confirmação apresenta os itens, a transação, a taxa e o total do snapshot da compra.
+6. Consulte `/perfil`, `/carteiras` e `/favoritos` para avaliar os fluxos da conta. Sem carteira compatível, o checkout oferece acesso ao cadastro com retorno ao pagamento.
+
+O carrinho de visitante é preservado ao autenticar. Favoritos, perfil, carteiras e pedidos pertencem à conta autenticada. A compra de NFTs de redes diferentes deve ser feita separadamente.
+
+## Cupons para avaliação
+
+| Código     | Resultado esperado                                                             |
+| ---------- | ------------------------------------------------------------------------------ |
+| `KURIO10`  | Desconto de 10% sobre o subtotal dos NFTs, antes da taxa de rede.              |
+| `EXPIRADO` | Erro de cupom expirado.                                                        |
+| `TESTE123` | Erro de cupom inválido; qualquer código não cadastrado tem esse comportamento. |
+
+Os códigos ignoram espaços nas extremidades e diferenças entre maiúsculas/minúsculas. A taxa não recebe desconto. As taxas da demonstração são Ethereum `0.003` ETH, Polygon `0.0001` ETH e Solana `0.00005` ETH.
+
+## Cenários reproduzíveis
+
+Abra os caminhos abaixo pela barra de endereço, na origem local ou publicada. A configuração é aplicada ao carregar a aplicação e permanece na aba durante a navegação.
+
+| Caminho                                | Como avaliar                                                                                                                                                          |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/?scenario=normal`                    | Desarma cenários especiais sem limpar os dados; não é necessário no primeiro acesso.                                                                                  |
+| `/?scenario=price-change`              | Adicione um NFT e abra carrinho/pagamento: após cinco segundos, seu preço aumenta 0.30 ETH, com aviso e atualização do resumo. Uma revisão anterior perde a validade. |
+| `/?scenario=stock-change`              | No mesmo ponto do fluxo, o NFT fica esgotado e o pagamento é bloqueado até ajustar o carrinho.                                                                        |
+| `/?scenario=duplicate-events`          | Altera o preço e repete o evento; o cliente evita reaplicar a atualização.                                                                                            |
+| `/?scenario=old-events`                | Altera o preço e depois entrega uma versão antiga; o preço atual é preservado.                                                                                        |
+| `/pagamento?scenario=disconnect-order` | Com itens e sessão, confirme a compra. A conexão é interrompida por 5,5 segundos, com toast; a reconexão recupera o pedido sem nova compra.                           |
+| `/pagamento?scenario=payment-declined` | A compra termina recusada, preservando os itens do carrinho.                                                                                                          |
+| `/pagamento?scenario=pending`          | Mantém o pedido pendente por aproximadamente um minuto; permite avaliar refresh e consulta de estado.                                                                 |
+| `/?scenario=reset`                     | Restaura as fixtures e limpa os dados/cenários locais do projeto, incluindo a sessão.                                                                                 |
+
+O cenário de mercado dispara uma vez por conta e cenário em cada carregamento. Use `nft=emerald-ape-042` como parâmetro adicional para escolher um NFT específico que esteja no carrinho. Para repetir com estado conhecido, use primeiro `/?scenario=reset`. O modo `normal` só desarma efeitos especiais; não desfaz compras nem alterações de preço anteriores.
+
+### Lentidão e falhas HTTP
+
+Se um cenário especial estiver ativo, abra `/?scenario=normal` antes. Navegue até a tela desejada e, no console do navegador, configure uma das chaves abaixo; depois atualize a página sem o parâmetro `scenario`:
+
+| Chave do localStorage                 | Valores disponíveis                                                                |
+| ------------------------------------- | ---------------------------------------------------------------------------------- |
+| `marketplace-nfts:catalogue-scenario` | `empty`, `slow`, `out-of-order`, `error`, `offline`, `timeout`                     |
+| `marketplace-nfts:cart-scenario`      | `slow`, `error`, `mutation-error`, `offline`                                       |
+| `marketplace-nfts:favorite-scenario`  | `slow`, `error`, `mutation-error`, `slow-mutation-error`, `offline`                |
+| `marketplace-nfts:wallet-scenario`    | `slow`, `error`, `mutation-error`, `offline`                                       |
+| `marketplace-nfts:payment-scenario`   | `wallet-refused`, `timeout-after-create`, `offline`, `payment-declined`, `pending` |
+
+Exemplo para observar o skeleton do catálogo:
+
+```js
+localStorage.setItem("marketplace-nfts:catalogue-scenario", "slow");
+location.reload();
+```
+
+`slow` usa dois segundos de latência; `error` retorna HTTP 503; `offline` gera erro de rede; `mutation-error` falha somente nas escritas. No catálogo, `out-of-order` faz buscas curtas demorarem mais que buscas longas. `timeout` demora 16 segundos, ultrapassando os 15 segundos do Axios.
+
+Para avaliar timeout depois de criar o pedido, já com itens no carrinho:
+
+```js
+localStorage.setItem(
+  "marketplace-nfts:payment-scenario",
+  "timeout-after-create",
+);
+location.assign("/pagamento");
+```
+
+Conecte, revise e confirme. Após o timeout, a tela recupera a tentativa existente. Para restaurar, remova a chave e tente novamente, ou use o reset completo. A expiração de sessão também pode ser observada removendo o cookie `authToken` e recarregando uma rota privada.
+
+## Testes e verificações
+
+Instale o Chromium utilizado pela versão do Playwright do projeto:
+
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
+
+| Comando                                    | Finalidade                                            |
+| ------------------------------------------ | ----------------------------------------------------- |
+| `npm run test:e2e -- --headed --workers=1` | Executa os casos com o navegador visível, um por vez. |
+| `npm run test:e2e -- --ui`                 | Abre a interface visual do Playwright.                |
+| `npx playwright show-report`               | Abre o relatório HTML da execução.                    |
+| `npm run typecheck`                        | Verifica os tipos TypeScript.                         |
+| `npm run lint`                             | Executa o lint.                                       |
+| `npm run format:check`                     | Verifica a formatação.                                |
+| `npm run format`                           | Aplica a formatação Prettier.                         |
+
+O Playwright inicia o Vite de testes na porta 4173. Relatórios ficam em `playwright-report`; traces e screenshots de falhas, em `test-results`. A cobertura atual, limitações e verificações ainda pendentes estão descritas em [ARCHITECTURE.md](./ARCHITECTURE.md#verificação-e-limitações-da-entrega).
+
+## Build e preview
+
+Mantenha `VITE_ENABLE_MOCKS=true` durante o build da demonstração:
 
 ```bash
 npm run build
-npm run typecheck
-npm run lint
-npm run preview -- --host 127.0.0.1
-npm run test:e2e
-npm run test:visual
-npm run audit:lighthouse
+npm run preview -- --host 127.0.0.1 --port 4173 --strictPort
 ```
 
-Copie `.env.example` para `.env.local` para ativar a API simulada e reinicie o Vite. Variáveis `VITE_` ficam públicas no navegador e não devem conter segredos.
+O preview fica em `http://127.0.0.1:4173`; use a porta livre de outro servidor de testes. Com o preview ativo e Chrome/Chromium disponível, `npm run audit:lighthouse` executa a auditoria básica local e grava `reports/lighthouse.html`. Configure `CHROME_PATH` se o navegador não for encontrado automaticamente. A configuração atual desse comando não gera, sozinha, todas as medições exigidas pelo enunciado.
 
-## Tema
+Na publicação, a hospedagem deve servir `dist`, disponibilizar `/mockServiceWorker.js` e redirecionar rotas da SPA para `index.html`, permitindo acesso direto e refresh. Os dados são separados por origem: o estado do localhost não é transferido ao deploy.
 
-A paleta está em `src/index.css`, com tokens CSS e utilitários Tailwind como `bg-primary`, `bg-primary-light`, `bg-surface-card`, `border-border-soft` e `text-success`. O tema escuro usa Ink como fundo principal; Background Elevated fica disponível como token independente. Primary, Primary Light e Primary Dark seguem os valores fornecidos; as demais cores foram amostradas do centro dos círculos da imagem de referência.
-
-Funções e componentes seguem o padrão arrow function.
-
-## Organização
-
-- `src/components`: componentes compartilhados entre páginas.
-- `src/pages/(inicio)/-components`: componentes exclusivos do Início. O prefixo `-` exclui esses arquivos do roteamento automático.
-- `src/features/<NomeDaFeature>/container`: lógica, hooks e composição de funcionalidades maiores.
-- `src/features/<NomeDaFeature>/components`: apresentação por props, sem regras de negócio.
-- `hooks`, `tests` e `utils`: pastas opcionais dentro de cada feature, conforme a necessidade.
-
-Cada feature possui container e components; componentes simples fora de features não exigem essa estrutura. Componentes usam PascalCase e arrow functions; evite arquivos muito grandes e divida responsabilidades quando necessário, sem limite rígido de linhas.
-
-Header e Hero usam Roboto Mono local e assets exportados da cópia do Figma. Os textos auxiliares do Hero seguem 14px conforme o arquivo de design. A largura máxima de 1264px inclui 64px de padding horizontal, preservando os 1200px de conteúdo do frame desktop junto à classe container.
-
-## Catálogo visual
-
-Os dados temporários do catálogo e dos filtros são arrays de objetos em `src/data/mocks/temporary/catalogue.ts` e `src/data/mocks/temporary/catalogue-filters.ts`. As imagens exportadas do Figma ficam em `public/mocks`.
-
-`src/components/NFTCard.tsx` é compartilhado: o mesmo padrão visual aparece no Início e nas recomendações de Detalhes e Carrinho. Ele recebe os dados por props. O fundo retangular das imagens foi preservado conforme as camadas do Figma.
-
-Os filtros, a composição do catálogo, toolbar, banner e paginação ficam em `src/pages/(inicio)/-components`, pois são exclusivos dessa página. No mobile, o painel abre em um Dialog shadcn/ui.
-
-A seção consulta a API MSW, combina filtros e mantém busca, ordenação e paginação na URL. Os cards recebem os dados retornados pelos serviços Axios. O controle de ordenação tem espaço adicional para evitar a sobreposição de texto e ícone presente no desenho.
-
-## Formatação e pre-commit
-
-Prettier utiliza ponto e vírgula, aspas duplas e finais de linha LF.
-
-- `npm run format`: formata todos os arquivos suportados do projeto.
-- `npm run format:check`: verifica a formatação de todos os arquivos suportados.
-
-O Husky configura os hooks por meio do script `prepare` durante a instalação. O pre-commit executa `npm run format:check` e bloqueia o commit se houver arquivos fora do padrão. Execute `npm run format`, revise e adicione as alterações desejadas ao Git antes de tentar novamente.
-
-Assets em public, dependências, artefatos de build, relatórios e a árvore de rotas gerada estão excluídos da formatação.
-
-## Cadastro com MSW
-
-Copie `.env.example` para `.env.local`, mantenha `VITE_ENABLE_MOCKS=true` e reinicie o Vite. Acesse `/cadastro`, preencha os dados e envie o formulário. O cadastro utiliza Axios e TanStack Query; o MSW valida e salva o usuário na base local da simulação.
-
-Tentar cadastrar novamente o mesmo e-mail retorna conflito 409 e uma mensagem no campo. Os cadastros permanecem após refresh. Há dois usuários iniciais: `luna@example.com` e `theo@example.com`, com senha fictícia `Colecionador123!`. Os hashes e salts estão em `src/data/mocks/fixtures/users.ts`; o estado fica em `src/data/mocks/database/users.ts`. Login consulta a mesma base e mantém sessão por cookie; logout encerra a sessão. Consulte `AUTH_INTEGRATION.md` para contratos e limitações.
-
-## Sessão e acesso à conta
-
-Entre com `luna@example.com` ou `theo@example.com` e senha fictícia `Colecionador123!`. O nome aparece no Header e a sessão continua após refresh. O botão Sair no perfil/carteiras encerra a sessão.
-
-Perfil, carteiras, favoritos, pagamento e confirmação exigem login. O destino é preservado para retorno após autenticação. A sessão dura 30 minutos; uma sessão inválida ou expirada recebe 401 na simulação. `resetUsers()` e `resetSessions()` restauram as respectivas bases para testes. Não há AuthProvider adicional: `useSession()` compartilha a query da sessão com o QueryClientProvider existente.
-
-## Catálogo e detalhes dos NFTs
-
-Catálogo e detalhe consultam a API simulada com Axios e TanStack Query. Busca, filtros, ordenação e paginação são mantidos na URL com TanStack Router. Veja [contratos, cache, cenários de falha e validação](./NFT_CATALOGUE.md).
-
-## Carrinho
-
-Detalhe e carrinho estão integrados à API simulada: adicionar, alterar quantidade, remover, persistir e unir os itens do visitante ao fazer login. Os carrinhos e os caches são separados por usuário. A remoção possui atualização otimista com rollback. Veja [contratos, estoque, cenários, reset e próximos passos](./CART_API.md).
-
-## Cotação e cupom
-
-O resumo do carrinho consulta subtotal, desconto, taxa estimada e total na API. Use `KURIO10` para aplicar 10% de desconto e `EXPIRADO` para exercitar erro de validade. A seleção persiste após refresh e os valores são recalculados ao alterar os itens. Veja [contratos, validade e cenários](./QUOTES_API.md). Pagamento e pedidos usam essa cotação antes de confirmar a compra.
-
-## Pagamento e pedidos
-
-Pagamento integrado ao carrinho, perfil, carteiras e cotação, com conexão simulada, revisão antes do envio, pedido idempotente e recuperação após timeout/refresh. Recibo apenas para pedido confirmado, com snapshot dos valores e baixa das quantidades compradas. Veja [fluxo, endpoints, cenários e limitações](./PAYMENT_FLOW.md).
-
-## Favoritos
-
-Favoritos exigem login e persistem por conta pela API MSW. Os corações do detalhe e dos cards compartilham o cache, com atualização otimista, rollback em falha e bloqueio de cliques repetidos. A lista está em `/favoritos`, acessível pelo menu da conta e pelo atalho mobile. Veja [contratos, cenários, reset e testes E2E](./FAVORITES_API.md).
-
-## Tempo real e cenários de demonstração
-
-Com `VITE_ENABLE_MOCKS=true`, abra `/?scenario=price-change`, adicione um NFT e entre no carrinho/pagamento: após cinco segundos, Socket.IO informa o novo preço e exige revisar a cotação novamente. `stock-change`, `duplicate-events`, `old-events`, `disconnect-order`, `payment-declined` e `pending` exercitam os outros cenários. `/?scenario=normal` desativa efeitos especiais em novas operações; `/?scenario=reset` restaura os dados locais do projeto e encerra a sessão.
-
-Os links funcionam tanto localmente quanto no build publicado. Consulte [REALTIME.md](./REALTIME.md) para passos completos, eventos, transporte, controles determinísticos e limitações. Não é necessário subir um servidor na porta 3000 ou 5174. `VITE_SOCKET_URL` só é usado quando os mocks estão desligados.
-
-Execute `npx playwright test realtime` para os testes desta integração ou `npm run test:e2e` para toda a cobertura existente. `npm run typecheck`, `npm run lint`, `npm run format:check` e `npm run build` verificam o código. `npm run preview -- --host 127.0.0.1` serve o build com os mocks incorporados, desde que a flag tenha sido ativada no build.
+Contratos REST/eventos, política de sessão, cache, estado do carrinho, decisões de UX e desvios do Figma estão centralizados em [ARCHITECTURE.md](./ARCHITECTURE.md).
