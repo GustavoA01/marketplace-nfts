@@ -1,6 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { isAxiosError } from "axios";
 import { Button } from "@/components/ui/Button";
+import { NotFoundPage } from "@/components/NotFoundPage";
 import { NFTRecommendations } from "@/components/NFTRecommendations";
 import { PurchaseBreadcrumb } from "@/components/PurchaseBreadcrumb";
 import { cartErrorMessage } from "@/lib/cart-query";
@@ -38,25 +39,27 @@ const Page = () => {
 
   if (isError || !nft) {
     const notFound = isAxiosError(error) && error.response?.status === 404;
+
+    if (notFound)
+      return (
+        <NotFoundPage
+          title="NFT não encontrado"
+          description="Este colecionável não existe ou não está mais disponível no catálogo."
+        />
+      );
+
     return (
       <div className="space-y-5 p-6" role="alert">
         <h1 className="text-2xl font-bold">
-          {notFound
-            ? "NFT não encontrado"
-            : "Não foi possível carregar este NFT"}
+          Não foi possível carregar este NFT
         </h1>
-        {!notFound && (
-          <Button
-            type="button"
-            onClick={() => void refetch()}
-            disabled={isFetching}
-          >
-            Tentar novamente
-          </Button>
-        )}
-        <Link to="/" hash="catalogo" className="block text-primary underline">
-          Voltar ao catálogo
-        </Link>
+        <Button
+          type="button"
+          onClick={() => void refetch()}
+          disabled={isFetching}
+        >
+          Tentar novamente
+        </Button>
       </div>
     );
   }

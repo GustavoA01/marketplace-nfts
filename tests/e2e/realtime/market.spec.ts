@@ -1,11 +1,11 @@
 import { expect, test } from "@playwright/test";
-import { loginAtNFT } from "./helpers/auth";
-import { seedCheckout } from "./helpers/checkout";
+import { loginAtNFT } from "../helpers/auth";
+import { seedCheckout } from "../helpers/checkout";
 import {
   captureEvents,
   controlRealtime,
   expectConnected,
-} from "./helpers/realtime";
+} from "../helpers/realtime";
 
 test("recebe atualização pelo cliente Socket.IO e mantém REST consistente", async ({
   page,

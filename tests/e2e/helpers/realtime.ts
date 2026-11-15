@@ -65,7 +65,7 @@ export const preparePayment = async (
     page.getByRole("button", { name: "Desconectar carteira", exact: true }),
   ).toBeVisible();
 
-  if (mobile)
+  if (mobile || (page.viewportSize()?.width ?? 1440) < 1024)
     await page
       .getByRole("button", { name: "Dados do colecionador e revisão" })
       .click();

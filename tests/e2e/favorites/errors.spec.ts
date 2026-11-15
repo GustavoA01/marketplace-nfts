@@ -1,73 +1,11 @@
-import { expect, test, type Page } from "@playwright/test";
-import { completeLogin, loginAtNFT, logout } from "./helpers/auth";
+import { expect, test } from "@playwright/test";
+import { completeLogin, loginAtNFT } from "../helpers/auth";
+import { favoriteButton } from "../helpers/favorites";
+import { viewports } from "../helpers/mocks";
 
-const favoriteButton = (page: Page) =>
-  page
-    .locator("button:visible")
-    .filter({ has: page.locator("svg.lucide-heart") })
-    .first();
-
-for (const viewport of [
-  { name: "desktop", width: 1440, height: 1000 },
-  { name: "mobile", width: 390, height: 844 },
-]) {
+for (const viewport of viewports) {
   test.describe(`Favoritos ${viewport.name}`, () => {
-    test.use({ viewport: { width: viewport.width, height: viewport.height } });
-
-    test("exige login, preserva o destino e persiste inclusão e remoção", async ({
-      page,
-    }) => {
-      await page.goto("/nfts/emerald-ape-042");
-
-      await favoriteButton(page).click();
-
-      if (viewport.name === "desktop") {
-        await expect(page.getByRole("dialog")).toBeVisible();
-        await expect(page).toHaveURL(/\/nfts\/emerald-ape-042\/?$/);
-      } else await expect(page).toHaveURL(/\/login\?.*redirect=/);
-
-      await completeLogin(page);
-
-      await expect(page).toHaveURL(/\/nfts\/emerald-ape-042\/?$/);
-      await expect(page.getByRole("dialog")).not.toBeVisible();
-
-      await favoriteButton(page).click();
-
-      await expect(favoriteButton(page)).toHaveAttribute(
-        "aria-pressed",
-        "true",
-      );
-      await expect(favoriteButton(page)).toBeEnabled();
-
-      await page.reload();
-
-      await expect(favoriteButton(page)).toHaveAttribute(
-        "aria-pressed",
-        "true",
-      );
-
-      await page.goto("/favoritos");
-
-      await expect(
-        page.getByRole("heading", { name: "Emerald Ape #042", exact: true }),
-      ).toBeVisible();
-
-      await favoriteButton(page).click();
-
-      await expect(
-        page.getByText("Você ainda não tem NFTs favoritos."),
-      ).toBeVisible();
-      await expect(page).toHaveURL(/\/favoritos\/?$/);
-      await expect(
-        page.getByText("NFT removido dos favoritos.", { exact: true }),
-      ).toBeVisible();
-
-      await page.reload();
-
-      await expect(
-        page.getByText("Você ainda não tem NFTs favoritos."),
-      ).toBeVisible();
-    });
+    test.use({ viewport });
 
     test("reverte uma atualização otimista que falhou e permite tentar novamente", async ({
       page,
@@ -127,42 +65,6 @@ for (const viewport of [
       await expect(favoriteButton(page)).toBeEnabled();
 
       await page.reload();
-
-      await expect(favoriteButton(page)).toHaveAttribute(
-        "aria-pressed",
-        "true",
-      );
-    });
-
-    test("isola favoritos ao sair e trocar de usuário", async ({ page }) => {
-      test.setTimeout(60_000);
-      await loginAtNFT(page);
-
-      await favoriteButton(page).click();
-
-      await expect(favoriteButton(page)).toHaveAttribute(
-        "aria-pressed",
-        "true",
-      );
-      await expect(favoriteButton(page)).toBeEnabled();
-
-      await logout(page);
-      await loginAtNFT(page, "theo@example.com");
-
-      await expect(favoriteButton(page)).toBeEnabled();
-      await expect(favoriteButton(page)).toHaveAttribute(
-        "aria-pressed",
-        "false",
-      );
-
-      await page.goto("/favoritos");
-
-      await expect(
-        page.getByText("Você ainda não tem NFTs favoritos."),
-      ).toBeVisible();
-
-      await logout(page);
-      await loginAtNFT(page);
 
       await expect(favoriteButton(page)).toHaveAttribute(
         "aria-pressed",

@@ -87,6 +87,7 @@ export const WalletFormFields = ({
         render={({ field, fieldState }) => (
           <FormField
             label="Rede"
+            htmlFor={`${idPrefix}-network`}
             required
             error={fieldState.error?.message}
             className="gap-1.5"
@@ -98,6 +99,10 @@ export const WalletFormFields = ({
               disabled={disabled}
             >
               <SelectTrigger
+                id={`${idPrefix}-network`}
+                aria-describedby={
+                  fieldState.error ? `${idPrefix}-network-error` : undefined
+                }
                 className="h-9 w-full rounded-[3px] border-border bg-transparent px-3 font-mono text-xs sm:h-10 sm:text-sm text-foreground data-placeholder:text-secondary dark:bg-transparent dark:hover:bg-transparent"
                 aria-invalid={Boolean(fieldState.error)}
               >
@@ -170,6 +175,7 @@ export const WalletFormFields = ({
         render={({ field, fieldState }) => (
           <FormField
             label="Tipo de carteira"
+            htmlFor={`${idPrefix}-walletType`}
             required
             error={fieldState.error?.message}
             className="gap-1.5"
@@ -181,6 +187,10 @@ export const WalletFormFields = ({
               disabled={disabled}
             >
               <SelectTrigger
+                id={`${idPrefix}-walletType`}
+                aria-describedby={
+                  fieldState.error ? `${idPrefix}-walletType-error` : undefined
+                }
                 className="h-9 w-full rounded-[3px] border-border bg-transparent px-3 font-mono text-xs sm:h-10 sm:text-sm text-foreground data-placeholder:text-secondary dark:bg-transparent dark:hover:bg-transparent"
                 aria-invalid={Boolean(fieldState.error)}
               >

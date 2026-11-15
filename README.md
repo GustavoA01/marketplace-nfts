@@ -112,17 +112,18 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-| Comando                                    | Finalidade                                            |
-| ------------------------------------------ | ----------------------------------------------------- |
-| `npm run test:e2e -- --headed --workers=1` | Executa os casos com o navegador visível, um por vez. |
-| `npm run test:e2e -- --ui`                 | Abre a interface visual do Playwright.                |
-| `npx playwright show-report`               | Abre o relatório HTML da execução.                    |
-| `npm run typecheck`                        | Verifica os tipos TypeScript.                         |
-| `npm run lint`                             | Executa o lint.                                       |
-| `npm run format:check`                     | Verifica a formatação.                                |
-| `npm run format`                           | Aplica a formatação Prettier.                         |
+| Comando                                    | Finalidade                                                                         |
+| ------------------------------------------ | ---------------------------------------------------------------------------------- |
+| `npm run test:e2e -- --headed --workers=1` | Executa os casos com o navegador visível, um por vez.                              |
+| `npm run test:e2e -- --ui`                 | Abre a interface visual do Playwright.                                             |
+| `npm run test:visual`                      | Compara início, detalhe, carrinho e pagamento com as oito referências versionadas. |
+| `npx playwright show-report`               | Abre o relatório HTML da execução.                                                 |
+| `npm run typecheck`                        | Verifica os tipos TypeScript.                                                      |
+| `npm run lint`                             | Executa o lint.                                                                    |
+| `npm run format:check`                     | Verifica a formatação.                                                             |
+| `npm run format`                           | Aplica a formatação Prettier.                                                      |
 
-O Playwright inicia o Vite de testes na porta 4173. Relatórios ficam em `playwright-report`; traces e screenshots de falhas, em `test-results`. A cobertura atual, limitações e verificações ainda pendentes estão descritas em [ARCHITECTURE.md](./ARCHITECTURE.md#verificação-e-limitações-da-entrega).
+O Playwright inicia o Vite de testes na porta 4173 com MSW ativado explicitamente no servidor de testes. Relatórios ficam em `playwright-report`; traces e screenshots de falhas, em `test-results`. Os testes estão agrupados por fluxo em `tests/e2e`; por exemplo, `npx playwright test realtime` executa tempo real e `npx playwright test cart` executa carrinho/cupons. A cobertura, limitações e verificações ainda pendentes estão descritas em [ARCHITECTURE.md](./ARCHITECTURE.md#verificação-e-limitações-da-entrega).
 
 ## Build e preview
 
@@ -138,3 +139,5 @@ O preview fica em `http://127.0.0.1:4173`; use a porta livre de outro servidor d
 Na publicação, a hospedagem deve servir `dist`, disponibilizar `/mockServiceWorker.js` e redirecionar rotas da SPA para `index.html`, permitindo acesso direto e refresh. Os dados são separados por origem: o estado do localhost não é transferido ao deploy.
 
 Contratos REST/eventos, política de sessão, cache, estado do carrinho, decisões de UX e desvios do Figma estão centralizados em [ARCHITECTURE.md](./ARCHITECTURE.md).
+
+As baselines visuais foram geradas em Chromium no Linux/WSL. Para atualizar referências após uma mudança de layout revisada, execute `npm run test:visual -- --update-snapshots` e versione os PNGs alterados.

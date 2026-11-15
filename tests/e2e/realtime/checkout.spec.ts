@@ -3,7 +3,7 @@ import {
   captureEvents,
   controlRealtime,
   preparePayment,
-} from "./helpers/realtime";
+} from "../helpers/realtime";
 
 for (const viewport of [
   { name: "desktop", width: 1440, height: 1000 },

@@ -75,7 +75,7 @@ O cookie `authToken` contém um identificador aleatório vinculado ao usuário n
 
 Login une o carrinho visitante ao da conta e substitui a sessão anterior do cookie. Logout invalida a sessão e remove o cookie. Troca de conta, logout e expiração cancelam queries e limpam dados em cache e mutations; a política conservadora também descarta caches públicos. Callbacks de escrita conferem a conta ativa antes de aplicar resultados. O socket libera listeners e encerra a assinatura anterior.
 
-Quando carrinho ou favoritos pedem autenticação, o desktop abre o modal de login e o mobile navega para `/login`, ambos com retorno ao destino. Em rota privada, sessão expirada redireciona para login preservando a navegação. O formulário de pagamento não persiste rascunho de campos ainda não enviados; só a tentativa de pedido (UUID + payload) usa sessionStorage.
+Quando carrinho ou favoritos pedem autenticação, o desktop abre o modal de login e o mobile navega para `/login`, ambos com retorno ao destino. Em rota privada, sessão expirada redireciona para login preservando a navegação. O formulário de pagamento mantém rascunho dos dados do colecionador em sessionStorage por conta, preservando o preenchimento durante a reautenticação. Conexão e revisão precisam ser refeitas; logout explícito e conclusão do pedido limpam o rascunho. A tentativa de compra mantém UUID e payload separadamente.
 
 Os modelos MSW persistem usuários, sessões, favoritos, carteiras, carrinhos, estoque/mercado e pedidos em chaves `marketplace-nfts:` do localStorage. Dados permanecem após refresh da mesma origem. Tentativas de compra e configuração de cenário ficam no sessionStorage; a chave adicional de cenário de pagamento fica no localStorage. Cotações ficam em memória, com validade de cinco minutos e limite de 100 registros, e são renovadas após refresh.
 
@@ -185,8 +185,12 @@ Os dados pertencem à origem do navegador e não são compartilhados entre dispo
 
 ## Verificação e limitações da entrega
 
-A suíte atual contém 30 casos Playwright em Chromium, com maior cobertura em favoritos, compatibilidade de carteiras, compra e tempo real. Há execução desktop/mobile nesses grupos e testes de confirmação/recusa, snapshot, eventos antigos/duplicados, reconexão, refresh, isolamento e expiração. Os contextos são isolados; testes sensíveis a tempo usam relógio e comandos MSW determinísticos. Relatório HTML, screenshot e trace são produzidos conforme a configuração de falhas.
+A suíte Playwright está organizada por fluxo em `tests/e2e`: `catalogue`, `auth`, `cart`, `checkout`, `account`, `favorites`, `feedback`, `realtime`, `accessibility` e `visual`. Os helpers compartilhados concentram preparação dos cenários via Axios/MSW. Os testes separam preparo, ações e verificações com linhas em branco.
 
-A cobertura ainda precisa ser ampliada para catálogo/histórico, operações completas do carrinho e cupons, formulários de cadastro/perfil/carteiras, timeout do envio e teclado/foco. A validação de formulários pelo navegador faz parte do E2E; não requer testes unitários. As baselines de regressão visual ainda não foram adicionadas, e a largura de 768 px não possui cobertura automatizada. O comando test:visual está reservado para essa etapa.
+A cobertura inclui busca/filtros/ordenação/paginação/histórico, acesso direto e 404, cadastro/login/expiração/troca de conta, favoritos com rollback, carrinho/cupons/persistência/união no login, compra completa em desktop/mobile, falha e timeout com idempotência, perfil/avatar/senha/carteiras, preço/estoque e eventos Socket.IO, reconexão/refresh, isolamento, teclado/foco, skeletons e recuperação de erros. Os contextos são isolados e os casos sensíveis a tempo usam relógio e disparos determinísticos pelos mocks.
+
+Há oito baselines PNG versionadas de início, detalhe, carrinho e pagamento em 1440 e 390 px. As imagens usam fixtures e data estáveis, fontes/imagens carregadas e animações desativadas na captura. As referências representam o layout atual da aplicação; a comparação visual não substitui a revisão de fidelidade ao Figma. Foram geradas em Chromium no Linux/WSL; outro sistema ou versão do navegador pode produzir diferenças de renderização.
+
+Relatório HTML fica em `playwright-report`; traces e screenshots de falhas, em `test-results`. Não há teste unitário como requisito adicional desta suíte; os formulários são exercitados pelo navegador e as respostas passam pela camada MSW.
 
 As auditorias Lighthouse completas, com três medições por página/perfil e respectivas medianas, e a URL pública de entrega ainda estão pendentes. A publicação deve manter os mocks no build e permitir acesso direto/refresh das rotas da SPA. Os comandos de setup e reprodução dos cenários estão no [README](./README.md).

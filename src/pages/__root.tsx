@@ -12,8 +12,31 @@ import {
 } from "@tanstack/react-router";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { NotFoundPage } from "@/components/NotFoundPage";
 import { Toaster } from "@/components/ui/Sonner";
 import { cn } from "@/lib/utils";
+
+const matchesPath = (pathname: string, prefixes: readonly string[]) =>
+  prefixes.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+
+const privatePaths = [
+  "/perfil",
+  "/carteiras",
+  "/favoritos",
+  "/pagamento",
+  "/confirmacao-pedido",
+] as const;
+
+const accountPaths = ["/perfil", "/carteiras", "/favoritos"] as const;
+const authPaths = ["/login", "/cadastro"] as const;
+const purchasePaths = [
+  "/nfts",
+  "/carrinho",
+  "/pagamento",
+  "/confirmacao-pedido",
+] as const;
 
 const RootLayout = () => {
   const location = useRouterState({ select: (state) => state.location });
@@ -23,10 +46,7 @@ const RootLayout = () => {
   const isLoggingOut =
     useIsMutating({ mutationKey: queryKeys.auth.logout }) > 0;
   const previousUserId = useRef<string | undefined>(undefined);
-  const isPrivate =
-    /^\/(perfil|carteiras|favoritos|pagamento|confirmacao-pedido)(\/|$)/.test(
-      pathname,
-    );
+  const isPrivate = matchesPath(pathname, privatePaths);
 
   useEffect(() => {
     if (user === undefined) return;
@@ -41,11 +61,11 @@ const RootLayout = () => {
       });
     }
   }, [user, isPrivate, isLoggingOut, location.href, navigate]);
+
   const isHome = pathname === "/";
-  const isAccount = /^\/(perfil|carteiras|favoritos)(\/|$)/.test(pathname);
-  const isAuth = /^\/(login|cadastro)(\/|$)/.test(pathname);
-  const isPurchase =
-    /^\/(nfts|carrinho|pagamento|confirmacao-pedido)(\/|$)/.test(pathname);
+  const isAccount = matchesPath(pathname, accountPaths);
+  const isAuth = matchesPath(pathname, authPaths);
+  const isPurchase = matchesPath(pathname, purchasePaths);
   const hideHeaderOnMobile = isHome || isPurchase || isAccount || isAuth;
 
   return (
@@ -78,5 +98,5 @@ const RootLayout = () => {
 
 export const Route = createRootRoute({
   component: RootLayout,
-  notFoundComponent: () => <h1>Página não encontrada</h1>,
+  notFoundComponent: () => <NotFoundPage />,
 });

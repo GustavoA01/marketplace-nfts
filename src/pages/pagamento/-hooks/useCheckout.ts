@@ -1,5 +1,10 @@
 import { getCartNetwork } from "@/lib/cart";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
+import {
+  clearCheckoutDraft,
+  readCheckoutDraft,
+  saveCheckoutDraft,
+} from "@/lib/checkout-draft";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -80,6 +85,8 @@ export const useCheckout = () => {
     ),
   });
 
+  const draft = useMemo(() => readCheckoutDraft(user?.id), [user?.id]);
+
   const form = useForm<CollectorValues>({
     resolver: zodResolver(collectorSchema),
     values: {
@@ -88,9 +95,18 @@ export const useCheckout = () => {
       profileName: profile.data?.username ?? user?.username ?? "",
       email: profile.data?.email ?? user?.email ?? "",
       note: "",
+      ...draft,
     },
     resetOptions: { keepDirtyValues: true },
   });
+
+  useEffect(() => {
+    if (!user?.id) return;
+    return form.subscribe({
+      formState: { values: true },
+      callback: ({ values }) => saveCheckoutDraft(user.id, values),
+    });
+  }, [form, user?.id]);
 
   const connectionMutation = useMutation({
     mutationFn: async ({
@@ -123,6 +139,7 @@ export const useCheckout = () => {
       submitOrder(attempt.key, attempt.payload),
     retry: false,
     onSuccess: (_order, { attempt, owner }) => {
+      clearCheckoutDraft(owner);
       if (isCartOwnerActive(client, owner))
         void navigate({
           to: "/confirmacao-pedido",

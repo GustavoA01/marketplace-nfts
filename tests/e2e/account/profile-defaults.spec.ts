@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { completeLogin } from "./helpers/auth";
+import { completeLogin } from "../helpers/auth";
 
 const prepareAccount = async (page: Page, legacy = false) => {
   await page.goto("/login?redirect=%2Fperfil");

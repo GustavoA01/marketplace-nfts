@@ -1,6 +1,7 @@
 import { useRealtimeStatus } from "@/features/Realtime/utils/status";
 import { ConnectionNotice } from "@/features/Realtime/components/ConnectionNotice";
 import { toast } from "sonner";
+import { clearCheckoutDraft } from "@/lib/checkout-draft";
 import { isAxiosError } from "axios";
 import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -58,6 +59,7 @@ const Page = () => {
 
   useEffect(() => {
     if (!user || !order || order.status === "pending") return;
+    clearCheckoutDraft(user.id);
     if (getOrderAttempt(user.id)?.key === order.attemptKey)
       clearOrderAttempt(user.id);
     void client.invalidateQueries({

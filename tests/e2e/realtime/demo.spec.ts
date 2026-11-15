@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { loginAtNFT } from "./helpers/auth";
+import { loginAtNFT } from "../helpers/auth";
 
 test.use({ viewport: { width: 1440, height: 1000 } });
 
