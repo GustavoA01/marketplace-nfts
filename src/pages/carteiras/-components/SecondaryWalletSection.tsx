@@ -19,6 +19,8 @@ type SecondaryWalletSectionProps = {
   errors: FieldErrors<WalletFormValues>;
   watch: UseFormWatch<WalletFormValues>;
   status: FormStatus;
+  submitLabel: string;
+  errorMessage?: string;
   onSubmit: FormEventHandler<HTMLFormElement>;
   onAddClick: () => void;
   onSameAsMainChange: (checked: boolean) => void;
@@ -35,6 +37,8 @@ export const SecondaryWalletSection = ({
   errors,
   watch,
   status,
+  submitLabel,
+  errorMessage,
   onSubmit,
   onAddClick,
   onSameAsMainChange,
@@ -44,11 +48,12 @@ export const SecondaryWalletSection = ({
 }: SecondaryWalletSectionProps) => {
   const isSubmitting = status === "submitting";
   const ensNameRegister = register("ensName");
+  const showAddButton = !hasSecondaryWallet && !isEditing;
 
   return (
     <section className="flex w-full flex-col gap-3 font-mono">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <h2 className="text-sm font-bold leading-4 text-foreground sm:text-[17px]">
+        <h2 className="text-sm leading-4 font-bold text-foreground sm:text-[17px]">
           Carteira secundária
         </h2>
         <div className="flex flex-wrap items-center gap-3 sm:gap-6">
@@ -67,13 +72,15 @@ export const SecondaryWalletSection = ({
               Igual à carteira principal
             </span>
           </label>
-          <button
-            type="button"
-            onClick={onAddClick}
-            className="text-sm font-medium leading-4 text-text-accent outline-none transition-colors hover:text-primary-light focus-visible:ring-2 focus-visible:ring-ring sm:text-base"
-          >
-            Adicionar
-          </button>
+          {showAddButton && (
+            <button
+              type="button"
+              onClick={onAddClick}
+              className="text-sm leading-4 font-medium text-text-accent outline-none transition-colors hover:text-primary-light focus-visible:ring-2 focus-visible:ring-ring sm:text-base"
+            >
+              Adicionar
+            </button>
+          )}
         </div>
       </div>
 
@@ -106,16 +113,19 @@ export const SecondaryWalletSection = ({
           <FormStatusMessage
             status={status}
             submittingMessage="Salvando carteira secundária..."
-            errorMessage="Não foi possível salvar a carteira secundária. Tente novamente."
+            errorMessage={
+              errorMessage ??
+              "Não foi possível salvar a carteira secundária. Tente novamente."
+            }
             successMessage="Carteira secundária salva."
           />
 
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="h-9 w-full rounded-full font-mono text-xs font-bold text-ink sm:h-10 sm:max-w-34 sm:rounded-[3px] sm:text-sm"
+            className="h-9 w-full rounded-full px-6 font-mono text-xs font-bold text-ink sm:h-10 sm:w-fit sm:min-w-44 sm:rounded-[3px] sm:text-sm"
           >
-            {isSubmitting ? "Salvando..." : "Salvar carteira"}
+            {isSubmitting ? "Salvando..." : submitLabel}
           </Button>
         </form>
       )}

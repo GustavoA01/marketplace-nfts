@@ -20,6 +20,7 @@ A Luna inicia com uma carteira principal nas fixtures. Contas novas e o Theo com
 - `src/data/mocks/fixtures/wallets.ts`: semente estática por usuário.
 - `src/data/mocks/database/wallets.ts`: leitura, criação, atualização, persistência e `resetWallets()`.
 - `src/data/mocks/handlers/wallets/`: GET, POST e PATCH com a mesma autenticação de perfil (`requestSessionId` + `getSessionUser`).
+- `src/data/mocks/scenarios/wallets.ts`: latência e falhas determinísticas.
 - `src/services/wallets/`: chamadas Axios.
 - `src/pages/carteiras/`: consulta, mutations, formulários e feedback de status.
 
@@ -54,7 +55,7 @@ Retorna `{ wallet: Wallet }`.
 
 ### `PATCH /api/wallets/:id`
 
-Recebe os campos do formulário (sem `kind` obrigatório na atualização). Não aceita `userId` no corpo.
+Recebe os campos do formulário. Não aceita `userId` no corpo.
 
 Retorna `{ wallet: Wallet }`.
 
@@ -84,12 +85,14 @@ Chave `marketplace-nfts:mock-wallets:v1` no `localStorage`. `resetWallets()` res
 
 ## Interface
 
-- Carrega carteiras do usuário autenticado e preenche os formulários.
-- **Salvar** cria (`POST`) ou atualiza (`PATCH`) conforme a carteira já exista.
-- **Adicionar** na secundária abre o formulário; na principal restaura os dados salvos ou o formulário vazio.
-- **Igual à carteira principal** copia os valores da principal para a secundária.
-- Exibe carregamento, erro com nova tentativa, envio e sucesso somente após confirmação da API.
-- Erros 422 são associados aos campos. Valores preenchidos permanecem se a API falhar.
+- Skeleton com shimmer no carregamento inicial.
+- **Salvar carteira** no cadastro e **Salvar alterações** na edição; cria (`POST`) ou atualiza (`PATCH`).
+- A principal não exibe “Adicionar”; o formulário já fica visível.
+- Na secundária, “Adicionar” aparece só quando ainda não há carteira e o formulário está fechado.
+- **Igual à carteira principal** sincroniza os campos com o formulário principal enquanto marcado, sem salvar sozinho. O envio usa os valores sincronizados mesmo com campos desabilitados.
+- Salvar um formulário não sobrescreve edições pendentes no outro; refetch também respeita `isDirty`.
+- Sucesso só após confirmação da API. Erros de campo e a mensagem geral da API são exibidos; valores preenchidos permanecem.
+- Mutations capturam o `ownerId` da sessão; respostas após logout ou troca de usuário não atualizam cache nem UI.
 
 ## Query keys
 
@@ -97,13 +100,38 @@ Chave `marketplace-nfts:mock-wallets:v1` no `localStorage`. `resetWallets()` res
 - `queryKeys.wallets.create`
 - `queryKeys.wallets.update`
 
-## Cenários verificados
+## Cenários de rede
 
-- Login como Luna: principal pré-preenchida; edição com `PATCH` e persistência após refresh.
-- Login como Theo ou conta nova: formulários vazios; cadastro com `POST` sem dados da Luna.
-- Isolamento: carteiras de um usuário não aparecem na sessão do outro.
-- Secundária: Adicionar, copiar da principal, salvar e recarregar.
-- 401 sem sessão; 422 com endereço/rede inválidos; 409 ao tentar criar segunda principal.
-- Sucesso visual apenas após resposta 2xx.
+Com `VITE_ENABLE_MOCKS=true`, use a chave abaixo no console e atualize `/carteiras`:
 
-Pendência: uso dessas carteiras no pagamento/checkout fica para outra etapa.
+```js
+localStorage.setItem("marketplace-nfts:wallet-scenario", "error");
+```
+
+| Valor            | Resultado                             |
+| ---------------- | ------------------------------------- |
+| Sem chave        | Sucesso com latência de 150 ms.       |
+| `slow`           | Resposta após 2 segundos.             |
+| `error`          | HTTP 503 em GET/POST/PATCH.           |
+| `mutation-error` | GET ok; POST/PATCH retornam HTTP 503. |
+| `offline`        | Falha de conexão simulada pelo MSW.   |
+
+A sessão é revalidada **depois** da latência e **antes** da operação. Para restaurar:
+
+```js
+localStorage.removeItem("marketplace-nfts:wallet-scenario");
+```
+
+`resetWallets()` restaura as fixtures de carteiras.
+
+## Como verificar
+
+1. Luna: editar principal, ver “Salvar alterações”, persistir com refresh.
+2. Theo/conta nova: cadastrar principal com “Salvar carteira”.
+3. Editar um formulário, salvar o outro e confirmar que as edições pendentes permanecem.
+4. Marcar “Igual à carteira principal”, alterar a principal e conferir a sincronização; salvar a secundária com campos desabilitados.
+5. Forçar 422/409 e conferir mensagem geral + erros de campo.
+6. Com `slow`, trocar de usuário ou sair antes da resposta e confirmar que o cache não é repovoado indevidamente.
+7. Ativar `error`/`offline`/`mutation-error` e usar “Tentar novamente”.
+
+Pendência: consumo dessas carteiras no pagamento/checkout fica com a etapa de pedidos.

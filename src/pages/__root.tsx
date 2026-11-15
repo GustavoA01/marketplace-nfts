@@ -23,7 +23,9 @@ const RootLayout = () => {
     useIsMutating({ mutationKey: queryKeys.auth.logout }) > 0;
   const previousUserId = useRef<string | undefined>(undefined);
   const isPrivate =
-    /^\/(perfil|carteiras|pagamento|confirmacao-pedido)(\/|$)/.test(pathname);
+    /^\/(perfil|carteiras|favoritos|pagamento|confirmacao-pedido)(\/|$)/.test(
+      pathname,
+    );
 
   useEffect(() => {
     if (user === undefined) return;
@@ -39,7 +41,7 @@ const RootLayout = () => {
     }
   }, [user, isPrivate, isLoggingOut, location.href, navigate]);
   const isHome = pathname === "/";
-  const isAccount = /^\/(perfil|carteiras)(\/|$)/.test(pathname);
+  const isAccount = /^\/(perfil|carteiras|favoritos)(\/|$)/.test(pathname);
   const isAuth = /^\/(login|cadastro)(\/|$)/.test(pathname);
   const isPurchase =
     /^\/(nfts|carrinho|pagamento|confirmacao-pedido)(\/|$)/.test(pathname);

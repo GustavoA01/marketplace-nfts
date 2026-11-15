@@ -12,7 +12,10 @@ import { loginUser } from "@/services/auth/login";
 import { safeReturnTo } from "../utils/navigation";
 import { setSessionUser } from "../utils/session";
 
-export const useLoginForm = () => {
+export const useLoginForm = (
+  redirectTo?: string,
+  onAuthenticated?: () => void,
+) => {
   const navigate = useNavigate();
   const location = useRouterState({ select: (state) => state.location });
   const formId = useId();
@@ -29,10 +32,11 @@ export const useLoginForm = () => {
     retry: false,
     onSuccess: async ({ user }) => {
       await setSessionUser(user);
+      onAuthenticated?.();
       toast.success("Login concluído com sucesso!");
-      const destination = safeReturnTo(
-        (location.search as Record<string, unknown>).redirect,
-      );
+      const destination =
+        safeReturnTo(redirectTo) ??
+        safeReturnTo((location.search as Record<string, unknown>).redirect);
       if (destination || /^\/(login|cadastro)(\/|$)/.test(location.pathname)) {
         const defaultDestination = window.matchMedia("(min-width: 1024px)")
           .matches

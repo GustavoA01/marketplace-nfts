@@ -10,13 +10,23 @@ const itemsSchema = z.array(itemSchema);
 const storeSchema = z.object({
   visitor: itemsSchema,
   users: z.record(z.string(), itemsSchema),
+  completedOrders: z.array(z.string()).default([]),
+  stockAdjustments: z.record(z.string(), z.number()).default({}),
+  editionAdjustments: z.record(z.string(), z.number()).default({}),
   coupons: z.record(z.string(), z.string().nullable()).default({}),
 });
 export type StoredCartItem = z.infer<typeof itemSchema>;
 export type CartStore = z.infer<typeof storeSchema>;
 const storageKey = "marketplace-nfts:mock-carts:v1";
 const legacyKey = "marketplace-nfts:mock-visitor-cart:v1";
-let memoryStore: CartStore = { visitor: [], users: {}, coupons: {} };
+let memoryStore: CartStore = {
+  visitor: [],
+  users: {},
+  coupons: {},
+  completedOrders: [],
+  stockAdjustments: {},
+  editionAdjustments: {},
+};
 
 export const readCartStore = (): CartStore => {
   if (typeof window === "undefined") return structuredClone(memoryStore);
@@ -27,6 +37,9 @@ export const readCartStore = (): CartStore => {
     visitor: legacy ? itemsSchema.parse(JSON.parse(legacy)) : [],
     users: {},
     coupons: {},
+    completedOrders: [],
+    stockAdjustments: {},
+    editionAdjustments: {},
   };
 };
 
@@ -49,7 +62,14 @@ export const setStoredCartItems = (
 };
 
 export const resetCarts = () =>
-  saveCartStore({ visitor: [], users: {}, coupons: {} });
+  saveCartStore({
+    visitor: [],
+    users: {},
+    coupons: {},
+    completedOrders: [],
+    stockAdjustments: {},
+    editionAdjustments: {},
+  });
 
 export const resetVisitorCart = () => {
   const store = readCartStore();

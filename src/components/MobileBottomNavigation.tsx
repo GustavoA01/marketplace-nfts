@@ -17,10 +17,10 @@ export const MobileBottomNavigation = () => {
       match: (path: string) => path === "/",
     },
     {
-      to: "/perfil",
+      to: "/favoritos",
       label: "Favoritos",
       Icon: Heart,
-      match: () => false,
+      match: (path: string) => path.startsWith("/favoritos"),
     },
     {
       to: "/",

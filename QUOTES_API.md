@@ -38,7 +38,7 @@ Carrinho vazio retorna 409 `EMPTY_CART`. Edição indisponível ou quantidade ac
 
 A cotação vale por cinco minutos. Os snapshots são independentes das fixtures: alterações posteriores no catálogo não modificam seus valores. `getQuoteForUser` só recupera uma cotação do mesmo proprietário e ainda válida. As últimas cotações ficam em memória do MSW, com remoção de expiradas e limite de 100 registros; após refresh a interface solicita uma nova cotação. Carrinho e cupom permanecem no localStorage.
 
-O pagamento futuro deverá comparar assinatura, validade e disponibilidade antes de aceitar uma cotação e exigir nova confirmação quando os valores mudarem. A criação idempotente de pedidos, pagamento e recibo continuam como próxima etapa.
+O pagamento futuro deverá comparar assinatura, validade e disponibilidade antes de aceitar uma cotação e exigir nova confirmação quando os valores mudarem. A criação idempotente de pedidos, pagamento e recibo estão descritos em [PAYMENT_FLOW.md](./PAYMENT_FLOW.md).
 
 ## Cache e erros na interface
 

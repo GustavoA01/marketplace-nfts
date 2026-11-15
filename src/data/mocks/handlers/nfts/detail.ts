@@ -1,6 +1,6 @@
 import { HttpResponse, type HttpResponseResolver } from "msw/http";
 import type { NFTDetail } from "@/data/types/catalogue";
-import { getEditionAvailability } from "../../database/inventory";
+import { getEditionAvailability, getNFTStock } from "../../database/inventory";
 import { nfts } from "../../fixtures/nfts";
 import { nftDetailFixtures } from "../../fixtures/nft-details";
 import { simulateCatalogueRequest } from "../../scenarios/catalogue";
@@ -20,6 +20,7 @@ export const nftDetailHandler: HttpResponseResolver = async ({
   const extra = nftDetailFixtures[nft.id];
   return HttpResponse.json<NFTDetail>({
     ...nft,
+    availableQuantity: getNFTStock(nft),
     editionAvailability: getEditionAvailability(nft),
     defaultEdition: nft.editions[0] ?? "",
     gallery: [

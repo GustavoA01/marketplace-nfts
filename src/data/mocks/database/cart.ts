@@ -8,7 +8,7 @@ import {
   storedCartItems,
   type StoredCartItem,
 } from "./cart-storage";
-import { getEditionStock } from "./inventory";
+import { getEditionStock, getNFTStock } from "./inventory";
 
 export type CartResult =
   | { cart: Cart; created?: boolean }
@@ -42,10 +42,7 @@ const stockError = (
   const others = items
     .filter((item) => item.nftId === nftId && item.id !== excludedId)
     .reduce((total, item) => total + item.quantity, 0);
-  const available = Math.max(
-    0,
-    Math.min(stock, nft.availableQuantity - others),
-  );
+  const available = Math.max(0, Math.min(stock, getNFTStock(nft) - others));
 
   if (quantity > available)
     return {

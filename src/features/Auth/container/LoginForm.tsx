@@ -4,9 +4,14 @@ import { FieldError } from "@/components/FieldError";
 import { PasswordField } from "@/components/PasswordField";
 import { useLoginForm } from "@/features/Auth/hooks/useLoginForm";
 
-export const LoginForm = () => {
+type LoginFormProps = {
+  redirectTo?: string;
+  onAuthenticated?: () => void;
+};
+
+export const LoginForm = ({ redirectTo, onAuthenticated }: LoginFormProps) => {
   const { formId, register, errors, isSubmitting, onSubmit, onForgotPassword } =
-    useLoginForm();
+    useLoginForm(redirectTo, onAuthenticated);
 
   return (
     <form className="flex w-full flex-col gap-3" onSubmit={onSubmit} noValidate>

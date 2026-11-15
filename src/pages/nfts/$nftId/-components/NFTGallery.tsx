@@ -1,7 +1,8 @@
+import { FavoriteButton } from "@/features/Favorites/container/FavoriteButton";
 import { useState } from "react";
 import type { NFTDetail } from "@/data/types/catalogue";
 import { Link } from "@tanstack/react-router";
-import { ChevronLeft, Heart, Search } from "lucide-react";
+import { ChevronLeft, Search } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import {
   Dialog,
@@ -10,9 +11,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/Dialog";
 
-type NFTGalleryProps = { gallery: NFTDetail["gallery"]; name: string };
+type NFTGalleryProps = {
+  nftId: string;
+  gallery: NFTDetail["gallery"];
+  name: string;
+};
 
-export const NFTGallery = ({ gallery, name }: NFTGalleryProps) => {
+export const NFTGallery = ({ nftId, gallery, name }: NFTGalleryProps) => {
   const [selected, setSelected] = useState(0);
   const { image, mobileImage, description } = gallery[selected] ?? gallery[0];
   return (
@@ -59,15 +64,10 @@ export const NFTGallery = ({ gallery, name }: NFTGalleryProps) => {
           <ChevronLeft className="size-5" />
           <span className="sr-only">Voltar ao catálogo</span>
         </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
+        <FavoriteButton
+          nftId={nftId}
           className="absolute top-5 right-5 rounded-full bg-surface-raised text-primary lg:hidden"
-        >
-          <Heart className="size-5" />
-          <span className="sr-only">Favoritar NFT</span>
-        </Button>
+        />
         <Dialog>
           <DialogTrigger
             render={

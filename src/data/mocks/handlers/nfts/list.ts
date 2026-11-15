@@ -1,3 +1,4 @@
+import { getNFTStock } from "../../database/inventory";
 import { HttpResponse, type HttpResponseResolver } from "msw/http";
 import { catalogueSearchSchema } from "@/data/schemas/catalogue";
 import type { CatalogueOption, NFTListResponse } from "@/data/types/catalogue";
@@ -81,7 +82,9 @@ export const listNFTsHandler: HttpResponseResolver = async ({ request }) => {
   });
   const page = search.page ?? 1;
   return HttpResponse.json<NFTListResponse>({
-    items: items.slice((page - 1) * pageSize, page * pageSize),
+    items: items
+      .slice((page - 1) * pageSize, page * pageSize)
+      .map((nft) => ({ ...nft, availableQuantity: getNFTStock(nft) })),
     total: items.length,
     page,
     pageSize,

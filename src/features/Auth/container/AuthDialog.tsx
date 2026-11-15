@@ -10,7 +10,15 @@ import { SocialAuthButtons } from "@/features/Auth/components/SocialAuthButtons"
 import { LoginForm } from "@/features/Auth/container/LoginForm";
 import { SignUpForm } from "@/features/Auth/container/SignUpForm";
 
-export const AuthDialog = () => {
+type AuthDialogProps = {
+  redirectTo?: string;
+  onAuthenticated?: () => void;
+};
+
+export const AuthDialog = ({
+  redirectTo,
+  onAuthenticated,
+}: AuthDialogProps) => {
   const [mode, setMode] = useState<AuthMode>("login");
   const isLogin = mode === "login";
 
@@ -35,7 +43,14 @@ export const AuthDialog = () => {
 
       <div className="flex flex-col pt-6">
         <div className="px-6 sm:px-20">
-          {isLogin ? <LoginForm /> : <SignUpForm />}
+          {isLogin ? (
+            <LoginForm
+              redirectTo={redirectTo}
+              onAuthenticated={onAuthenticated}
+            />
+          ) : (
+            <SignUpForm />
+          )}
         </div>
         <div className="pt-6">
           <SocialAuthButtons />

@@ -2,6 +2,18 @@ import type { QuoteNetwork } from "./types/quote";
 import type { CatalogueSearch } from "./types/catalogue";
 
 export const queryKeys = {
+  favorites: {
+    all: ["favorites"] as const,
+    list: (userId?: string) =>
+      ["favorites", "list", userId ?? "visitor"] as const,
+    change: (userId?: string) =>
+      ["favorites", "change", userId ?? "visitor"] as const,
+  },
+  orders: {
+    create: ["orders", "create"] as const,
+    attempt: (userId: string | undefined, key: string) =>
+      ["orders", userId, key] as const,
+  },
   quotes: {
     all: ["quotes"] as const,
     current: (

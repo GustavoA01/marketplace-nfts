@@ -7,7 +7,6 @@ export type NFTPreview = {
   previousPrice?: string;
   portrait?: boolean;
   rare?: boolean;
-  favorite?: "outline" | "filled";
 };
 
 export type NFT = NFTPreview & {

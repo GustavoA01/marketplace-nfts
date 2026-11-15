@@ -1,4 +1,4 @@
-const decimals = BigInt(10) ** BigInt(18);
+const decimals = BigInt(`1${"0".repeat(18)}`);
 
 export const ethToWei = (value: string): bigint => {
   if (!/^\d+(?:\.\d{1,18})?$/.test(value))

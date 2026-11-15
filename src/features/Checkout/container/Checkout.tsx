@@ -1,90 +1,214 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/Accordion";
+import { useSyncExternalStore, type ReactNode } from "react";
+import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/Button";
-import { NFTLineItem } from "@/components/NFTLineItem";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { PurchaseBreadcrumb } from "@/components/PurchaseBreadcrumb";
-import { OrderTotals } from "@/components/OrderTotals";
+import { cartErrorMessage } from "@/lib/cart-query";
+import { CheckoutDesktop } from "../components/CheckoutDesktop";
 import { CheckoutForm } from "../components/CheckoutForm";
-import { WalletOptions } from "../components/WalletOptions";
-import {
-  cartSummaryMock,
-  mobileCartSummaryMock,
-  checkoutItemsMock,
-  collectorWalletsMock,
-} from "@/data/mocks/temporary/purchase";
+import { CheckoutItems } from "../components/CheckoutItems";
+import { CheckoutMobile } from "../components/CheckoutMobile";
+import { CheckoutReview } from "../components/CheckoutReview";
+import { useCheckout } from "../hooks/useCheckout";
+
+const subscribeDesktop = (notify: () => void) => {
+  const media = window.matchMedia("(min-width: 1024px)");
+  media.addEventListener("change", notify);
+  return () => media.removeEventListener("change", notify);
+};
+
+const CheckoutShell = ({ children }: { children: ReactNode }) => (
+  <div className="mb-16 px-7 pt-8 lg:mb-24 lg:px-0 lg:pt-0">
+    <PurchaseBreadcrumb
+      title="Pagamento"
+      mobileTitle="Pagamento com carteira"
+      backTo="/carrinho"
+    />
+    {children}
+  </div>
+);
 
 export const Checkout = () => {
-  return (
-    <div className="mb-16 px-7 pt-8 lg:mb-24 lg:px-0 lg:pt-0">
-      <PurchaseBreadcrumb
-        title="Pagamento"
-        mobileTitle="Pagamento com carteira"
-        backTo="/carrinho"
-      />
-      <div className="hidden items-start gap-8 lg:flex">
-        <div className="min-w-0 flex-1">
-          <CheckoutForm />
+  const desktop = useSyncExternalStore(
+    subscribeDesktop,
+    () => window.matchMedia("(min-width: 1024px)").matches,
+    () => false,
+  );
+  const state = useCheckout();
+  const {
+    cart,
+    wallets,
+    profile,
+    quote,
+    form,
+    selected,
+    connected,
+    reviewed,
+    busy,
+  } = state;
+  const loading = cart.isPending || wallets.isPending || profile.isPending;
+  const error = cart.error ?? wallets.error ?? profile.error;
+
+  const walletProps = {
+    wallets: wallets.data ?? [],
+    selectedId: selected?.id,
+    connected,
+    disabled: busy,
+    connecting: state.connectionMutation.isPending,
+    onSelect: state.onSelect,
+    onConnect: state.onConnect,
+    onDisconnect: state.onDisconnect,
+  };
+
+  if (loading) {
+    return (
+      <CheckoutShell>
+        <div role="status" className="space-y-5">
+          <span className="sr-only">Carregando pagamento</span>
+          <Skeleton className="h-60 w-full" />
+          <Skeleton className="h-40 w-full" />
         </div>
-        <aside className="w-101.25 shrink-0 space-y-4">
-          <h2 className="text-[17px] leading-5 font-bold">Seus NFTs</h2>
-          <div className="flex justify-between border-b border-border pb-3 text-base leading-4">
-            <span className="font-bold">NFTs</span>
-            <span>Subtotal</span>
-          </div>
-          <div className="space-y-3">
-            {checkoutItemsMock.map((item) => (
-              <NFTLineItem key={item.id} item={item} />
-            ))}
-          </div>
-          <p className="text-center text-sm">
-            Tem um código promocional? Aplique aqui
-          </p>
-          <OrderTotals summary={cartSummaryMock} />
-          <WalletOptions wallets={collectorWalletsMock} />
+      </CheckoutShell>
+    );
+  }
+
+  if (error) {
+    return (
+      <CheckoutShell>
+        <div role="alert" className="space-y-4">
+          <p>{cartErrorMessage(error)}</p>
           <Button
-            type="button"
-            className="mt-2 h-[45px] w-full rounded-sm text-base font-bold"
+            onClick={() => {
+              void cart.refetch();
+              void wallets.refetch();
+              void profile.refetch();
+            }}
           >
-            Confirmar compra
+            Tentar novamente
           </Button>
-        </aside>
-      </div>
-      <div className="flex min-h-[calc(100svh-140px)] flex-col lg:hidden">
-        <WalletOptions wallets={collectorWalletsMock} mobile />
-        <p className="mt-5 text-right text-base font-bold">
-          Total:{" "}
-          <span className="ml-3 text-xl text-text-accent">
-            {mobileCartSummaryMock.total} ETH
-          </span>
+        </div>
+      </CheckoutShell>
+    );
+  }
+
+  if (!cart.data?.items.length) {
+    return (
+      <CheckoutShell>
+        <div className="space-y-4 py-8">
+          <p>Seu carrinho está vazio.</p>
+          <Link to="/" hash="catalogo" className="text-primary underline">
+            Explorar NFTs
+          </Link>
+        </div>
+      </CheckoutShell>
+    );
+  }
+
+  const collectorForm = (
+    <CheckoutForm
+      wallet={selected}
+      wallets={wallets.data ?? []}
+      onWalletChange={state.onSelect}
+      register={form.register}
+      errors={form.formState.errors}
+      disabled={busy}
+    />
+  );
+
+  const disableConfirm =
+    busy ||
+    !connected ||
+    !quote.data ||
+    reviewed !== quote.data.id ||
+    quote.isFetching ||
+    quote.isError ||
+    cart.isFetching ||
+    Boolean(state.pendingAttempt);
+
+  const items = <CheckoutItems items={cart.data.items} />;
+
+  const review = (
+    <CheckoutReview
+      quote={quote.data}
+      pending={quote.isPending}
+      error={quote.isError ? cartErrorMessage(quote.error) : undefined}
+      reviewed={Boolean(quote.data && reviewed === quote.data.id)}
+      disabled={busy || quote.isFetching}
+      hasWallet={Boolean(selected)}
+      onReview={(checked) =>
+        state.setReviewed(checked ? (quote.data?.id ?? "") : "")
+      }
+      onRetry={() => void quote.refetch()}
+    />
+  );
+
+  const submit = (
+    <>
+      {state.orderMutation.error && (
+        <p role="alert" className="text-sm text-error">
+          {cartErrorMessage(state.orderMutation.error)}
         </p>
-        <Accordion className="mt-8 mb-8">
-          <AccordionItem value="collector-review">
-            <AccordionTrigger className="py-5 text-sm font-normal text-text-secondary hover:no-underline">
-              Dados do colecionador e revisão
-            </AccordionTrigger>
-            <AccordionContent className="pt-2 pb-6">
-              <div className="space-y-6">
-                <CheckoutForm idPrefix="mobile-checkout" />
-                <div className="space-y-3">
-                  {checkoutItemsMock.map((item) => (
-                    <NFTLineItem key={item.id} item={item} />
-                  ))}
-                </div>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-        <Button
-          type="button"
-          className="mt-auto h-15 w-full shrink-0 rounded-full text-base font-bold"
+      )}
+      <Button
+        type="submit"
+        disabled={disableConfirm}
+        className="h-15 w-full shrink-0 rounded-full text-base font-bold lg:h-11.25 lg:rounded-lg lg:text-[15px]"
+      >
+        {busy ? "Enviando pedido..." : "Confirmar compra"}
+      </Button>
+    </>
+  );
+
+  return (
+    <CheckoutShell>
+      {state.pendingAttempt && (
+        <div
+          role="status"
+          className="my-6 space-y-3 rounded-lg border border-primary p-4"
         >
-          Confirmar compra
-        </Button>
-      </div>
-    </div>
+          <p>Existe uma tentativa de pagamento para consultar.</p>
+          <Button
+            nativeButton={false}
+            render={
+              <Link
+                to="/confirmacao-pedido"
+                search={{ attempt: state.pendingAttempt.key }}
+              />
+            }
+          >
+            Retomar pedido
+          </Button>
+        </div>
+      )}
+      <form
+        noValidate
+        onSubmit={state.onSubmit}
+        className="flex min-h-[calc(100svh-140px)] flex-col gap-4 lg:min-h-0 lg:flex-row lg:items-start lg:gap-8"
+      >
+        {desktop ? (
+          <CheckoutDesktop
+            collectorForm={collectorForm}
+            items={items}
+            review={review}
+            submit={submit}
+            walletProps={walletProps}
+          />
+        ) : (
+          <CheckoutMobile
+            wallets={wallets.data ?? []}
+            selectedId={selected?.id}
+            connected={connected}
+            busy={busy}
+            totalLabel={quote.data ? `${quote.data.summary.total} ETH` : "—"}
+            collectorForm={collectorForm}
+            items={items}
+            review={review}
+            submit={submit}
+            walletProps={walletProps}
+            onSelect={state.onSelect}
+          />
+        )}
+      </form>
+    </CheckoutShell>
   );
 };

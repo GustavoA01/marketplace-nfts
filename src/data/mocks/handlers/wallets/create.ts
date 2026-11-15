@@ -12,6 +12,7 @@ import type {
 } from "@/data/types/wallets";
 import { getSessionUser } from "../../database/sessions";
 import { createWallet } from "../../database/wallets";
+import { simulateWalletRequest } from "../../scenarios/wallets";
 import { requestSessionId, sessionCookie } from "../auth/utils";
 
 export const createWalletHandler: HttpResponseResolver<
@@ -20,6 +21,9 @@ export const createWalletHandler: HttpResponseResolver<
   WalletResponse | WalletApiError | AuthApiError
 > = async ({ request }) => {
   try {
+    const scenario = await simulateWalletRequest(request);
+    if (scenario instanceof Response) return scenario;
+
     const sessionUser = getSessionUser(requestSessionId(request));
     if (!sessionUser) {
       return HttpResponse.json<AuthApiError>(

@@ -9,6 +9,7 @@ import type {
 } from "@/data/types/wallets";
 import { getSessionUser } from "../../database/sessions";
 import { updateWallet } from "../../database/wallets";
+import { simulateWalletRequest } from "../../scenarios/wallets";
 import { requestSessionId, sessionCookie } from "../auth/utils";
 
 export const updateWalletHandler: HttpResponseResolver<
@@ -17,6 +18,9 @@ export const updateWalletHandler: HttpResponseResolver<
   WalletResponse | WalletApiError | AuthApiError
 > = async ({ params, request }) => {
   try {
+    const scenario = await simulateWalletRequest(request);
+    if (scenario instanceof Response) return scenario;
+
     const sessionUser = getSessionUser(requestSessionId(request));
     if (!sessionUser) {
       return HttpResponse.json<AuthApiError>(
@@ -66,7 +70,8 @@ export const updateWalletHandler: HttpResponseResolver<
       );
     }
 
-    const updated = updateWallet(sessionUser.id, params.id, result.data);
+    const walletId = Array.isArray(params.id) ? params.id[0] : params.id;
+    const updated = updateWallet(sessionUser.id, walletId, result.data);
     if (!updated) {
       return HttpResponse.json<WalletApiError>(
         { message: "Carteira não encontrada." },

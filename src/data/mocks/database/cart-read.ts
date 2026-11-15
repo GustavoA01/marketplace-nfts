@@ -3,7 +3,7 @@ import { summarizeCart } from "@/lib/cart";
 import { ethToWei, weiToEth } from "@/lib/eth";
 import { nfts } from "../fixtures/nfts";
 import type { StoredCartItem } from "./cart-storage";
-import { getEditionStock } from "./inventory";
+import { getEditionStock, getNFTStock } from "./inventory";
 
 export const buildCart = (
   stored: StoredCartItem[],
@@ -19,7 +19,7 @@ export const buildCart = (
       0,
       Math.min(
         getEditionStock(nft, item.edition),
-        nft.availableQuantity - otherQuantity,
+        getNFTStock(nft) - otherQuantity,
       ),
     );
     return {
@@ -30,7 +30,7 @@ export const buildCart = (
       network: nft.network,
       unitPrice: nft.price,
       lineTotal: weiToEth(ethToWei(nft.price) * BigInt(item.quantity)),
-      availableQuantity: nft.availableQuantity,
+      availableQuantity: getNFTStock(nft),
       maxQuantity,
       isAvailable: item.quantity <= maxQuantity,
     };

@@ -6,6 +6,7 @@ import type { Quote } from "@/data/types/quote";
 import { CouponField } from "./CouponField";
 
 type OrderSummaryProps = {
+  onCheckout: () => void;
   subtotal: string;
   couponCode: string | null;
   isBusy: boolean;
@@ -20,6 +21,7 @@ type OrderSummaryProps = {
 };
 
 export const OrderSummary = ({
+  onCheckout,
   subtotal,
   couponCode,
   isBusy,
@@ -90,14 +92,13 @@ export const OrderSummary = ({
       )}
       <Button
         type="button"
-        disabled
+        onClick={onCheckout}
+        disabled={isBusy || isQuoteFetching || Boolean(quoteError) || !quote}
         className="h-[60px] w-full rounded-full text-[15px] font-bold lg:h-10 lg:rounded-sm"
       >
         Conectar e finalizar
       </Button>
-      <p className="text-xs text-text-secondary">
-        Pagamento indisponível no momento.
-      </p>
+
       <Link
         to="/"
         hash="catalogo"

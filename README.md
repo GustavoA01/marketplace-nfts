@@ -28,6 +28,7 @@ O grupo `(inicio)` organiza a página inicial sem adicionar um segmento à URL.
 | cadastro           | /cadastro           | Cadastro               |
 | perfil             | /perfil             | Perfil do colecionador |
 | carteiras          | /carteiras          | Carteiras              |
+| favoritos          | /favoritos          | Favoritos              |
 
 ## Stack e preparação
 
@@ -42,7 +43,7 @@ O grupo `(inicio)` organiza a página inicial sem adicionar um segmento à URL.
 - Lighthouse instalado para auditorias locais. Com o preview rodando, executar `npm run audit:lighthouse`. Requer Chrome/Chromium instalado; definir `CHROME_PATH` se necessário.
 
 O cadastro utiliza Axios, TanStack Query e MSW, com persistência local dos usuários simulados. Login e sessão por cookie também estão integrados. Compras, recursos privados de perfil/carteiras e Socket.IO ainda precisam ser concluídos.
-Ainda não há testes E2E permanentes nem baselines visuais.
+Há testes E2E permanentes de favoritos para desktop e mobile. A cobertura dos demais fluxos e as baselines visuais continuam pendentes.
 
 ## Comandos
 
@@ -106,7 +107,7 @@ Tentar cadastrar novamente o mesmo e-mail retorna conflito 409 e uma mensagem no
 
 Entre com `luna@example.com` ou `theo@example.com` e senha fictícia `Colecionador123!`. O nome aparece no Header e a sessão continua após refresh. O botão Sair no perfil/carteiras encerra a sessão.
 
-Perfil, carteiras, pagamento e confirmação exigem login. O destino é preservado para retorno após autenticação. A sessão dura 30 minutos; uma sessão inválida ou expirada recebe 401 na simulação. `resetUsers()` e `resetSessions()` restauram as respectivas bases para testes. Não há AuthProvider adicional: `useSession()` compartilha a query da sessão com o QueryClientProvider existente.
+Perfil, carteiras, favoritos, pagamento e confirmação exigem login. O destino é preservado para retorno após autenticação. A sessão dura 30 minutos; uma sessão inválida ou expirada recebe 401 na simulação. `resetUsers()` e `resetSessions()` restauram as respectivas bases para testes. Não há AuthProvider adicional: `useSession()` compartilha a query da sessão com o QueryClientProvider existente.
 
 ## Catálogo e detalhes dos NFTs
 
@@ -119,3 +120,11 @@ Detalhe e carrinho estão integrados à API simulada: adicionar, alterar quantid
 ## Cotação e cupom
 
 O resumo do carrinho consulta subtotal, desconto, taxa estimada e total na API. Use `KURIO10` para aplicar 10% de desconto e `EXPIRADO` para exercitar erro de validade. A seleção persiste após refresh e os valores são recalculados ao alterar os itens. Veja [contratos, validade e cenários](./QUOTES_API.md). Pagamento e pedidos ainda precisam ser integrados.
+
+## Pagamento e pedidos
+
+Pagamento integrado ao carrinho, perfil, carteiras e cotação, com conexão simulada, revisão antes do envio, pedido idempotente e recuperação após timeout/refresh. Recibo apenas para pedido confirmado, com snapshot dos valores e baixa das quantidades compradas. Veja [fluxo, endpoints, cenários e limitações](./PAYMENT_FLOW.md).
+
+## Favoritos
+
+Favoritos exigem login e persistem por conta pela API MSW. Os corações do detalhe e dos cards compartilham o cache, com atualização otimista, rollback em falha e bloqueio de cliques repetidos. A lista está em `/favoritos`, acessível pelo menu da conta e pelo atalho mobile. Veja [contratos, cenários, reset e testes E2E](./FAVORITES_API.md).

@@ -90,7 +90,7 @@ As falhas retornam `{ code, message, errors? }`: 400 para JSON inválido, 422 pa
 
 Cupom, desconto, taxa estimada e total estão integrados. Veja [os contratos e cenários de cotação](./QUOTES_API.md). O cálculo utiliza a API e rejeita uma assinatura de carrinho desatualizada.
 
-Pagamento, criação de pedidos, confirmação, Socket.IO e a suíte Playwright permanente continuam como próximas etapas. Finalizar a compra permanece desabilitado até a integração do pagamento.
+Pagamento e pedidos estão integrados ao fluxo descrito em PAYMENT_FLOW.md. Socket.IO e a suíte Playwright permanente continuam pendentes. O botão de finalizar abre o pagamento quando há cotação disponível. Veja [o fluxo de pagamento e pedidos](./PAYMENT_FLOW.md).
 
 ## Verificações executadas
 

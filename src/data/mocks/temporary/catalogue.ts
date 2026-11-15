@@ -7,7 +7,6 @@ export const catalogueMocks: NFTPreview[] = [
     image: "/mocks/EmeraldApe.png",
     imageDescription: "Macaco com óculos e jaqueta verde",
     price: "1.19",
-    favorite: "outline",
   },
   {
     id: "sage-nomad-009",
@@ -15,7 +14,6 @@ export const catalogueMocks: NFTPreview[] = [
     image: "/mocks/SageNomad.png",
     imageDescription: "Macaco com chapéu verde e moletom roxo",
     price: "1.69",
-    favorite: "filled",
   },
   {
     id: "neon-vessel-552",

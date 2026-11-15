@@ -1,88 +1,122 @@
-import { MoreVertical, Wallet } from "lucide-react";
+import type { Wallet } from "@/data/types/wallets";
+import { Link } from "@tanstack/react-router";
+import { Wallet as WalletIcon } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import type { CollectorWalletPreview } from "@/data/types/purchase";
-
-type WalletOptionsProps = {
-  wallets: CollectorWalletPreview[];
-  mobile?: boolean;
+import { cn } from "@/lib/utils";
+const providers = [
+  { value: "walletconnect", label: "WalletConnect", mark: "W" },
+  { value: "metamask", label: "MetaMask", mark: "M" },
+  { value: "coinbase", label: "Coinbase Wallet", mark: "" },
+];
+type Props = {
+  wallets: Wallet[];
+  selectedId?: string;
+  connected: boolean;
+  disabled: boolean;
+  connecting: boolean;
+  onSelect: (id: string) => void;
+  onConnect: () => void;
+  onDisconnect: () => void;
 };
-
 export const WalletOptions = ({
   wallets,
-  mobile = false,
-}: WalletOptionsProps) => {
+  selectedId,
+  connected,
+  disabled,
+  connecting,
+  onSelect,
+  onConnect,
+  onDisconnect,
+}: Props) => {
+  const selected = wallets.find((entry) => entry.id === selectedId);
   return (
-    <section>
-      {mobile && (
-        <>
-          <div className="mb-4 flex items-center justify-between gap-3 text-base leading-5 font-bold">
-            <h2>Carteira conectada</h2>
-            <Button type="button" variant="link" className="h-auto p-0 text-sm">
-              Trocar carteira
-            </Button>
-          </div>
-          <div className="mb-4 space-y-5">
-            {wallets.map((wallet) => (
-              <Label
-                key={wallet.id}
-                htmlFor={`saved-${wallet.id}`}
-                className="flex items-center gap-4 rounded-2xl bg-surface-card p-5"
-              >
-                <Input
-                  id={`saved-${wallet.id}`}
-                  name="saved-wallet"
-                  type="radio"
-                  value={wallet.id}
-                  defaultChecked={wallet.selected}
-                  className="size-4 shrink-0 accent-primary"
-                />
-                <span className="min-w-0 flex-1">
-                  <span className="block text-base font-bold">
-                    {wallet.name}
-                  </span>
-                  <span className="mt-1 block break-all text-sm leading-[22px] font-normal text-text-secondary">
-                    {wallet.address}
-                    <br />
-                    {wallet.network}
-                  </span>
-                </span>
-                <MoreVertical className="size-5 shrink-0 text-secondary" />
-              </Label>
-            ))}
-          </div>
-        </>
-      )}
-      <h2 className="mb-4 text-base leading-5 font-bold lg:text-center">
+    <section className="space-y-4 lg:space-y-5">
+      <h2 className="text-base leading-4 font-bold lg:text-center lg:text-[17px]">
         Carteira e rede
       </h2>
+      {!wallets.length && (
+        <p className="text-sm text-text-secondary">
+          Cadastre uma carteira para continuar.{" "}
+          <Link to="/carteiras" className="text-primary underline">
+            Gerenciar carteiras
+          </Link>
+        </p>
+      )}
       <div className="space-y-4">
-        {[
-          { id: "walletconnect", name: "WalletConnect", symbol: "W" },
-          { id: "metamask", name: "MetaMask", symbol: "M" },
-          { id: "coinbase", name: "Coinbase Wallet", symbol: "" },
-        ].map((option) => (
-          <Label
-            key={option.id}
-            htmlFor={`${mobile ? "mobile" : "desktop"}-provider-${option.id}`}
-            className="flex min-h-[65px] items-center gap-3 rounded-2xl bg-surface-card p-4 text-sm font-normal lg:min-h-[45px] lg:flex-row-reverse lg:rounded-sm lg:border lg:border-border has-checked:border-primary lg:bg-transparent lg:p-3"
-          >
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-border bg-surface-raised font-bold text-primary lg:hidden">
-              {option.symbol || <Wallet className="size-5" />}
-            </span>
-            <span className="min-w-0 flex-1">{option.name}</span>
-            <Input
-              id={`${mobile ? "mobile" : "desktop"}-provider-${option.id}`}
-              type="radio"
-              name={`${mobile ? "mobile" : "desktop"}-provider`}
-              value={option.id}
-              defaultChecked={option.id === "coinbase"}
-              className="size-4 shrink-0 accent-primary"
-            />
-          </Label>
-        ))}
+        {providers.map((provider) => {
+          const match =
+            wallets.find(
+              (entry) =>
+                entry.walletType === provider.value &&
+                entry.network === selected?.network,
+            ) ?? wallets.find((entry) => entry.walletType === provider.value);
+          return (
+            <Label
+              key={provider.value}
+              htmlFor={`checkout-provider-${provider.value}`}
+              className={cn(
+                "flex min-h-16.25 items-center gap-3 rounded-3xl bg-surface-card px-3.5 py-3 text-sm font-normal lg:min-h-11.25 lg:rounded-[3px] lg:border lg:border-border lg:bg-transparent lg:px-3 lg:py-2",
+                selected?.walletType === provider.value && "lg:border-primary",
+                !match && "opacity-50",
+              )}
+              title={
+                !match
+                  ? "Cadastre uma carteira deste tipo para selecionar."
+                  : undefined
+              }
+            >
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-border bg-surface-raised text-primary lg:hidden">
+                {provider.mark || <WalletIcon className="size-6" />}
+              </span>
+              <span className="flex-1 lg:order-2">
+                {provider.value === "walletconnect" ? (
+                  <>
+                    <span className="lg:hidden">{provider.label}</span>
+                    <span className="hidden rounded-md border border-border-soft bg-surface-dark px-2 py-1 text-[9px] font-bold text-text-accent lg:inline">
+                      METAMASK · WALLETCONNECT · COINBASE
+                    </span>
+                  </>
+                ) : (
+                  provider.label
+                )}
+              </span>
+              <Input
+                id={`checkout-provider-${provider.value}`}
+                type="radio"
+                name="checkout-provider"
+                checked={selected?.walletType === provider.value}
+                disabled={disabled || !match}
+                onChange={() => {
+                  if (match) onSelect(match.id);
+                }}
+                className="size-4 shrink-0 accent-primary lg:order-1"
+              />
+            </Label>
+          );
+        })}
       </div>
+      {selectedId && (
+        <Button
+          type="button"
+          variant="outline"
+          disabled={disabled || connecting}
+          onClick={connected ? onDisconnect : onConnect}
+          className="h-10 w-full rounded-sm text-sm"
+        >
+          {connecting
+            ? "Aguarde..."
+            : connected
+              ? "Desconectar carteira"
+              : "Conectar carteira"}
+        </Button>
+      )}
+      <p role="status" className="text-xs text-text-secondary">
+        {connected
+          ? "Carteira conectada."
+          : "Conecte a carteira selecionada para confirmar."}
+      </p>
     </section>
   );
 };

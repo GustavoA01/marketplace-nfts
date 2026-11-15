@@ -1,4 +1,5 @@
-import { Heart, Mail, ShoppingCart, Star } from "lucide-react";
+import { FavoriteButton } from "@/features/Favorites/container/FavoriteButton";
+import { Mail, ShoppingCart, Star } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { QuantitySelector } from "@/components/QuantitySelector";
 import type { NFTDetail } from "@/data/types/catalogue";
@@ -117,14 +118,11 @@ export const NFTInformation = ({
           >
             {isAdding ? "Adicionando..." : "COMPRAR"}
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="h-10 w-[130px] rounded-md border-primary text-sm text-text-accent"
-          >
-            <Heart className="size-5" />
-            Favoritar
-          </Button>
+          <FavoriteButton
+            nftId={nft.id}
+            showLabel
+            className="h-10 min-w-[130px] rounded-md border-primary text-sm text-text-accent"
+          />
         </div>
       </div>
       <p role="status" className="text-sm text-text-secondary">

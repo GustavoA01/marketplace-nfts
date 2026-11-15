@@ -25,16 +25,18 @@ const primaryLinks = [
     icon: MapPin,
     key: "wallets" as const,
   },
+  {
+    label: "Lista de interesse",
+    to: "/favoritos",
+    icon: Heart,
+    key: "favorites" as const,
+  },
 ] as const;
 
 const secondaryLinks = [
   {
     label: "Atividade",
     icon: ShoppingBag,
-  },
-  {
-    label: "Lista de interesse",
-    icon: Heart,
   },
   {
     label: "Ofertas",
@@ -51,7 +53,7 @@ const secondaryLinks = [
 ] as const;
 
 type AccountSidebarProps = {
-  active: "profile" | "wallets";
+  active: "profile" | "wallets" | "favorites";
 };
 
 export const AccountSidebar = ({ active }: AccountSidebarProps) => {

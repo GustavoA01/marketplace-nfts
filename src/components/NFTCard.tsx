@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Heart } from "lucide-react";
+import { FavoriteButton } from "@/features/Favorites/container/FavoriteButton";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 import type { NFTPreview } from "@/data/types/nft";
@@ -7,6 +7,7 @@ import type { NFTPreview } from "@/data/types/nft";
 type NFTCardProps = {
   nft: NFTPreview;
   compact?: boolean;
+  showFavorite?: boolean;
   artworkClassName?: string;
   detailsClassName?: string;
 };
@@ -14,86 +15,89 @@ type NFTCardProps = {
 export const NFTCard = ({
   nft,
   compact = false,
+  showFavorite = false,
   artworkClassName,
   detailsClassName,
 }: NFTCardProps) => {
   return (
-    <Link
-      to="/nfts/$nftId"
-      params={{ nftId: nft.id }}
-      className="block min-w-0 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
-    >
-      <Card className="gap-2 overflow-visible rounded-none bg-transparent p-0 ring-0 lg:gap-3">
-        <div
-          className={cn(
-            "relative flex h-50 justify-center overflow-hidden rounded-[20px] bg-linear-to-br from-surface-card to-surface-raised px-1 pt-3 lg:h-75 lg:rounded-none lg:bg-surface-card lg:bg-none lg:pt-6",
-            nft.portrait && "lg:pl-5 lg:pr-3 lg:pt-1.5",
-            compact && "lg:h-[255px] lg:pt-5",
-            compact && nft.portrait && "lg:pt-1",
-            artworkClassName,
-          )}
-        >
-          <img
-            src={nft.image}
-            alt={nft.imageDescription}
-            width={nft.portrait ? 224 : 250}
-            height={nft.portrait ? 286 : 250}
-            loading="lazy"
-            className={cn(
-              "aspect-square h-fit w-full rounded-2xl object-cover lg:max-w-62.5 lg:rounded-[15px]",
-              nft.portrait && "lg:h-71.5 lg:max-w-56 lg:rounded-[13px]",
-              compact && "lg:max-w-[212px]",
-              compact && nft.portrait && "lg:h-[243px] lg:max-w-[190px]",
-            )}
-          />
-          {nft.favorite && (
-            <Heart
-              className="absolute top-3 right-2 size-5 text-primary lg:hidden"
-              strokeWidth={1.6}
-              fill={nft.favorite === "filled" ? "currentColor" : "none"}
-            />
-          )}
-          {nft.rare && (
-            <span className="absolute top-4 left-0 bg-primary px-2 py-2 text-[13px] leading-4 text-ink lg:hidden">
-              RARO
-            </span>
-          )}
-        </div>
-
-        {nft.name && (
+    <div className="relative min-w-0">
+      <Link
+        to="/nfts/$nftId"
+        params={{ nftId: nft.id }}
+        className="block min-w-0 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        <Card className="gap-2 overflow-visible rounded-none bg-transparent p-0 ring-0 lg:gap-3">
           <div
             className={cn(
-              "flex flex-col gap-1.5 px-2 lg:px-0",
-              compact && "lg:gap-0",
-              detailsClassName,
+              "relative flex h-50 justify-center overflow-hidden rounded-[20px] bg-linear-to-br from-surface-card to-surface-raised px-1 pt-3 lg:h-75 lg:rounded-none lg:bg-surface-card lg:bg-none lg:pt-6",
+              nft.portrait && "lg:pl-5 lg:pr-3 lg:pt-1.5",
+              compact && "lg:h-[255px] lg:pt-5",
+              compact && nft.portrait && "lg:pt-1",
+              artworkClassName,
             )}
           >
-            <h3
+            <img
+              src={nft.image}
+              alt={nft.imageDescription}
+              width={nft.portrait ? 224 : 250}
+              height={nft.portrait ? 286 : 250}
+              loading="lazy"
               className={cn(
-                "text-[15px] leading-5 font-normal lg:text-base lg:leading-4",
-                compact && "lg:text-[15px] lg:leading-5",
+                "aspect-square h-fit w-full rounded-2xl object-cover lg:max-w-62.5 lg:rounded-[15px]",
+                nft.portrait && "lg:h-71.5 lg:max-w-56 lg:rounded-[13px]",
+                compact && "lg:max-w-[212px]",
+                compact && nft.portrait && "lg:h-[243px] lg:max-w-[190px]",
               )}
-            >
-              {nft.name}
-            </h3>
-            {nft.price && (
-              <p
-                className={cn(
-                  "flex flex-wrap items-center gap-x-3 gap-y-1 text-base leading-4 font-bold text-text-accent lg:text-lg",
-                  compact && "lg:text-base",
-                )}
-              >
-                <span>{nft.price} ETH</span>
-                {nft.previousPrice && (
-                  <span className="font-normal text-secondary">
-                    {nft.previousPrice} ETH
-                  </span>
-                )}
-              </p>
+            />
+            {nft.rare && (
+              <span className="absolute top-4 left-0 bg-primary px-2 py-2 text-[13px] leading-4 text-ink lg:hidden">
+                RARO
+              </span>
             )}
           </div>
+
+          {nft.name && (
+            <div
+              className={cn(
+                "flex flex-col gap-1.5 px-2 lg:px-0",
+                compact && "lg:gap-0",
+                detailsClassName,
+              )}
+            >
+              <h3
+                className={cn(
+                  "text-[15px] leading-5 font-normal lg:text-base lg:leading-4",
+                  compact && "lg:text-[15px] lg:leading-5",
+                )}
+              >
+                {nft.name}
+              </h3>
+              {nft.price && (
+                <p
+                  className={cn(
+                    "flex flex-wrap items-center gap-x-3 gap-y-1 text-base leading-4 font-bold text-text-accent lg:text-lg",
+                    compact && "lg:text-base",
+                  )}
+                >
+                  <span>{nft.price} ETH</span>
+                  {nft.previousPrice && (
+                    <span className="font-normal text-secondary">
+                      {nft.previousPrice} ETH
+                    </span>
+                  )}
+                </p>
+              )}
+            </div>
+          )}
+        </Card>
+      </Link>
+      <FavoriteButton
+        nftId={nft.id}
+        className={cn(
+          "absolute top-3 right-2 rounded-full bg-surface-raised text-primary",
+          !showFavorite && "lg:hidden",
         )}
-      </Card>
-    </Link>
+      />
+    </div>
   );
 };

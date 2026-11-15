@@ -1,144 +1,261 @@
+import { useState } from "react";
+import type { Wallet } from "@/data/types/wallets";
+import type { FieldErrors, UseFormRegister } from "react-hook-form";
+import type { CollectorValues } from "@/data/schemas/orders";
+import { networkOptions, walletTypeOptions } from "@/data/schemas/wallets";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
+import { FieldError } from "@/components/FieldError";
 import { Textarea } from "@/components/ui/Textarea";
-import { CheckoutField } from "./CheckoutField";
-import { CheckoutSelect } from "./CheckoutSelect";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/Select";
+import { SavedWallets } from "./SavedWallets";
 
-const fieldClassName =
-  "h-10 rounded-sm border-border bg-transparent px-3 text-sm placeholder:text-secondary dark:bg-transparent";
+type CheckoutFormProps = {
+  wallet?: Wallet;
+  wallets: Wallet[];
+  onWalletChange: (id: string) => void;
+  register: UseFormRegister<CollectorValues>;
+  errors: FieldErrors<CollectorValues>;
+  disabled: boolean;
+};
+
+const inputClass =
+  "h-10 data-[size=default]:h-10 rounded-[3px] border-border bg-transparent px-3 text-sm shadow-none placeholder:text-secondary dark:bg-transparent";
 
 export const CheckoutForm = ({
-  idPrefix = "checkout",
-}: {
-  idPrefix?: string;
-}) => {
+  wallet,
+  wallets,
+  onWalletChange,
+  register,
+  errors,
+  disabled,
+}: CheckoutFormProps) => {
+  const [showWallets, setShowWallets] = useState(false);
+  const collector = (
+    field: "displayName" | "username" | "profileName" | "email",
+    label: string,
+  ) => (
+    <div className="min-w-0">
+      <Label
+        htmlFor={`checkout-${field}`}
+        className="flex min-h-7.25 items-center text-[15px] font-normal"
+      >
+        {label}
+        <span className="text-[22px] leading-[29px] text-[#F0805F]">*</span>
+      </Label>
+      <Input
+        id={`checkout-${field}`}
+        type={field === "email" ? "email" : "text"}
+        className={inputClass}
+        disabled={disabled}
+        aria-invalid={Boolean(errors[field])}
+        aria-describedby={errors[field] ? `checkout-${field}-error` : undefined}
+        {...register(field)}
+      />
+      <FieldError
+        id={`checkout-${field}-error`}
+        message={errors[field]?.message}
+      />
+    </div>
+  );
+
+  const readonly = (
+    id: string,
+    label: string,
+    value: string,
+    placeholder: string,
+    required = false,
+  ) => (
+    <div className="min-w-0">
+      <Label
+        htmlFor={`checkout-${id}`}
+        className="flex min-h-7.25 items-center text-[15px] font-normal"
+      >
+        {label || (
+          <span className="sr-only">ENS ou carteira secundária (opcional)</span>
+        )}
+        {required && (
+          <span className="text-[22px] leading-[29px] text-[#F0805F]">*</span>
+        )}
+      </Label>
+      <Input
+        id={`checkout-${id}`}
+        readOnly
+        value={value}
+        placeholder={placeholder}
+        className={inputClass}
+      />
+    </div>
+  );
+
   return (
     <section>
-      <h1 className="mb-3 text-[17px] leading-5 font-bold">
+      <h1 className="mb-3 text-[17px] leading-4 font-bold">
         Perfil do colecionador
       </h1>
       <div className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
-        <CheckoutField
-          id={`${idPrefix}-display`}
-          label="Nome de exibição"
-          required
-        >
-          <Input
-            id={`${idPrefix}-display`}
-            autoComplete="name"
-            className={fieldClassName}
-          />
-        </CheckoutField>
-        <CheckoutField
-          id={`${idPrefix}-username`}
-          label="Nome de usuário"
-          required
-        >
-          <Input
-            id={`${idPrefix}-username`}
-            autoComplete="username"
-            className={fieldClassName}
-          />
-        </CheckoutField>
-        <CheckoutField id={`${idPrefix}-network`} label="Rede" required>
-          <CheckoutSelect
-            id={`${idPrefix}-network`}
-            placeholder="Selecione uma rede"
-            options={[
-              { value: "ethereum", label: "Ethereum" },
-              { value: "polygon", label: "Polygon" },
-              { value: "solana", label: "Solana" },
-            ]}
-          />
-        </CheckoutField>
-        <CheckoutField
-          id={`${idPrefix}-profile`}
-          label="Nome do perfil"
-          required
-        >
-          <Input id={`${idPrefix}-profile`} className={fieldClassName} />
-        </CheckoutField>
-        <CheckoutField
-          id={`${idPrefix}-address`}
-          label="Endereço da carteira"
-          required
-        >
-          <Input
-            id={`${idPrefix}-address`}
-            placeholder="Endereço 0x da carteira"
-            className={fieldClassName}
-          />
-        </CheckoutField>
-        <CheckoutField id={`${idPrefix}-secondary`} label="Carteira secundária">
-          <Input
-            id={`${idPrefix}-secondary`}
-            placeholder="ENS ou carteira secundária (opcional)"
-            className={fieldClassName}
-          />
-        </CheckoutField>
-        <CheckoutField
-          id={`${idPrefix}-wallet-type`}
-          label="Tipo de carteira"
-          required
-        >
-          <CheckoutSelect
-            id={`${idPrefix}-wallet-type`}
-            placeholder="Selecione uma carteira"
-            options={[
-              { value: "metamask", label: "MetaMask" },
-              { value: "walletconnect", label: "WalletConnect" },
-              { value: "coinbase", label: "Coinbase Wallet" },
-            ]}
-          />
-        </CheckoutField>
-        <CheckoutField
-          id={`${idPrefix}-referral`}
-          label="Código de indicação"
-          required
-        >
-          <Input id={`${idPrefix}-referral`} className={fieldClassName} />
-        </CheckoutField>
-        <CheckoutField id={`${idPrefix}-email`} label="E-mail" required>
-          <Input
-            id={`${idPrefix}-email`}
-            type="email"
-            autoComplete="email"
-            className={fieldClassName}
-          />
-        </CheckoutField>
+        {collector("displayName", "Nome de exibição")}
+        {collector("username", "Nome de usuário")}
+        <div>
+          <Label
+            htmlFor="checkout-network"
+            className="flex min-h-7.25 items-center text-[15px] font-normal"
+          >
+            Rede
+            <span className="text-[22px] leading-[29px] text-[#F0805F]">*</span>
+          </Label>
+          <Select
+            value={wallet?.network ?? null}
+            items={[...networkOptions]}
+            disabled={disabled}
+            onValueChange={(value) => {
+              const match = wallets.find((entry) => entry.network === value);
+              if (match) onWalletChange(match.id);
+            }}
+          >
+            <SelectTrigger
+              id="checkout-network"
+              className={`${inputClass} w-full`}
+            >
+              <SelectValue placeholder="Selecione uma rede" />
+            </SelectTrigger>
+            <SelectContent>
+              {networkOptions.map((option) => (
+                <SelectItem
+                  key={option.value}
+                  value={option.value}
+                  disabled={
+                    !wallets.some((entry) => entry.network === option.value)
+                  }
+                >
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        {collector("profileName", "Nome do perfil")}
+        {readonly(
+          "address",
+          "Endereço da carteira",
+          wallet?.address ?? "",
+          "Endereço 0x da carteira",
+          true,
+        )}
+
+        {readonly(
+          "secondary",
+          "",
+          wallet?.secondaryAddress ?? "",
+          "ENS ou carteira secundária (opcional)",
+        )}
+
+        <div>
+          <Label
+            htmlFor="checkout-type"
+            className="flex min-h-7.25 items-center text-[15px] font-normal"
+          >
+            Tipo de carteira
+            <span className="text-[22px] leading-7.25 text-[#F0805F]">*</span>
+          </Label>
+          <Select
+            value={wallet?.walletType ?? null}
+            items={[...walletTypeOptions]}
+            disabled={disabled}
+            onValueChange={(value) => {
+              const match =
+                wallets.find(
+                  (entry) =>
+                    entry.walletType === value &&
+                    entry.network === wallet?.network,
+                ) ?? wallets.find((entry) => entry.walletType === value);
+              if (match) onWalletChange(match.id);
+            }}
+          >
+            <SelectTrigger
+              id="checkout-type"
+              className={`${inputClass} w-full`}
+            >
+              <SelectValue placeholder="Selecione uma carteira" />
+            </SelectTrigger>
+            <SelectContent>
+              {walletTypeOptions.map((option) => (
+                <SelectItem
+                  key={option.value}
+                  value={option.value}
+                  disabled={
+                    !wallets.some((entry) => entry.walletType === option.value)
+                  }
+                >
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {readonly(
+          "referral",
+          "Código de indicação",
+          wallet?.referralCode ?? "",
+          "",
+        )}
+
+        {collector("email", "E-mail")}
+
         <div className="w-24">
-          <CheckoutField id={`${idPrefix}-ens`} label="Nome ENS" required>
-            <CheckoutSelect
-              id={`${idPrefix}-ens`}
-              defaultValue="eth"
-              options={[{ value: "eth", label: ".eth" }]}
-            />
-          </CheckoutField>
+          {readonly("ens", "Nome ENS", wallet?.ensSuffix ?? ".eth", ".eth")}
         </div>
       </div>
+
       <Label
-        htmlFor={`${idPrefix}-other-wallet`}
+        htmlFor="checkout-other-wallet"
         className="mt-6 flex items-center gap-2 text-[15px] font-normal"
       >
         <Input
-          id={`${idPrefix}-other-wallet`}
+          id="checkout-other-wallet"
           type="checkbox"
+          checked={showWallets}
+          disabled={disabled}
+          onChange={(event) => setShowWallets(event.target.checked)}
           className="size-4 accent-primary"
         />
         Usar outra carteira?
       </Label>
-      <div className="mt-6 max-w-[350px]">
+
+      {showWallets && (
+        <div className="mt-4">
+          <SavedWallets
+            wallets={wallets}
+            selectedId={wallet?.id}
+            disabled={disabled}
+            onSelect={onWalletChange}
+          />
+        </div>
+      )}
+      <div className="mt-6 max-w-87.5">
         <Label
-          htmlFor={`${idPrefix}-note`}
-          className="mb-3 text-[15px] font-normal"
+          htmlFor="checkout-note"
+          className="mb-3 text-[15px] leading-4 font-normal"
         >
           Observação do colecionador (opcional)
         </Label>
         <Textarea
-          id={`${idPrefix}-note`}
+          id="checkout-note"
           rows={6}
-          className="min-h-[152px] rounded-sm border-border bg-transparent dark:bg-transparent"
+          maxLength={1000}
+          disabled={disabled}
+          className="min-h-38 rounded-[3px] border-border bg-transparent dark:bg-transparent"
+          aria-describedby={errors.note ? "checkout-note-error" : undefined}
+          {...register("note")}
         />
+        <FieldError id="checkout-note-error" message={errors.note?.message} />
       </div>
     </section>
   );

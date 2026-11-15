@@ -1,3 +1,8 @@
+import { useState } from "react";
+import { toast } from "sonner";
+import { Dialog } from "@/components/ui/Dialog";
+import { AuthDialog } from "@/features/Auth/container/AuthDialog";
+import { sessionQueryOptions } from "@/features/Auth/hooks/useSession";
 import { quoteQueryOptions } from "@/lib/quote-query";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -15,6 +20,27 @@ import { useCartMutations } from "./-hooks/useCartMutations";
 
 const Page = () => {
   const client = useQueryClient();
+  const navigate = Route.useNavigate();
+  const [authOpen, setAuthOpen] = useState(false);
+  const [isStartingCheckout, setIsStartingCheckout] = useState(false);
+  const onCheckout = async () => {
+    if (isStartingCheckout) return;
+    setIsStartingCheckout(true);
+    try {
+      const session = await client.fetchQuery({
+        ...sessionQueryOptions,
+        staleTime: 0,
+      });
+      if (session) await navigate({ to: "/pagamento" });
+      else if (window.matchMedia("(min-width: 1024px)").matches)
+        setAuthOpen(true);
+      else await navigate({ to: "/login", search: { redirect: "/pagamento" } });
+    } catch {
+      toast.error("Não foi possível verificar sua sessão. Tente novamente.");
+    } finally {
+      setIsStartingCheckout(false);
+    }
+  };
   const {
     data: user,
     isError: sessionError,
@@ -66,6 +92,9 @@ const Page = () => {
       .slice(0, 5) ?? [];
   return (
     <div className="mb-16 pt-8 lg:mb-24 lg:pt-0">
+      <Dialog open={authOpen && !user} onOpenChange={setAuthOpen}>
+        <AuthDialog redirectTo="/pagamento" />
+      </Dialog>
       <div className="px-7 lg:px-0">
         <PurchaseBreadcrumb
           compact
@@ -111,6 +140,7 @@ const Page = () => {
           </div>
           <aside className="w-full shrink-0 xl:w-83">
             <OrderSummary
+              onCheckout={() => void onCheckout()}
               subtotal={cart.subtotal}
               couponCode={cart.couponCode}
               onApplyCoupon={applyCoupon}
@@ -133,7 +163,7 @@ const Page = () => {
                   ? () => void refetchQuote()
                   : undefined
               }
-              isBusy={isSaving || isFetching}
+              isBusy={isSaving || isFetching || isStartingCheckout}
             />
           </aside>
         </div>

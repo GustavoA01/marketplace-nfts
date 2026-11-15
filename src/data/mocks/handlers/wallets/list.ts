@@ -3,14 +3,18 @@ import type { AuthApiError } from "@/data/types/auth";
 import type { WalletsResponse } from "@/data/types/wallets";
 import { getSessionUser } from "../../database/sessions";
 import { getWalletsByUserId } from "../../database/wallets";
+import { simulateWalletRequest } from "../../scenarios/wallets";
 import { requestSessionId, sessionCookie } from "../auth/utils";
 
 export const listWalletsHandler: HttpResponseResolver<
   never,
   never,
   WalletsResponse | AuthApiError
-> = ({ request }) => {
+> = async ({ request }) => {
   try {
+    const scenario = await simulateWalletRequest(request);
+    if (scenario instanceof Response) return scenario;
+
     const sessionUser = getSessionUser(requestSessionId(request));
     if (!sessionUser) {
       return HttpResponse.json<AuthApiError>(
