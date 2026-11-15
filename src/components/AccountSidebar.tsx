@@ -66,7 +66,7 @@ export const AccountSidebar = ({ active }: AccountSidebarProps) => {
         </p>
       </div>
 
-      <nav className="flex gap-1 px-2 pb-1 sm:flex-col sm:gap-0 sm:px-0 sm:pb-0">
+      <nav className="no-scrollbar flex gap-1 overflow-x-auto px-2 pb-1 sm:flex-col sm:gap-0 sm:overflow-visible sm:px-0 sm:pb-0">
         {primaryLinks.map(({ label, to, icon: Icon, key }) => {
           const isActive = active === key;
 
@@ -75,15 +75,13 @@ export const AccountSidebar = ({ active }: AccountSidebarProps) => {
               key={label}
               to={to}
               className={cn(
-                "flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-2.5 text-center text-xs leading-tight text-text-accent outline-none transition-colors hover:text-primary-light focus-visible:ring-2 focus-visible:ring-ring sm:flex-none sm:justify-start sm:gap-3 sm:rounded-none sm:border-l-6 sm:border-transparent sm:px-4 sm:py-0 sm:text-left sm:text-[15px] sm:leading-11.25 sm:focus-visible:ring-inset",
+                "flex shrink-0 items-center gap-2 rounded-md px-3 py-2.5 text-sm leading-none text-text-accent outline-none transition-colors hover:text-primary-light focus-visible:ring-2 focus-visible:ring-ring sm:gap-3 sm:rounded-none sm:border-l-6 sm:border-transparent sm:px-4 sm:py-0 sm:text-[15px] sm:leading-11.25 sm:focus-visible:ring-inset",
                 isActive &&
                   "bg-surface-raised text-text-accent sm:border-primary sm:bg-transparent",
               )}
             >
               <Icon className="size-4 shrink-0 sm:size-4.5" strokeWidth={1.6} />
-              <span className="min-w-0 whitespace-normal sm:whitespace-nowrap">
-                {label}
-              </span>
+              {label}
             </Link>
           );
         })}
