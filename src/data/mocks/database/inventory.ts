@@ -1,3 +1,4 @@
+import { getNFTPrice, getNFTSupply, getNFTVersion } from "./market-store";
 import { readCartStore } from "./cart-storage";
 import type { NFT } from "@/data/types/nft";
 import { editionStockFixtures } from "../fixtures/nft-inventory";
@@ -5,7 +6,7 @@ import { editionStockFixtures } from "../fixtures/nft-inventory";
 export const getNFTStock = (nft: NFT) =>
   Math.max(
     0,
-    nft.availableQuantity - (readCartStore().stockAdjustments[nft.id] ?? 0),
+    getNFTSupply(nft) - (readCartStore().stockAdjustments[nft.id] ?? 0),
   );
 
 export const getEditionStock = (nft: NFT, edition: string): number => {
@@ -29,3 +30,10 @@ export const getEditionAvailability = (nft: NFT) =>
   Object.fromEntries(
     nft.editions.map((edition) => [edition, getEditionStock(nft, edition)]),
   );
+
+export const getPublicNFT = (nft: NFT): NFT => ({
+  ...nft,
+  price: getNFTPrice(nft),
+  availableQuantity: getNFTStock(nft),
+  version: getNFTVersion(nft.id),
+});

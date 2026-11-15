@@ -7,7 +7,7 @@
 3. Clique em Conectar e finalizar. Visitantes abrem o modal de login no desktop (a partir de 1024 px) ou a página de login no mobile. Após autenticar, seguem para o pagamento, preservando o destino e os itens.
 4. No pagamento, confira os dados do colecionador, selecione uma carteira cadastrada e clique em Conectar carteira. A rede e o endereço vêm da carteira selecionada.
 5. Confira os valores da nova cotação e marque a revisão antes de Confirmar compra.
-6. O pedido aparece pendente. A consulta à API apresenta confirmação ou recusa; somente confirmação permite exibir o recibo e remover as quantidades compradas do carrinho.
+6. O pedido aparece pendente. O evento Socket.IO provoca a consulta à API para apresentar confirmação ou recusa; somente confirmação permite exibir o recibo e remover as quantidades compradas do carrinho.
 
 Se não houver carteira, há um link para cadastrá-la. Sem conexão, revisão ou cotação válida, o envio permanece bloqueado. Não há extensão de carteira, gateway ou transação blockchain real.
 
@@ -39,7 +39,7 @@ Antes de criar, a API verifica a conexão, a propriedade e o endereço/rede atua
 
 O pedido guarda um snapshot de itens, quantidades, preços, descontos, taxa, total, dados do colecionador e carteira. O recibo lê esse snapshot, preservando os valores após mudanças no catálogo.
 
-A simulação persiste o pedido pendente com prazo para decisão. Consultar após o prazo consolida confirmação/recusa. Estados terminais não regridem. A confirmação desconta apenas as quantidades compradas, preservando itens ou quantidades acrescentados depois. Recusa mantém o carrinho.
+A simulação persiste o pedido pendente com prazo para decisão. Um timer consolida confirmação/recusa e publica order.updated; consultar após o prazo também reconcilia o estado. Os timers são retomados após refresh. Estados terminais não regridem. A confirmação desconta apenas as quantidades compradas, preservando itens ou quantidades acrescentados depois. Recusa mantém o carrinho.
 
 Carrinho, ajustes de estoque e um marcador de conclusão do pedido são gravados juntos na chave do carrinho. Se a gravação do estado final do pedido falhar depois disso, a próxima consulta reconhece o marcador e recupera a confirmação sem descontar novamente. Estoque e edições passam a refletir as compras no catálogo, detalhe e carrinho.
 
@@ -72,7 +72,7 @@ Para simular desconexão antes de enviar, use Desconectar carteira. Uma solicita
 
 O pagamento usa dados de perfil e carteiras pela API, campos do colecionador validados com React Hook Form/Zod, revisão explícita e indicação de cotação. O recibo só é exibido para pedido confirmado. O recibo exibe a identificação abreviada no formato `0xA91F…E82C`, preservando o valor completo no título e no link. O botão abre o explorador da rede em uma nova aba: Etherscan para Ethereum, Polygonscan para Polygon e Solana Explorer para Solana. As identificações geradas pelo mock não correspondem a transações reais, portanto não terão registro nesses serviços. A interface usa mensagens normais de compra e conexão; os detalhes da simulação permanecem nesta documentação.
 
-Esta etapa usa consultas REST periódicas de um segundo enquanto o pedido está pendente. A integração obrigatória de eventos com Socket.IO ainda será feita; este polling não a substitui. Favoritos e seus testes E2E já estão integrados; há testes permanentes da troca de carteira e compra confirmada; os demais cenários de pagamento e a auditoria Lighthouse continuam pendentes.
+O pedido é atualizado por Socket.IO enquanto a conexão está pronta. Consultas REST a cada cinco segundos servem apenas como fallback durante desconexão. Reconexão e refresh recuperam o pedido sem reenviar a compra. Veja [REALTIME.md](./REALTIME.md) para contratos, cenários pela URL e testes de confirmação/recusa, eventos antigos, interrupção e isolamento entre sessões. Os demais cenários E2E e a auditoria Lighthouse continuam pendentes.
 
 Sem abrir navegador, verificações temporárias da API cobriram idempotência concorrente, conflito de chave, isolamento entre usuários, pendência, confirmação, recusa, snapshot imutável, baixa única de estoque/carrinho, recusa/desconexão da carteira, cotação alterada e recuperação do mesmo pedido após timeout e falha intermediária de persistência. TypeScript, lint e build foram executados. Interações e fidelidade visual desta etapa ainda precisam da verificação no navegador e dos testes E2E permanentes.
 
@@ -90,4 +90,4 @@ No mobile, a carteira selecionada aparece no topo; a troca é feita em Usar outr
 
 A decisão de UX é uma rede por pedido. Carrinhos podem manter itens de redes diferentes, mas a cotação e o pagamento ficam bloqueados até o usuário ajustar os itens. A API também rejeita uma rede enviada que diverge dos NFTs e um pedido cuja carteira diverge da cotação. Os valores continuam denominados em ETH na simulação, conforme o contrato do desafio; as taxas são fixtures e não representam gas real, WETH, conversão ou bridge.
 
-Os testes permanentes em `tests/e2e/checkout-wallets.spec.ts` cobrem troca de carteira com nova conexão/revisão e compra concluída em desktop/mobile, carteira de outra rede omitida no seletor, rejeições na API e bloqueio de carrinho com redes diferentes. O preparo usa os serviços Axios e os mesmos handlers MSW. Essa cobertura não substitui os cenários restantes de falha, tempo real e regressão visual.
+Os testes permanentes em `tests/e2e/checkout-wallets.spec.ts` cobrem troca de carteira com nova conexão/revisão e compra concluída em desktop/mobile, carteira de outra rede omitida no seletor, rejeições na API e bloqueio de carrinho com redes diferentes. O preparo usa os serviços Axios e os mesmos handlers MSW. Os testes de tempo real complementam essa cobertura conforme [REALTIME.md](./REALTIME.md). Permanecem cenários adicionais de falha e regressão visual.

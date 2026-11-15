@@ -1,3 +1,4 @@
+import { getNFTPrice, getNFTVersion } from "../../database/market-store";
 import { HttpResponse, type HttpResponseResolver } from "msw/http";
 import type { NFTDetail } from "@/data/types/catalogue";
 import { getEditionAvailability, getNFTStock } from "../../database/inventory";
@@ -39,5 +40,7 @@ export const nftDetailHandler: HttpResponseResolver = async ({
       { label: "Coleção", value: nft.collection },
     ],
     ...extra,
+    price: getNFTPrice(nft),
+    version: getNFTVersion(nft.id),
   });
 };

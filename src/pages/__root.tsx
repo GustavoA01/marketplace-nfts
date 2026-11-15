@@ -1,3 +1,4 @@
+import { RealtimeSync } from "@/features/Realtime/container/RealtimeSync";
 import { queryKeys } from "@/data/query-keys";
 import { useIsMutating } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
@@ -49,6 +50,7 @@ const RootLayout = () => {
 
   return (
     <div className="flex min-h-svh flex-col bg-background text-foreground">
+      <RealtimeSync />
       <div className={hideHeaderOnMobile ? "hidden lg:block" : undefined}>
         <Header />
       </div>

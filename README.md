@@ -1,6 +1,6 @@
 # Marketplace NFTs
 
-Base React + TypeScript + Vite
+Marketplace de NFTs com React, TypeScript, Vite e API simulada com MSW.
 
 ## Executar no Ubuntu
 
@@ -8,6 +8,7 @@ Base React + TypeScript + Vite
 cd ~/Projetos/marketplace-nfts
 nvm use
 npm ci
+cp .env.example .env.local
 npm run dev
 ```
 
@@ -17,18 +18,18 @@ O plugin do TanStack Router lê `src/pages` e gera `src/routeTree.gen.ts` ao ini
 As pastas organizam as rotas; `index.tsx` representa a página de cada pasta.
 O grupo `(inicio)` organiza a página inicial sem adicionar um segmento à URL.
 
-| Pasta em src/pages | URL                 | Tela                   |
-| ------------------ | ------------------- | ---------------------- |
-| (inicio)           | /                   | Início                 |
-| nfts/$nftId        | /nfts/1             | Detalhes do NFT        |
-| carrinho           | /carrinho           | Carrinho de NFTs       |
-| pagamento          | /pagamento          | Pagamento              |
-| confirmacao-pedido | /confirmacao-pedido | Confirmação de pedido  |
-| login              | /login              | Login                  |
-| cadastro           | /cadastro           | Cadastro               |
-| perfil             | /perfil             | Perfil do colecionador |
-| carteiras          | /carteiras          | Carteiras              |
-| favoritos          | /favoritos          | Favoritos              |
+| Pasta em src/pages | URL                   | Tela                   |
+| ------------------ | --------------------- | ---------------------- |
+| (inicio)           | /                     | Início                 |
+| nfts/$nftId        | /nfts/emerald-ape-042 | Detalhes do NFT        |
+| carrinho           | /carrinho             | Carrinho de NFTs       |
+| pagamento          | /pagamento            | Pagamento              |
+| confirmacao-pedido | /confirmacao-pedido   | Confirmação de pedido  |
+| login              | /login                | Login                  |
+| cadastro           | /cadastro             | Cadastro               |
+| perfil             | /perfil               | Perfil do colecionador |
+| carteiras          | /carteiras            | Carteiras              |
+| favoritos          | /favoritos            | Favoritos              |
 
 ## Stack e preparação
 
@@ -36,13 +37,13 @@ O grupo `(inicio)` organiza a página inicial sem adicionar um segmento à URL.
 - TanStack Router com rotas por arquivo em `src/pages`.
 - TanStack Query com provider e cliente em `src/lib/query-client.ts`.
 - Axios com cliente REST em `src/lib/http.ts` e serviços de autenticação e NFTs em `src/services`.
-- Socket.IO com cliente em `src/lib/socket.ts`, sem conexão automática ou eventos.
+- Socket.IO com cliente em `src/lib/socketio.ts`, eventos de NFT/pedido, isolamento por sessão e reconciliação REST. O MSW simula o protocolo pela mesma origem, sem servidor adicional.
 - Tailwind CSS e componentes oficiais shadcn/ui em `src/components/ui`. Os estilos auxiliares gerados estão em `src/styles/shadcn.css`; o CLI pode ser executado com `npx shadcn@latest add <componente>`.
-- MSW configurado em `src/data/mocks`, ativado por `VITE_ENABLE_MOCKS=true`. O worker está em `public/mockServiceWorker.js`. O cadastro já possui handler funcional; os demais recursos estão em implementação. A flag também deve estar ativa no build de demonstração.
-- Playwright configurado em `playwright.config.ts`, com pasta para futuros testes E2E e visuais (marcar testes visuais com `@visual`). Instalar o navegador com `npx playwright install chromium` antes de executar os testes.
+- MSW configurado em `src/data/mocks`, ativado por `VITE_ENABLE_MOCKS=true`. O worker está em `public/mockServiceWorker.js`. Conta, catálogo, favoritos, carrinho, cotações, perfil, carteiras e pedidos possuem handlers com estado consistente. A flag também deve estar ativa no build de demonstração.
+- Playwright configurado em `playwright.config.ts`, com testes E2E em `tests/e2e` e relatório HTML/traces. Baselines visuais ainda precisam ser adicionadas (marcar testes visuais com `@visual`). Instalar o navegador com `npx playwright install chromium` antes de executar os testes.
 - Lighthouse instalado para auditorias locais. Com o preview rodando, executar `npm run audit:lighthouse`. Requer Chrome/Chromium instalado; definir `CHROME_PATH` se necessário.
 
-O cadastro utiliza Axios, TanStack Query e MSW, com persistência local dos usuários simulados. Login e sessão por cookie também estão integrados. Compras, recursos privados de perfil/carteiras e Socket.IO ainda precisam ser concluídos.
+O cadastro utiliza Axios, TanStack Query e MSW, com persistência local dos usuários simulados. Login e sessão por cookie também estão integrados. Compras, perfil/carteiras e eventos Socket.IO estão integrados. Veja as decisões e limitações em [ARCHITECTURE.md](./ARCHITECTURE.md).
 Há testes E2E permanentes de favoritos para desktop e mobile. A cobertura dos demais fluxos e as baselines visuais continuam pendentes.
 
 ## Comandos
@@ -85,7 +86,7 @@ Os dados temporários do catálogo e dos filtros são arrays de objetos em `src/
 
 Os filtros, a composição do catálogo, toolbar, banner e paginação ficam em `src/pages/(inicio)/-components`, pois são exclusivos dessa página. No mobile, o painel abre em um Dialog shadcn/ui.
 
-A seção ainda não consulta API nem filtra, ordena ou pagina os dados. Os controles são a base visual para a futura integração. A seleção visual de ordenação não altera a lista. O oitavo card não exibe título nem preço porque esses elementos estão ausentes no frame de referência. O controle de ordenação tem espaço adicional para evitar a sobreposição de texto e ícone presente no desenho.
+A seção consulta a API MSW, combina filtros e mantém busca, ordenação e paginação na URL. Os cards recebem os dados retornados pelos serviços Axios. O controle de ordenação tem espaço adicional para evitar a sobreposição de texto e ícone presente no desenho.
 
 ## Formatação e pre-commit
 
@@ -120,7 +121,7 @@ Detalhe e carrinho estão integrados à API simulada: adicionar, alterar quantid
 
 ## Cotação e cupom
 
-O resumo do carrinho consulta subtotal, desconto, taxa estimada e total na API. Use `KURIO10` para aplicar 10% de desconto e `EXPIRADO` para exercitar erro de validade. A seleção persiste após refresh e os valores são recalculados ao alterar os itens. Veja [contratos, validade e cenários](./QUOTES_API.md). Pagamento e pedidos ainda precisam ser integrados.
+O resumo do carrinho consulta subtotal, desconto, taxa estimada e total na API. Use `KURIO10` para aplicar 10% de desconto e `EXPIRADO` para exercitar erro de validade. A seleção persiste após refresh e os valores são recalculados ao alterar os itens. Veja [contratos, validade e cenários](./QUOTES_API.md). Pagamento e pedidos usam essa cotação antes de confirmar a compra.
 
 ## Pagamento e pedidos
 
@@ -129,3 +130,11 @@ Pagamento integrado ao carrinho, perfil, carteiras e cotação, com conexão sim
 ## Favoritos
 
 Favoritos exigem login e persistem por conta pela API MSW. Os corações do detalhe e dos cards compartilham o cache, com atualização otimista, rollback em falha e bloqueio de cliques repetidos. A lista está em `/favoritos`, acessível pelo menu da conta e pelo atalho mobile. Veja [contratos, cenários, reset e testes E2E](./FAVORITES_API.md).
+
+## Tempo real e cenários de demonstração
+
+Com `VITE_ENABLE_MOCKS=true`, abra `/?scenario=price-change`, adicione um NFT e entre no carrinho/pagamento: após cinco segundos, Socket.IO informa o novo preço e exige revisar a cotação novamente. `stock-change`, `duplicate-events`, `old-events`, `disconnect-order`, `payment-declined` e `pending` exercitam os outros cenários. `/?scenario=normal` desativa efeitos especiais em novas operações; `/?scenario=reset` restaura os dados locais do projeto e encerra a sessão.
+
+Os links funcionam tanto localmente quanto no build publicado. Consulte [REALTIME.md](./REALTIME.md) para passos completos, eventos, transporte, controles determinísticos e limitações. Não é necessário subir um servidor na porta 3000 ou 5174. `VITE_SOCKET_URL` só é usado quando os mocks estão desligados.
+
+Execute `npx playwright test realtime` para os testes desta integração ou `npm run test:e2e` para toda a cobertura existente. `npm run typecheck`, `npm run lint`, `npm run format:check` e `npm run build` verificam o código. `npm run preview -- --host 127.0.0.1` serve o build com os mocks incorporados, desde que a flag tenha sido ativada no build.

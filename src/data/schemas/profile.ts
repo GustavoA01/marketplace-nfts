@@ -20,9 +20,7 @@ export const profileSchema = z
       data.currentPassword || data.newPassword || data.confirmNewPassword,
     );
 
-    if (!changingPassword) {
-      return;
-    }
+    if (!changingPassword) return;
 
     if (!data.currentPassword) {
       ctx.addIssue({

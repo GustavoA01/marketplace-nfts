@@ -66,4 +66,4 @@ Remover a chave e clicar em Tentar novamente também permite conferir a recupera
 
 Foram feitas verificações temporárias da API com MSW e da interface com Playwright, incluindo filtros combinados, paginação sem repetição, ordenação numérica, erro/recuperação, acesso direto ao detalhe, 404, refresh, histórico, seleção de edição e limite de quantidade. O cancelamento de uma consulta antiga foi verificado com QueryObserver e respostas de latências diferentes. As larguras 390, 768 e 1440 foram verificadas sem overflow horizontal.
 
-Essas verificações não substituem a suíte E2E permanente e as baselines visuais, que continuam como uma etapa própria. Favoritos, compra, carrinho, disponibilidade por edição e Socket.IO não foram implementados nesta etapa.
+Essas verificações não substituem os cenários E2E específicos de busca/histórico e as baselines visuais, que continuam pendentes. Favoritos, compra, carrinho e disponibilidade por edição foram integrados nas etapas seguintes. A sincronização por Socket.IO está documentada em [REALTIME.md](./REALTIME.md).

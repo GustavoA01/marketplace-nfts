@@ -1,3 +1,5 @@
+import { useRealtimeStatus } from "@/features/Realtime/utils/status";
+import { ConnectionNotice } from "@/features/Realtime/components/ConnectionNotice";
 import { toast } from "sonner";
 import { isAxiosError } from "axios";
 import { useEffect } from "react";
@@ -15,17 +17,23 @@ import { OrderReceipt } from "./-components/OrderReceipt";
 
 const Page = () => {
   const { attempt } = Route.useSearch();
+  const realtimeStatus = useRealtimeStatus();
   const { data: user } = useSession();
   const client = useQueryClient();
+
   const query = useQuery({
     queryKey: queryKeys.orders.attempt(user?.id, attempt),
     queryFn: ({ signal }) => getOrder(attempt, signal),
     enabled: Boolean(user && attempt),
     refetchInterval: (entry) =>
-      entry.state.data?.status === "pending" ? 1000 : false,
+      entry.state.data?.status === "pending" && realtimeStatus !== "connected"
+        ? 5000
+        : false,
     retry: 1,
   });
+
   const saved = getOrderAttempt(user?.id);
+
   const retry = useMutation({
     mutationFn: () => {
       if (!saved || saved.key !== attempt)
@@ -47,6 +55,7 @@ const Page = () => {
     },
   });
   const order = query.data;
+
   useEffect(() => {
     if (!user || !order || order.status === "pending") return;
     if (getOrderAttempt(user.id)?.key === order.attemptKey)
@@ -57,6 +66,7 @@ const Page = () => {
     void client.invalidateQueries({ queryKey: queryKeys.nfts.all });
     void client.invalidateQueries({ queryKey: queryKeys.quotes.all });
   }, [user, order, client]);
+
   if (!attempt)
     return (
       <div className="space-y-4 p-6">
@@ -68,6 +78,7 @@ const Page = () => {
         </Link>
       </div>
     );
+
   if (query.isPending)
     return (
       <div role="status" className="space-y-4 p-6">
@@ -75,6 +86,7 @@ const Page = () => {
         <Skeleton className="h-80 w-full" />
       </div>
     );
+
   if (query.isError || !order)
     return (
       <div role="alert" className="space-y-4 p-6">
@@ -96,13 +108,18 @@ const Page = () => {
         </Link>
       </div>
     );
+
   if (order.status === "pending")
     return (
       <div role="status" className="space-y-5 p-6">
         <h1 className="text-xl font-bold">Pagamento pendente</h1>
+
+        <ConnectionNotice status={realtimeStatus} />
+
         <p>
           Seu pedido está sendo processado. Aguarde a confirmação do pagamento.
         </p>
+
         <p className="break-all text-sm">Pedido: {order.id}</p>
         <Skeleton className="h-40 w-full" />
         <Button
@@ -119,6 +136,7 @@ const Page = () => {
         </Button>
       </div>
     );
+
   if (order.status === "declined")
     return (
       <div role="alert" className="space-y-5 p-6">
@@ -151,6 +169,7 @@ const Page = () => {
     </div>
   );
 };
+
 export const Route = createFileRoute("/confirmacao-pedido/")({
   beforeLoad: requireSession,
   validateSearch: (search: Record<string, unknown>) => ({

@@ -1,3 +1,4 @@
+import { armCartScenario } from "../../realtime/scenarios";
 import { http, HttpResponse } from "msw/http";
 import { couponSchema, quoteSchema } from "@/data/schemas/quote";
 import type { CartApiError, CartResponse } from "@/data/types/cart";
@@ -25,6 +26,8 @@ export const quoteHandlers = [
           return HttpResponse.json<QuoteApiError>(result.error, {
             status: result.status,
           });
+        armCartScenario(user.userId);
+
         return HttpResponse.json<QuoteResponse>({ quote: result.quote });
       } catch {
         return cartStorageError();

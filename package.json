@@ -32,6 +32,7 @@
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-hook-form": "^7.92.0",
+    "socket.io": "^4.8.4",
     "socket.io-client": "^4.8.4",
     "sonner": "^2.0.8",
     "tailwind-merge": "^3.7.0",
@@ -40,6 +41,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@mswjs/socket.io-binding": "^0.2.0",
     "@playwright/test": "^1.65.1",
     "@tanstack/router-plugin": "^1.169.0",
     "@types/node": "^24.19.2",
@@ -61,5 +63,10 @@
     "workerDirectory": [
       "public"
     ]
+  },
+  "overrides": {
+    "@mswjs/socket.io-binding": {
+      "msw": "$msw"
+    }
   }
 }

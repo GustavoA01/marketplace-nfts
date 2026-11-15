@@ -15,46 +15,61 @@ for (const viewport of [
       await loginAtNFT(page);
       const secondaryId = await seedCheckout(page);
       await page.goto("/pagamento");
+
       await page
         .getByRole("button", { name: "Conectar carteira", exact: true })
         .click();
+
       await expect(
         page.getByRole("button", { name: "Desconectar carteira", exact: true }),
       ).toBeVisible();
+
       if (viewport.name === "mobile")
         await page
           .getByRole("button", { name: "Dados do colecionador e revisão" })
           .click();
+
       const review = page.getByRole("checkbox", {
         name: "Revisei os itens, a carteira e o total desta compra.",
       });
-      await review.check();
       const confirm = page.getByRole("button", {
         name: "Confirmar compra",
         exact: true,
       });
+
+      await review.check();
+
       await expect(confirm).toBeEnabled();
+
       await page
         .getByRole("checkbox", { name: "Usar outra carteira?" })
         .check();
       await page
         .getByRole("radio", { name: /Carteira secundária de teste/ })
         .check();
+
       if (viewport.name === "mobile")
         await expect(
           page.locator(`#checkout-saved-${secondaryId}`),
         ).toBeChecked();
+
       await expect(review).not.toBeChecked();
       await expect(confirm).toBeDisabled();
+
       await page
         .getByRole("button", { name: "Conectar carteira", exact: true })
         .click();
+
       await expect(
         page.getByRole("button", { name: "Desconectar carteira", exact: true }),
       ).toBeVisible();
+
       await review.check();
+
       await expect(confirm).toBeEnabled();
+
       await confirm.click();
+
       await expect(
         page.getByRole("heading", {
           name: "Seus NFTs agora estão na sua carteira",
@@ -66,7 +81,9 @@ for (const viewport of [
       await expect(
         page.getByRole("button", { name: "Ver no Etherscan", exact: true }),
       ).toHaveAttribute("href", /^https:\/\/etherscan\.io\/tx\/0x/);
+
       await page.goto("/carrinho");
+
       await expect(
         page.getByRole("heading", { name: "Seu carrinho está vazio" }),
       ).toBeVisible();
@@ -82,12 +99,16 @@ test.describe("Compatibilidade de rede", () => {
     await loginAtNFT(page);
     await seedCheckout(page, "polygon");
     await page.goto("/pagamento");
+
     await page
       .getByRole("button", { name: "Dados do colecionador e revisão" })
       .click();
     await page.getByRole("checkbox", { name: "Usar outra carteira?" }).check();
+
     await expect(
-      page.getByRole("radio", { name: /Carteira principal/ }),
+      page
+        .getByRole("region", { name: "Dados do colecionador e revisão" })
+        .getByRole("radio", { name: /Carteira principal/ }),
     ).toBeChecked();
     await expect(
       page.getByRole("radio", { name: /Carteira secundária de teste/ }),
@@ -100,6 +121,7 @@ test.describe("Compatibilidade de rede", () => {
     test.setTimeout(60_000);
     await loginAtNFT(page);
     const walletId = await seedCheckout(page, "polygon");
+
     const result = await page.evaluate(async (walletId) => {
       const load = (url: string) => import(url);
       const [
@@ -156,12 +178,15 @@ test.describe("Compatibilidade de rede", () => {
       );
       return { quoteRejected, orderRejected, mixedRejected };
     }, walletId);
+
     expect(result).toEqual({
       quoteRejected: 409,
       orderRejected: 409,
       mixedRejected: 409,
     });
+
     await page.goto("/carrinho");
+
     await expect(
       page.getByText(
         "Finalize uma rede por vez. Mantenha no carrinho apenas NFTs de uma mesma rede.",
@@ -171,7 +196,9 @@ test.describe("Compatibilidade de rede", () => {
     await expect(
       page.getByRole("button", { name: "Conectar e finalizar", exact: true }),
     ).toBeDisabled();
+
     await page.goto("/pagamento");
+
     await expect(
       page.getByRole("button", { name: "Revisar carrinho", exact: true }),
     ).toBeVisible();

@@ -18,30 +18,42 @@ for (const viewport of [
       page,
     }) => {
       await page.goto("/nfts/emerald-ape-042");
+
       await favoriteButton(page).click();
+
       if (viewport.name === "desktop") {
         await expect(page.getByRole("dialog")).toBeVisible();
         await expect(page).toHaveURL(/\/nfts\/emerald-ape-042\/?$/);
       } else await expect(page).toHaveURL(/\/login\?.*redirect=/);
+
       await completeLogin(page);
+
       await expect(page).toHaveURL(/\/nfts\/emerald-ape-042\/?$/);
       await expect(page.getByRole("dialog")).not.toBeVisible();
+
       await favoriteButton(page).click();
+
       await expect(favoriteButton(page)).toHaveAttribute(
         "aria-pressed",
         "true",
       );
       await expect(favoriteButton(page)).toBeEnabled();
+
       await page.reload();
+
       await expect(favoriteButton(page)).toHaveAttribute(
         "aria-pressed",
         "true",
       );
+
       await page.goto("/favoritos");
+
       await expect(
         page.getByRole("heading", { name: "Emerald Ape #042", exact: true }),
       ).toBeVisible();
+
       await favoriteButton(page).click();
+
       await expect(
         page.getByText("Você ainda não tem NFTs favoritos."),
       ).toBeVisible();
@@ -49,7 +61,9 @@ for (const viewport of [
       await expect(
         page.getByText("NFT removido dos favoritos.", { exact: true }),
       ).toBeVisible();
+
       await page.reload();
+
       await expect(
         page.getByText("Você ainda não tem NFTs favoritos."),
       ).toBeVisible();
@@ -66,7 +80,9 @@ for (const viewport of [
           "slow-mutation-error",
         ),
       );
+
       await favoriteButton(page).click();
+
       await expect(favoriteButton(page)).toHaveAttribute(
         "aria-pressed",
         "true",
@@ -83,6 +99,7 @@ for (const viewport of [
         "false",
       );
       await expect(favoriteButton(page)).toBeEnabled();
+
       await page.evaluate(() =>
         localStorage.removeItem("marketplace-nfts:favorite-scenario"),
       );
@@ -93,19 +110,24 @@ for (const viewport of [
         })
         .getByRole("button", { name: "Close toast", exact: true })
         .click();
+
       await expect(
         page.getByText(
           "Não foi possível atualizar os favoritos. Tente novamente.",
           { exact: true },
         ),
       ).not.toBeVisible();
+
       await favoriteButton(page).click();
+
       await expect(favoriteButton(page)).toHaveAttribute(
         "aria-pressed",
         "true",
       );
       await expect(favoriteButton(page)).toBeEnabled();
+
       await page.reload();
+
       await expect(favoriteButton(page)).toHaveAttribute(
         "aria-pressed",
         "true",
@@ -115,25 +137,33 @@ for (const viewport of [
     test("isola favoritos ao sair e trocar de usuário", async ({ page }) => {
       test.setTimeout(60_000);
       await loginAtNFT(page);
+
       await favoriteButton(page).click();
+
       await expect(favoriteButton(page)).toHaveAttribute(
         "aria-pressed",
         "true",
       );
       await expect(favoriteButton(page)).toBeEnabled();
+
       await logout(page);
       await loginAtNFT(page, "theo@example.com");
+
       await expect(favoriteButton(page)).toBeEnabled();
       await expect(favoriteButton(page)).toHaveAttribute(
         "aria-pressed",
         "false",
       );
+
       await page.goto("/favoritos");
+
       await expect(
         page.getByText("Você ainda não tem NFTs favoritos."),
       ).toBeVisible();
+
       await logout(page);
       await loginAtNFT(page);
+
       await expect(favoriteButton(page)).toHaveAttribute(
         "aria-pressed",
         "true",
@@ -145,18 +175,22 @@ for (const viewport of [
       await page.evaluate(() =>
         localStorage.setItem("marketplace-nfts:favorite-scenario", "error"),
       );
+
       await page.goto("/favoritos");
+
       await expect(
         page.getByText("Não foi possível carregar os favoritos.", {
           exact: true,
         }),
       ).toBeVisible();
+
       await page.evaluate(() =>
         localStorage.removeItem("marketplace-nfts:favorite-scenario"),
       );
       await page
         .getByRole("button", { name: "Tentar novamente", exact: true })
         .click();
+
       await expect(
         page.getByText("Você ainda não tem NFTs favoritos."),
       ).toBeVisible();
@@ -169,17 +203,23 @@ for (const viewport of [
       await loginAtNFT(page);
       await expect(favoriteButton(page)).toBeEnabled();
       await context.clearCookies();
+
       await favoriteButton(page).click();
+
       if (viewport.name === "desktop")
         await expect(page.getByRole("dialog")).toBeVisible();
       else await expect(page).toHaveURL(/\/login\?.*redirect=/);
+
       await completeLogin(page);
+
       await expect(favoriteButton(page)).toBeEnabled();
       await expect(favoriteButton(page)).toHaveAttribute(
         "aria-pressed",
         "false",
       );
+
       await favoriteButton(page).click();
+
       await expect(favoriteButton(page)).toHaveAttribute(
         "aria-pressed",
         "true",

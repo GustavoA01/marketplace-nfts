@@ -1,3 +1,6 @@
+import { maybeDisconnectOrder } from "../realtime/scenarios";
+import { scheduleOrderDecision } from "../realtime/order-timers";
+import { publishOrderUpdate } from "../realtime/orders";
 import type { CreateOrderPayload, StoredOrder } from "@/data/schemas/orders";
 import {
   readOrders,
@@ -21,6 +24,7 @@ export const createOrder = (
   const existing = store.orders.find(
     (entry) => entry.userId === userId && entry.attemptKey === key,
   );
+
   if (existing)
     return existing.fingerprint === fingerprint
       ? { order: consultOrder(userId, existing.id)! }
@@ -28,12 +32,14 @@ export const createOrder = (
           error: "A chave desta tentativa já foi usada com outros dados.",
           status: 409,
         };
+
   const quote = getQuoteForUser(payload.quoteId, userId);
   if (!quote)
     return {
       error: "A cotação expirou. Recalcule e revise os valores.",
       status: 409,
     };
+
   const connection = store.connections.find(
     (entry) =>
       entry.id === payload.connectionId &&
@@ -41,6 +47,7 @@ export const createOrder = (
       entry.connected &&
       entry.expiresAt > Date.now(),
   );
+
   const wallet =
     connection && getWalletByIdForUser(connection.walletId, userId);
   if (
@@ -54,12 +61,14 @@ export const createOrder = (
       error: "Conecte uma carteira válida na rede da cotação.",
       status: 409,
     };
+
   const current = getCart(userId);
   if (cartSignature(current) !== quote.cartSignature)
     return {
       error: "O carrinho mudou. Recalcule e confirme os novos valores.",
       status: 409,
     };
+
   const validation = createQuote(
     { cartSignature: quote.cartSignature, network: quote.network },
     userId,
@@ -75,6 +84,7 @@ export const createOrder = (
     };
   const now = new Date().toISOString();
   const order: StoredOrder = {
+    version: 1,
     id: crypto.randomUUID(),
     attemptKey: key,
     userId,
@@ -108,5 +118,9 @@ export const createOrder = (
   };
   store.orders.push(order);
   saveOrders(store);
+  publishOrderUpdate(order);
+  scheduleOrderDecision(userId, order.id, order.settlesAt);
+  maybeDisconnectOrder(userId);
+
   return { order: publicOrder(order) };
 };

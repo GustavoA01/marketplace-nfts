@@ -1,4 +1,5 @@
 import type { CartItem } from "@/data/types/cart";
+import { getNFTPrice, getNFTVersion } from "./market-store";
 import { summarizeCart } from "@/lib/cart";
 import { ethToWei, weiToEth } from "@/lib/eth";
 import { nfts } from "../fixtures/nfts";
@@ -28,8 +29,9 @@ export const buildCart = (
       image: nft.image,
       imageDescription: nft.imageDescription,
       network: nft.network,
-      unitPrice: nft.price,
-      lineTotal: weiToEth(ethToWei(nft.price) * BigInt(item.quantity)),
+      unitPrice: getNFTPrice(nft),
+      version: getNFTVersion(nft.id),
+      lineTotal: weiToEth(ethToWei(getNFTPrice(nft)) * BigInt(item.quantity)),
       availableQuantity: getNFTStock(nft),
       maxQuantity,
       isAvailable: item.quantity <= maxQuantity,

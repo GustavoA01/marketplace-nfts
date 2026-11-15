@@ -51,33 +51,43 @@ export const FavoriteButton = ({
   );
 
   const onClick = async () => {
-    if (user === undefined) {
+    let currentUser = user;
+
+    if (currentUser === undefined) {
       const result = await refetchSession();
-      if (result.isError)
+
+      if (result.isError) {
         toast.error("Não foi possível verificar sua sessão. Tente novamente.");
-      return;
+        return;
+      }
+
+      currentUser = result.data ?? null;
     }
 
-    if (!user) {
+    if (!currentUser) {
       requestLogin();
       return;
     }
 
     if (isError) {
       const result = await refetch();
+
       if (result.isError)
         toast.error("Não foi possível carregar os favoritos. Tente novamente.");
+
       return;
     }
 
-    if (isSaving || !data || !isFavoriteOwnerActive(client, user.id)) return;
+    if (isSaving || !data || !isFavoriteOwnerActive(client, currentUser.id))
+      return;
+
     const current = client.getQueryData<Favorites>(
-      queryKeys.favorites.list(user.id),
+      queryKeys.favorites.list(currentUser.id),
     );
 
     mutate({
       nftId,
-      ownerId: user.id,
+      ownerId: currentUser.id,
       isFavorite: !current?.nftIds.includes(nftId),
     });
   };

@@ -5,6 +5,7 @@ export type AddCartItemPayload = {
 };
 
 export type CartItem = AddCartItemPayload & {
+  version?: number;
   id: string;
   name: string;
   image: string;

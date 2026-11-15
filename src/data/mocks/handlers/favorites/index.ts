@@ -2,7 +2,7 @@ import { http, HttpResponse, type HttpResponseResolver } from "msw/http";
 import type { Favorites } from "@/data/types/favorites";
 import { getSessionUser } from "../../database/sessions";
 import { getFavoriteIds, setFavorite } from "../../database/favorites";
-import { getNFTStock } from "../../database/inventory";
+import { getPublicNFT } from "../../database/inventory";
 import { nfts } from "../../fixtures/nfts";
 import { simulateFavoriteRequest } from "../../scenarios/favorites";
 import { requestSessionId } from "../auth/utils";
@@ -23,9 +23,7 @@ const favoritesHandler: HttpResponseResolver = async ({ request, params }) => {
       const nftIds = getFavoriteIds(user.id);
       return HttpResponse.json<Favorites>({
         nftIds,
-        items: nfts
-          .filter((nft) => nftIds.includes(nft.id))
-          .map((nft) => ({ ...nft, availableQuantity: getNFTStock(nft) })),
+        items: nfts.filter((nft) => nftIds.includes(nft.id)).map(getPublicNFT),
       });
     }
     const nft = nfts.find((entry) => entry.id === params.nftId);

@@ -3,6 +3,7 @@ import { completeLogin } from "./helpers/auth";
 
 const prepareAccount = async (page: Page, legacy = false) => {
   await page.goto("/login?redirect=%2Fperfil");
+
   await expect(page.getByLabel("E-mail", { exact: true })).toBeVisible();
 
   await page.evaluate(async (legacy) => {
@@ -31,6 +32,7 @@ const prepareAccount = async (page: Page, legacy = false) => {
   }, legacy);
 
   await completeLogin(page, "newcollector@example.com");
+
   await expect(page).toHaveURL(/\/perfil\/?$/);
 };
 
@@ -51,9 +53,11 @@ test("perfil novo permite salvar dados pessoais sem carteira ou ENS", async ({
 
   await page.getByLabel("Nome de exibição").fill("Novo colecionador");
   await page.getByRole("button", { name: "Salvar", exact: true }).click();
+
   await expect(
     page.getByText("Perfil atualizado.", { exact: true }),
   ).toBeVisible();
+
   await page.reload();
 
   await expect(page.getByLabel("Nome de exibição")).toHaveValue(
@@ -82,13 +86,16 @@ test("limpa o apelido automático de conta antiga e preserva um apelido personal
   await expect(
     page.getByLabel("Apelido da carteira", { exact: true }),
   ).toHaveValue("");
+
   await page
     .getByLabel("Apelido da carteira", { exact: true })
     .fill("Minha carteira preferida");
   await page.getByRole("button", { name: "Salvar", exact: true }).click();
+
   await expect(
     page.getByText("Perfil atualizado.", { exact: true }),
   ).toBeVisible();
+
   await page.reload();
 
   await expect(

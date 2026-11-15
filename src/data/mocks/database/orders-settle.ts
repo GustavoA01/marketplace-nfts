@@ -1,3 +1,5 @@
+import { changeNFT } from "../realtime/market";
+import { publishOrderUpdate } from "../realtime/orders";
 import { readOrders, saveOrders, publicOrder } from "./orders-store";
 import { readCartStore, saveCartStore, storedCartItems } from "./cart-storage";
 import { nfts } from "../fixtures/nfts";
@@ -24,11 +26,14 @@ export const consultOrder = (userId: string, id?: string, attempt?: string) => {
       entry.userId === userId &&
       (id ? entry.id === id : entry.attemptKey === attempt),
   );
+
   if (!order) return undefined;
   if (order.status !== "pending" || Date.now() < order.settlesAt)
     return publicOrder(order);
+
   const carts = readCartStore();
   const applied = carts.completedOrders.includes(order.id);
+
   if (!applied && (order.outcome === "declined" || !available(order))) {
     order.status = "declined";
     order.reason =
@@ -63,7 +68,16 @@ export const consultOrder = (userId: string, id?: string, attempt?: string) => {
     order.status = "confirmed";
     order.transaction = `0x${order.id.replaceAll("-", "")}${order.id.replaceAll("-", "")}`;
   }
+  order.version += 1;
   order.updatedAt = new Date().toISOString();
   saveOrders(store);
+  publishOrderUpdate(order);
+
+  if (order.status === "confirmed")
+    for (const nftId of Array.from(
+      new Set(order.items.map((item) => item.nftId)),
+    ))
+      changeNFT(nftId, {}, "purchase");
+
   return publicOrder(order);
 };

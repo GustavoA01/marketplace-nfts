@@ -1,4 +1,4 @@
-import { getNFTStock } from "../../database/inventory";
+import { getPublicNFT } from "../../database/inventory";
 import { HttpResponse, type HttpResponseResolver } from "msw/http";
 import { catalogueSearchSchema } from "@/data/schemas/catalogue";
 import type { CatalogueOption, NFTListResponse } from "@/data/types/catalogue";
@@ -54,7 +54,7 @@ export const listNFTsHandler: HttpResponseResolver = async ({ request }) => {
   const items =
     scenario === "empty"
       ? []
-      : nfts.filter((nft) => {
+      : nfts.map(getPublicNFT).filter((nft) => {
           const price = Number(nft.price);
           const matchesQuery = normalizeText(
             `${nft.name} ${nft.collection} ${nft.creator}`,
@@ -82,9 +82,7 @@ export const listNFTsHandler: HttpResponseResolver = async ({ request }) => {
   });
   const page = search.page ?? 1;
   return HttpResponse.json<NFTListResponse>({
-    items: items
-      .slice((page - 1) * pageSize, page * pageSize)
-      .map((nft) => ({ ...nft, availableQuantity: getNFTStock(nft) })),
+    items: items.slice((page - 1) * pageSize, page * pageSize),
     total: items.length,
     page,
     pageSize,

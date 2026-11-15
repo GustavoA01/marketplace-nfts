@@ -10,6 +10,7 @@ export type NFTPreview = {
 };
 
 export type NFT = NFTPreview & {
+  version?: number;
   name: string;
   price: string;
   category: string;
