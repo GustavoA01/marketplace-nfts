@@ -123,7 +123,7 @@ npm run test:e2e
 | `npm run format:check`                     | Verifica a formatação.                                                             |
 | `npm run format`                           | Aplica a formatação Prettier.                                                      |
 
-O Playwright inicia o Vite de testes na porta 4173 com MSW ativado explicitamente no servidor de testes. Relatórios ficam em `playwright-report`; traces e screenshots de falhas, em `test-results`. Os testes estão agrupados por fluxo em `tests/e2e`; por exemplo, `npx playwright test realtime` executa tempo real e `npx playwright test cart` executa carrinho/cupons. A cobertura, limitações e verificações ainda pendentes estão descritas em [ARCHITECTURE.md](./ARCHITECTURE.md#verificação-e-limitações-da-entrega).
+O Playwright inicia o Vite de testes na porta 4173 com MSW ativado explicitamente no servidor de testes. Relatórios ficam em `playwright-report`; traces e screenshots de falhas, em `test-results`. Os testes estão agrupados por fluxo em `tests/e2e`; por exemplo, `npx playwright test realtime` executa tempo real e `npx playwright test cart` executa carrinho/cupons. A cobertura, limitações e auditorias Lighthouse estão em [ARCHITECTURE.md](./ARCHITECTURE.md#verificação-e-limitações-da-entrega).
 
 ## Build e preview
 
@@ -134,10 +134,10 @@ npm run build
 npm run preview -- --host 127.0.0.1 --port 4173 --strictPort
 ```
 
-O preview fica em `http://127.0.0.1:4173`; use a porta livre de outro servidor de testes. Com o preview ativo e Chrome/Chromium disponível, `npm run audit:lighthouse` executa a auditoria básica local e grava `reports/lighthouse.html`. Configure `CHROME_PATH` se o navegador não for encontrado automaticamente. A configuração atual desse comando não gera, sozinha, todas as medições exigidas pelo enunciado.
+O preview fica em `http://127.0.0.1:4173`; use a porta livre de outro servidor de testes. Com o preview ativo e Chrome/Chromium disponível, `npm run audit:lighthouse` executa uma auditoria básica local. As medições oficiais da entrega (três runs por página/perfil, medianas, LCP/CLS/TBT) estão em `reports/` e resumidas em [ARCHITECTURE.md](./ARCHITECTURE.md#auditorias-lighthouse).
 
-Na publicação, a hospedagem deve servir `dist`, disponibilizar `/mockServiceWorker.js` e redirecionar rotas da SPA para `index.html`, permitindo acesso direto e refresh. Os dados são separados por origem: o estado do localhost não é transferido ao deploy.
+URL pública: `https://marketplace-nfts-kurio.vercel.app`. O `vercel.json` define o rewrite SPA e as variáveis de build com mocks. `/mockServiceWorker.js` sai de `public/`. Os dados são separados por origem: o estado do localhost não é transferido ao deploy.
 
-Contratos REST/eventos, política de sessão, cache, estado do carrinho, decisões de UX e desvios do Figma estão centralizados em [ARCHITECTURE.md](./ARCHITECTURE.md).
+Contratos REST/eventos, política de sessão, cache, estado do carrinho, decisões de UX, desvios do Figma e auditorias Lighthouse estão centralizados em [ARCHITECTURE.md](./ARCHITECTURE.md).
 
 As baselines visuais foram geradas em Chromium no Linux/WSL. Para atualizar referências após uma mudança de layout revisada, execute `npm run test:visual -- --update-snapshots` e versione os PNGs alterados.

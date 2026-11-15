@@ -2,12 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { homePromosMock } from "@/data/mocks/temporary/home-content";
+import { homePromos } from "@/data/mocks/fixtures/home-content";
 
 export const HomePromos = () => {
   return (
     <section className="flex flex-col gap-7 lg:flex-row">
-      {homePromosMock.map((promo) => (
+      {homePromos.map((promo) => (
         <Card
           key={promo.id}
           className="relative flex h-[250px] min-w-0 flex-1 flex-row gap-0 overflow-hidden rounded-lg p-0 ring-0"

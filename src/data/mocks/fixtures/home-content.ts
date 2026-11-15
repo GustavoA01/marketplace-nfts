@@ -1,4 +1,4 @@
-export const homePromosMock = [
+export const homePromos = [
   {
     id: "genesis",
     image: "/mocks/PromoEmerald.png",
@@ -15,7 +15,7 @@ export const homePromosMock = [
   },
 ];
 
-export const journalMock = [
+export const journalArticles = [
   {
     id: "ownership",
     image: "/mocks/JournalOwnership.png",
@@ -37,7 +37,7 @@ export const journalMock = [
     image: "/mocks/JournalRarity.png",
     date: "15 de setembro",
     minutes: 3,
-    title: "Raridade, atributos e procedência",
+    title: "Raridade, licenses e procedência",
     description:
       "Entenda raridade, procedência, direitos autorais e utilidade.",
   },

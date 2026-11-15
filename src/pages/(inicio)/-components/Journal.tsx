@@ -1,7 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { journalMock } from "@/data/mocks/temporary/home-content";
+import { journalArticles } from "@/data/mocks/fixtures/home-content";
 
 export const Journal = () => {
   return (
@@ -14,7 +14,7 @@ export const Journal = () => {
         propriedade digital.
       </p>
       <div className="mt-10 grid max-w-286 grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
-        {journalMock.map((article) => (
+        {journalArticles.map((article) => (
           <Card
             key={article.id}
             className="gap-0 overflow-hidden rounded-lg p-0 ring-0"

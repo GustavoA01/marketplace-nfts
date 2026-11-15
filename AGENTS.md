@@ -11,6 +11,6 @@
 - Reserve `src/features/<NomeDaFeature>` para funcionalidades compartilhadas ou transversais. Use `container` para lógica/composição e `components` para apresentação por props; adicione hooks e utils conforme a necessidade.
 - Não edite `src/routeTree.gen.ts` manualmente; a árvore é gerada pelo TanStack Router.
 - Centralize REST nos serviços Axios e estado remoto no TanStack Query. Preserve isolamento por usuário, cancelamento de consultas e consistência entre REST e Socket.IO.
-- Mantenha respostas e cenários simulados na camada MSW. Preserve os dados visuais provisórios em `src/data/mocks/temporary`, separados da infraestrutura e dos mocks de testes.
+- Mantenha respostas e cenários simulados na camada MSW. Conteúdo editorial estático da home fica em `src/data/mocks/fixtures`; assets locais em `public/mocks`.
 - Use ponto e vírgula e aspas duplas conforme o Prettier. Execute `npm run format` após alterações e verificações adequadas ao escopo.
 - Mantenha o README voltado a setup e avaliação. Documente contratos, cache, sessão, limitações e decisões de UX em `ARCHITECTURE.md`, evitando notas paralelas desatualizadas.

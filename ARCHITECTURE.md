@@ -13,7 +13,7 @@ React e TypeScript são compilados pelo Vite. TanStack Router gera as rotas de `
 | `src/data/types` e `src/data/schemas`                           | Contratos de transporte e validação.                                                                                                                                                       |
 | `src/data/mocks/handlers`                                       | Handlers REST e de conexão Socket.IO registrados no MSW.                                                                                                                                   |
 | `src/data/mocks/database`, `fixtures`, `scenarios` e `realtime` | Estado canônico, dados iniciais, falhas configuráveis e emissão dos eventos.                                                                                                               |
-| `src/data/mocks/temporary` e `public/mocks`                     | Dados visuais provisórios e assets locais.                                                                                                                                                 |
+| `src/data/mocks/fixtures` e `public/mocks`                      | Fixtures da simulação, conteúdo editorial estático da home e assets locais.                                                                                                                |
 | `tests/e2e`                                                     | Testes Playwright com isolamento por contexto do navegador.                                                                                                                                |
 
 Os mocks são ativados por `VITE_ENABLE_MOCKS=true`, inclusive no build. O worker inicia antes da importação do router e do cliente Socket.IO, permitindo interceptar HTTP e WebSocket. As respostas fictícias ficam na camada MSW; os componentes consomem os mesmos serviços utilizados no fluxo normal da aplicação.
@@ -193,4 +193,21 @@ Há oito baselines PNG versionadas de início, detalhe, carrinho e pagamento em 
 
 Relatório HTML fica em `playwright-report`; traces e screenshots de falhas, em `test-results`. Não há teste unitário como requisito adicional desta suíte; os formulários são exercitados pelo navegador e as respostas passam pela camada MSW.
 
-As auditorias Lighthouse completas, com três medições por página/perfil e respectivas medianas, e a URL pública de entrega ainda estão pendentes. A publicação deve manter os mocks no build e permitir acesso direto/refresh das rotas da SPA. Os comandos de setup e reprodução dos cenários estão no [README](./README.md).
+A URL pública é `https://marketplace-nfts-kurio.vercel.app`. A publicação mantém os mocks no build (`VITE_ENABLE_MOCKS=true` em `vercel.json`) e o rewrite SPA para acesso direto/refresh.
+
+### Auditorias Lighthouse
+
+Relatórios HTML/JSON versionados em `reports/{home|details}/{mobile|desktop}/`. Medições na URL publicada, Chrome DevTools (modo Navigation), aba anônima, Lighthouse 13.5.0, em 15/11/2026. Três runs por página e perfil; a tabela abaixo usa a mediana. Páginas: início (`/`) e detalhe (`/nfts/golden-signal-160`).
+
+| Página  | Perfil  | Performance | Accessibility | Best Practices | SEO |   LCP |   CLS |    TBT |
+| ------- | ------- | ----------: | ------------: | -------------: | --: | ----: | ----: | -----: |
+| Início  | Mobile  |          83 |            95 |             96 |  92 | 2,7 s | 0,024 | 430 ms |
+| Início  | Desktop |         100 |            95 |             96 |  92 | 0,7 s | 0,007 |   0 ms |
+| Detalhe | Mobile  |          85 |           100 |             96 |  92 | 2,6 s |     0 | 386 ms |
+| Detalhe | Desktop |         100 |           100 |             96 |  92 | 0,6 s | 0,001 |   0 ms |
+
+Metas do enunciado: Performance ≥ 90, Accessibility ≥ 95, Best Practices ≥ 95, SEO ≥ 90. Accessibility, Best Practices e SEO atingem as metas em todos os perfis. Performance no desktop atende; no mobile fica abaixo (83 início, 85 detalhe).
+
+A Performance mobile é puxada principalmente por LCP (~2,6–2,8 s) e TBT (~350–490 ms): first load com Service Worker MSW, bundle da SPA, fontes variáveis e imagens do catálogo/detalhe no caminho crítico. A latência HTTP dos mocks não simula rede real, mas o custo de JS/CSS/imagens no cliente é real. Não foram aplicadas simplificações exclusivas para a auditoria.
+
+Os comandos de setup e reprodução dos cenários estão no [README](./README.md).
