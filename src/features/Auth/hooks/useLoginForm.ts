@@ -74,8 +74,6 @@ export const useLoginForm = (
     errors,
     isSubmitting: isPending,
     onSubmit: handleSubmit((data) => mutate(data)),
-    onForgotPassword: () => {
-      console.log("Recuperação de senha fora do escopo desta etapa");
-    },
+    onForgotPassword: () => undefined,
   };
 };

@@ -8,12 +8,8 @@ type SocialAuthButtonsProps = {
 };
 
 export const SocialAuthButtons = ({
-  onGoogleClick = () => {
-    console.log("Login social Google fora do escopo desta etapa");
-  },
-  onFacebookClick = () => {
-    console.log("Login social Facebook fora do escopo desta etapa");
-  },
+  onGoogleClick,
+  onFacebookClick,
   padded = true,
 }: SocialAuthButtonsProps) => {
   return (
