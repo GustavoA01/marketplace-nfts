@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { isAxiosError } from "axios";
 import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -105,10 +106,16 @@ const Page = () => {
         <p className="break-all text-sm">Pedido: {order.id}</p>
         <Skeleton className="h-40 w-full" />
         <Button
-          onClick={() => void query.refetch()}
+          onClick={async () => {
+            const result = await query.refetch();
+            if (!result.isError && result.data?.status === "pending")
+              toast.info(
+                "O pagamento continua pendente. Aguarde a confirmação.",
+              );
+          }}
           disabled={query.isFetching}
         >
-          Consultar estado
+          {query.isFetching ? "Consultando..." : "Atualizar status"}
         </Button>
       </div>
     );

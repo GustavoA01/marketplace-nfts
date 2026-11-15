@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/Label";
 type SavedWalletsProps = {
   wallets: Wallet[];
   selectedId?: string;
+  idPrefix?: string;
   disabled: boolean;
   onSelect: (id: string) => void;
 };
@@ -12,6 +13,7 @@ type SavedWalletsProps = {
 export const SavedWallets = ({
   wallets,
   selectedId,
+  idPrefix = "checkout-saved",
   disabled,
   onSelect,
 }: SavedWalletsProps) => (
@@ -19,16 +21,16 @@ export const SavedWallets = ({
     {wallets.map((wallet) => (
       <div
         key={wallet.id}
-        className="flex cursor-pointer min-h-23.25 items-center gap-4 rounded-2xl bg-surface-card px-5 py-3"
+        className="flex min-h-23.25 items-center gap-4 rounded-2xl bg-surface-card px-5 py-3"
       >
         <Label
-          htmlFor={`checkout-saved-${wallet.id}`}
-          className="flex cursor-pointer min-w-0 flex-1 items-center gap-4"
+          htmlFor={`${idPrefix}-${wallet.id}`}
+          className="flex min-w-0 flex-1 cursor-pointer items-center gap-4"
         >
           <Input
-            id={`checkout-saved-${wallet.id}`}
+            id={`${idPrefix}-${wallet.id}`}
             type="radio"
-            name="checkout-saved-wallet"
+            name={`${idPrefix}-wallet`}
             checked={selectedId === wallet.id}
             disabled={disabled}
             onChange={() => onSelect(wallet.id)}

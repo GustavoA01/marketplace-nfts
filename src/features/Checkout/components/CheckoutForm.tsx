@@ -233,6 +233,7 @@ export const CheckoutForm = ({
         <div className="mt-4">
           <SavedWallets
             wallets={wallets}
+            idPrefix="checkout-form"
             selectedId={wallet?.id}
             disabled={disabled}
             onSelect={onWalletChange}

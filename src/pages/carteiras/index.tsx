@@ -1,5 +1,6 @@
+import { ChevronLeft } from "lucide-react";
 import { requireSession } from "@/features/Auth/utils/navigation";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { AccountMobileBar } from "@/components/AccountMobileBar";
 import { AccountSidebar } from "@/components/AccountSidebar";
 import { MobileBottomNavigation } from "@/components/MobileBottomNavigation";
@@ -10,6 +11,7 @@ import { WalletsSkeleton } from "./-components/WalletsSkeleton";
 import { useWalletsPage } from "./-hooks/useWalletsPage";
 
 const Page = () => {
+  const { returnTo } = Route.useSearch();
   const {
     isPending,
     isError,
@@ -34,7 +36,22 @@ const Page = () => {
 
   return (
     <>
-      <AccountMobileBar title="Carteiras" />
+      <AccountMobileBar
+        title="Carteiras"
+        backTo={returnTo ?? "/"}
+        backLabel={returnTo ? "Voltar ao pagamento" : "Voltar"}
+      />
+      {returnTo && (
+        <Button
+          variant="link"
+          nativeButton={false}
+          render={<Link to={returnTo} />}
+          className="mb-5 hidden h-auto p-0 text-sm lg:inline-flex"
+        >
+          <ChevronLeft className="size-4" />
+          Voltar ao pagamento
+        </Button>
+      )}
       <div className="flex flex-col gap-5 sm:gap-7 lg:flex-row lg:items-start">
         <AccountSidebar active="wallets" />
         <div className="flex min-w-0 flex-1 flex-col gap-6 sm:gap-8">
@@ -58,6 +75,7 @@ const Page = () => {
           ) : (
             <>
               <MainWalletForm
+                control={mainForm.control}
                 register={mainForm.register}
                 errors={mainForm.formState.errors}
                 watch={mainForm.watch}
@@ -65,17 +83,11 @@ const Page = () => {
                 submitLabel={mainSubmitLabel}
                 errorMessage={mainErrorMessage}
                 onSubmit={onMainSubmit}
-                onNetworkChange={(value) => {
-                  mainForm.setValue("network", value, { shouldValidate: true });
-                }}
-                onWalletTypeChange={(value) => {
-                  mainForm.setValue("walletType", value, {
-                    shouldValidate: true,
-                  });
-                }}
                 onEnsSuffixChange={(value) => {
                   mainForm.setValue("ensSuffix", value, {
+                    shouldDirty: true,
                     shouldValidate: true,
+                    shouldTouch: true,
                   });
                 }}
               />
@@ -83,6 +95,7 @@ const Page = () => {
                 isEditing={isEditingSecondary}
                 sameAsMain={sameAsMain}
                 hasSecondaryWallet={hasSecondaryWallet}
+                control={secondaryForm.control}
                 register={secondaryForm.register}
                 errors={secondaryForm.formState.errors}
                 watch={secondaryForm.watch}
@@ -92,19 +105,11 @@ const Page = () => {
                 onSubmit={onSecondarySubmit}
                 onAddClick={onAddSecondary}
                 onSameAsMainChange={onSameAsMainChange}
-                onNetworkChange={(value) => {
-                  secondaryForm.setValue("network", value, {
-                    shouldValidate: true,
-                  });
-                }}
-                onWalletTypeChange={(value) => {
-                  secondaryForm.setValue("walletType", value, {
-                    shouldValidate: true,
-                  });
-                }}
                 onEnsSuffixChange={(value) => {
                   secondaryForm.setValue("ensSuffix", value, {
+                    shouldDirty: true,
                     shouldValidate: true,
+                    shouldTouch: true,
                   });
                 }}
               />
@@ -119,5 +124,10 @@ const Page = () => {
 
 export const Route = createFileRoute("/carteiras/")({
   beforeLoad: requireSession,
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { returnTo?: "/pagamento" } => ({
+    returnTo: search.returnTo === "/pagamento" ? "/pagamento" : undefined,
+  }),
   component: Page,
 });

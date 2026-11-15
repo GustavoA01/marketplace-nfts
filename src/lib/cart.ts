@@ -1,3 +1,4 @@
+import type { QuoteNetwork } from "@/data/types/quote";
 import type { Cart, CartItem } from "@/data/types/cart";
 import { ethToWei, weiToEth } from "./eth";
 
@@ -28,3 +29,18 @@ export const cartSignature = (cart: Cart) =>
       item.network,
     ]),
   });
+
+export const getCartNetwork = (
+  cart?: Pick<Cart, "items">,
+): QuoteNetwork | undefined => {
+  const networks = Array.from(
+    new Set(
+      (cart?.items ?? []).map((item) => item.network.trim().toLowerCase()),
+    ),
+  );
+  const network = networks[0];
+  return networks.length === 1 &&
+    (network === "ethereum" || network === "polygon" || network === "solana")
+    ? network
+    : undefined;
+};

@@ -85,16 +85,18 @@ export const OrderSummary = ({
           </p>
         </>
       )}
+
       {isQuoteFetching && !isQuotePending && (
         <p role="status" className="text-sm text-text-secondary">
           Atualizando valores...
         </p>
       )}
+
       <Button
         type="button"
         onClick={onCheckout}
         disabled={isBusy || isQuoteFetching || Boolean(quoteError) || !quote}
-        className="h-[60px] w-full rounded-full text-[15px] font-bold lg:h-10 lg:rounded-sm"
+        className="h-15 w-full rounded-full text-[15px] font-bold lg:h-10 lg:rounded-sm"
       >
         Conectar e finalizar
       </Button>

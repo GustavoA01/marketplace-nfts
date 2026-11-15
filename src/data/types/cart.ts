@@ -32,6 +32,7 @@ export type CartApiError = {
     | "COUPON_INVALID"
     | "COUPON_EXPIRED"
     | "CART_CHANGED"
+    | "NETWORK_MISMATCH"
     | "EMPTY_CART"
     | "ITEM_NOT_FOUND"
     | "SESSION_EXPIRED"

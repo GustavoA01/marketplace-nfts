@@ -1,11 +1,10 @@
-import type { ComponentProps, ReactNode } from "react";
+import { type ComponentProps, type ReactNode } from "react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/Accordion";
-import { Button } from "@/components/ui/Button";
 import type { Wallet } from "@/data/types/wallets";
 import { SavedWallets } from "./SavedWallets";
 import { WalletOptions } from "./WalletOptions";
@@ -38,21 +37,11 @@ export const CheckoutMobile = ({
   onSelect,
 }: CheckoutMobileProps) => (
   <>
-    <div className="mb-0 flex items-center justify-between gap-3 text-base leading-4 font-bold">
-      <h2>{connected ? "Carteira conectada" : "Carteiras cadastradas"}</h2>
-      <Button
-        type="button"
-        variant="link"
-        className="h-auto p-0 text-sm text-text-accent"
-        onClick={() =>
-          document.getElementById(`checkout-saved-${wallets[0]?.id}`)?.focus()
-        }
-      >
-        Trocar carteira
-      </Button>
-    </div>
+    <h2 className="mb-0 text-base leading-4 font-bold">
+      {connected ? "Carteira conectada" : "Carteiras cadastradas"}
+    </h2>
     <SavedWallets
-      wallets={wallets}
+      wallets={wallets.filter((wallet) => wallet.id === selectedId)}
       selectedId={selectedId}
       disabled={busy}
       onSelect={onSelect}

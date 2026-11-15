@@ -1,4 +1,4 @@
-import type { ChangeEventHandler, Ref } from "react";
+import { useId, type ChangeEventHandler, type Ref } from "react";
 import { Input } from "@/components/ui/Input";
 import {
   Select,
@@ -37,10 +37,12 @@ export const EnsNameField = ({
   ensNameName,
   ensNameRef,
 }: EnsNameFieldProps) => {
+  const inputId = useId();
+
   return (
     <FormField
       label="Nome ENS"
-      required
+      htmlFor={inputId}
       error={ensNameError || ensSuffixError}
       className="gap-2.5"
     >
@@ -67,6 +69,7 @@ export const EnsNameField = ({
           </SelectContent>
         </Select>
         <Input
+          id={inputId}
           ref={ensNameRef}
           name={ensNameName}
           value={ensName}

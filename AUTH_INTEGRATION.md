@@ -99,3 +99,9 @@ Foram verificadas chamadas HTTP passando pelos handlers MSW: JSON inválido, val
 Os testes E2E permanentes continuam como etapa separada. Os comandos gerais de verificação são `npm run lint`, `npm run build` e `npm run format:check`.
 
 Também foram verificados login correto/incorreto, cookies distintos, isolamento de sessões, troca de usuário, expiração, logout, limpeza de cache, proteção de rotas e validação do destino de retorno.
+
+## Perfil sem carteira
+
+Novos usuários começam com apelido da carteira e nome ENS vazios. O sufixo `.eth` é somente a opção inicial do seletor e não representa um ENS registrado ou uma carteira criada. Apelido e ENS são metadados opcionais do perfil e não impedem salvar dados pessoais, avatar ou senha. Preencher esses campos não cadastra uma carteira; os registros utilizados no pagamento continuam na API de carteiras.
+
+Para perfis persistidos pelo cadastro antigo, a resposta do perfil trata o valor automático `Carteira principal` como vazio quando não existe carteira principal cadastrada para aquele usuário. Nomes personalizados e os demais dados são preservados; não é necessário limpar a base de usuários. Os dados pessoais continuam vindo do cadastro da própria conta.

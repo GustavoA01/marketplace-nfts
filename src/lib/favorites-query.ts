@@ -28,7 +28,7 @@ export const updateFavoriteCache = (
   if (!isFavoriteOwnerActive(client, userId)) return;
   client.setQueryData<Favorites>(
     queryKeys.favorites.list(userId),
-    (previous) => {
+    (previous: Favorites | undefined) => {
       if (!previous) return previous;
       const nftIds = previous.nftIds.filter((id) => id !== nftId);
       if (isFavorite) nftIds.push(nftId);

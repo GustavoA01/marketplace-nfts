@@ -1,3 +1,4 @@
+import { getWalletsByUserId } from "./wallets";
 import { z } from "zod";
 import type { SignUpFormValues } from "@/data/schemas/auth";
 import type { AuthUser } from "@/data/types/auth";
@@ -33,7 +34,7 @@ const normalizeUser = (
   displayName: user.displayName ?? user.username,
   ensName: user.ensName ?? "",
   ensSuffix: user.ensSuffix ?? ".eth",
-  walletAlias: user.walletAlias ?? "Carteira principal",
+  walletAlias: user.walletAlias ?? "",
   avatarUrl: user.avatarUrl ?? null,
 });
 
@@ -62,7 +63,11 @@ export const toCollectorProfile = (user: MockUser): CollectorProfile => ({
   email: user.email,
   ensName: user.ensName,
   ensSuffix: user.ensSuffix,
-  walletAlias: user.walletAlias,
+  walletAlias:
+    user.walletAlias === "Carteira principal" &&
+    !getWalletsByUserId(user.id).some((wallet) => wallet.kind === "main")
+      ? ""
+      : user.walletAlias,
   avatarUrl: user.avatarUrl,
 });
 
@@ -96,7 +101,7 @@ export const createUser = async (
     displayName: username,
     ensName: "",
     ensSuffix: ".eth",
-    walletAlias: "Carteira principal",
+    walletAlias: "",
     avatarUrl: null,
     ...credentials,
   };

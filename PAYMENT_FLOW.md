@@ -72,7 +72,7 @@ Para simular desconexão antes de enviar, use Desconectar carteira. Uma solicita
 
 O pagamento usa dados de perfil e carteiras pela API, campos do colecionador validados com React Hook Form/Zod, revisão explícita e indicação de cotação. O recibo só é exibido para pedido confirmado. O recibo exibe a identificação abreviada no formato `0xA91F…E82C`, preservando o valor completo no título e no link. O botão abre o explorador da rede em uma nova aba: Etherscan para Ethereum, Polygonscan para Polygon e Solana Explorer para Solana. As identificações geradas pelo mock não correspondem a transações reais, portanto não terão registro nesses serviços. A interface usa mensagens normais de compra e conexão; os detalhes da simulação permanecem nesta documentação.
 
-Esta etapa usa consultas REST periódicas de um segundo enquanto o pedido está pendente. A integração obrigatória de eventos com Socket.IO ainda será feita; este polling não a substitui. Favoritos e seus testes E2E já estão integrados; os testes permanentes do pagamento e a auditoria Lighthouse continuam pendentes.
+Esta etapa usa consultas REST periódicas de um segundo enquanto o pedido está pendente. A integração obrigatória de eventos com Socket.IO ainda será feita; este polling não a substitui. Favoritos e seus testes E2E já estão integrados; há testes permanentes da troca de carteira e compra confirmada; os demais cenários de pagamento e a auditoria Lighthouse continuam pendentes.
 
 Sem abrir navegador, verificações temporárias da API cobriram idempotência concorrente, conflito de chave, isolamento entre usuários, pendência, confirmação, recusa, snapshot imutável, baixa única de estoque/carrinho, recusa/desconexão da carteira, cotação alterada e recuperação do mesmo pedido após timeout e falha intermediária de persistência. TypeScript, lint e build foram executados. Interações e fidelidade visual desta etapa ainda precisam da verificação no navegador e dos testes E2E permanentes.
 
@@ -81,3 +81,13 @@ Sem abrir navegador, verificações temporárias da API cobriram idempotência c
 O pagamento foi realinhado aos frames desktop e mobile do Figma: no desktop, formulário de duas colunas na ordem original e revisão com 405 px à direita, seguida de carteira/rede; no mobile, carteiras salvas e provedores aparecem primeiro, com os dados e a revisão no Accordion. Os campos de rede e tipo selecionam carteiras cadastradas compatíveis. Os provedores sem uma carteira cadastrada ficam desabilitados. Campos derivados da carteira são preenchidos pela API e não criam uma nova carteira no checkout.
 
 Foi feita uma verificação temporária apenas deste fluxo, com captura desktop/mobile, alinhamento dos campos, coluna de revisão, ausência de overflow, preservação do formulário ao redimensionar, abertura do modal no desktop, conexão e pedido confirmado. A revisão explícita e os controles de conexão são estados funcionais adicionais ao frame estático. O footer continua exclusivo da página inicial, conforme a decisão do projeto.
+
+## Compatibilidade de rede e troca de carteira
+
+A rede da compra é determinada pelos NFTs, sem ser alterada ao escolher outra carteira. O checkout seleciona uma carteira compatível, priorizando a principal. Provedores e campos de carteira permitem apenas as opções dessa rede. Quando não há carteira compatível, o usuário é orientado a gerenciar suas carteiras, com retorno ao pagamento.
+
+No mobile, a carteira selecionada aparece no topo; a troca é feita em Usar outra carteira? dentro do Accordion de dados e revisão. Só entram carteiras compatíveis com a rede da compra. Trocar limpa a conexão e a revisão anteriores e exige conectar e revisar novamente.
+
+A decisão de UX é uma rede por pedido. Carrinhos podem manter itens de redes diferentes, mas a cotação e o pagamento ficam bloqueados até o usuário ajustar os itens. A API também rejeita uma rede enviada que diverge dos NFTs e um pedido cuja carteira diverge da cotação. Os valores continuam denominados em ETH na simulação, conforme o contrato do desafio; as taxas são fixtures e não representam gas real, WETH, conversão ou bridge.
+
+Os testes permanentes em `tests/e2e/checkout-wallets.spec.ts` cobrem troca de carteira com nova conexão/revisão e compra concluída em desktop/mobile, carteira de outra rede omitida no seletor, rejeições na API e bloqueio de carrinho com redes diferentes. O preparo usa os serviços Axios e os mesmos handlers MSW. Essa cobertura não substitui os cenários restantes de falha, tempo real e regressão visual.

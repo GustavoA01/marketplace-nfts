@@ -135,3 +135,7 @@ localStorage.removeItem("marketplace-nfts:wallet-scenario");
 7. Ativar `error`/`offline`/`mutation-error` e usar “Tentar novamente”.
 
 Pendência: consumo dessas carteiras no pagamento/checkout fica com a etapa de pedidos.
+
+## Retorno ao pagamento
+
+O link Gerenciar carteiras exibido no checkout sem carteiras abre `/carteiras?returnTo=/pagamento`. O parâmetro é validado pela rota e aceita somente o destino do pagamento. No mobile, a seta de voltar usa esse destino; no desktop, há o link Voltar ao pagamento. O cadastro permanece na página de carteiras até o usuário escolher voltar. A referência continua após refresh e no retorno do login. Ao abrir carteiras fora da compra, o retorno padrão continua sendo o Início.

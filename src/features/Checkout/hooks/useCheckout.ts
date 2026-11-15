@@ -1,4 +1,5 @@
-import { useState, useRef, type FormEvent } from "react";
+import { getCartNetwork } from "@/lib/cart";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -43,34 +44,42 @@ export const useCheckout = () => {
     ...cartQueryOptions(user?.id),
     enabled: Boolean(user),
   });
+
   const wallets = useQuery({
     queryKey: queryKeys.wallets.list(user?.id ?? ""),
     queryFn: ({ signal }) => getWallets(signal),
     enabled: Boolean(user),
   });
+
   const profile = useQuery({
     queryKey: queryKeys.profile.current,
     queryFn: ({ signal }) => getProfile(signal),
     enabled: Boolean(user),
   });
-  const selected =
-    wallets.data?.find((entry) => entry.id === walletId) ??
-    (!walletId
-      ? (wallets.data?.find((entry) => entry.kind === "main") ??
-        wallets.data?.[0])
-      : undefined);
-  const network =
-    selected?.network === "ethereum" ||
-    selected?.network === "polygon" ||
-    selected?.network === "solana"
-      ? selected.network
+
+  const network = getCartNetwork(cart.data);
+
+  const networkError =
+    cart.data?.items.length && !network
+      ? "Finalize uma rede por vez. Mantenha no carrinho apenas NFTs de uma mesma rede."
       : undefined;
+  const compatibleWallets =
+    wallets.data?.filter((entry) => entry.network === network) ?? [];
+  const selected =
+    compatibleWallets.find((entry) => entry.id === walletId) ??
+    compatibleWallets.find((entry) => entry.kind === "main") ??
+    compatibleWallets[0];
   const quote = useQuery({
     ...quoteQueryOptions(cart.data, client, user?.id, network),
     enabled: Boolean(
-      user && selected && cart.data?.items.length && !cart.isFetching,
+      user &&
+      network &&
+      selected &&
+      cart.data?.items.length &&
+      !cart.isFetching,
     ),
   });
+
   const form = useForm<CollectorValues>({
     resolver: zodResolver(collectorSchema),
     values: {
@@ -82,6 +91,7 @@ export const useCheckout = () => {
     },
     resetOptions: { keepDirtyValues: true },
   });
+
   const connectionMutation = useMutation({
     mutationFn: async ({
       id,
@@ -106,6 +116,7 @@ export const useCheckout = () => {
     },
     onError: (error) => toast.error(cartErrorMessage(error)),
   });
+
   const orderMutation = useMutation({
     mutationKey: queryKeys.orders.create,
     mutationFn: ({ attempt }: { attempt: OrderAttempt; owner: string }) =>
@@ -140,46 +151,60 @@ export const useCheckout = () => {
       submitting.current = false;
     },
   });
+
   const pendingAttempt = getOrderAttempt(user?.id);
   const connected = Boolean(connection && connection.walletId === selected?.id);
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
-    void form.handleSubmit((collector) => {
-      if (
-        !user ||
-        !quote.data ||
-        !connection ||
-        !connected ||
-        reviewed !== quote.data.id ||
-        quote.isFetching ||
-        quote.isError ||
-        submitting.current ||
-        pendingAttempt
-      )
-        return;
-      try {
-        const attempt = {
-          key: crypto.randomUUID(),
-          payload: {
-            quoteId: quote.data.id,
-            connectionId: connection.id,
-            collector,
-          },
-        };
-        saveOrderAttempt(user.id, attempt);
-        submitting.current = true;
-        orderMutation.mutate({ attempt, owner: user.id });
-      } catch {
-        submitting.current = false;
-        toast.error("Não foi possível preservar esta tentativa no navegador.");
-      }
-    })(event);
-  };
+
+  const onSubmit = form.handleSubmit((collector) => {
+    const connecting = connectionMutation.isPending;
+    const walletMatchesNetwork = selected?.network === network;
+    const quoteMatchesNetwork = quote.data?.network === network;
+    const quoteReviewed = Boolean(quote.data && reviewed === quote.data.id);
+    const quoteIdle = !quote.isFetching && !quote.isError;
+    const alreadySubmitting = submitting.current || Boolean(pendingAttempt);
+
+    if (
+      !user ||
+      !quote.data ||
+      !connection ||
+      !connected ||
+      connecting ||
+      !walletMatchesNetwork ||
+      !quoteMatchesNetwork ||
+      !quoteReviewed ||
+      !quoteIdle ||
+      alreadySubmitting
+    )
+      return;
+
+    const attempt = {
+      key: crypto.randomUUID(),
+      payload: {
+        quoteId: quote.data.id,
+        connectionId: connection.id,
+        collector,
+      },
+    };
+
+    try {
+      saveOrderAttempt(user.id, attempt);
+      submitting.current = true;
+      orderMutation.mutate({ attempt, owner: user.id });
+    } catch {
+      submitting.current = false;
+      toast.error("Não foi possível preservar esta tentativa no navegador.");
+    }
+  });
+
   return {
     user,
     cart,
     wallets,
     profile,
     quote,
+    network,
+    networkError,
+    compatibleWallets,
     selected,
     form,
     connected,
@@ -190,6 +215,7 @@ export const useCheckout = () => {
     connectionMutation,
     busy: orderMutation.isPending,
     onSelect: (id: string) => {
+      if (!compatibleWallets.some((entry) => entry.id === id)) return;
       setWalletId(id);
       setConnection(undefined);
       setReviewed("");

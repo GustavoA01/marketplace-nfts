@@ -21,3 +21,5 @@ A divisão container/components existe apenas em features. Nas páginas, mantenh
 Prefira manter funcionalidades exclusivas de uma tela no index.tsx e em -components da própria página. O tamanho de um arquivo, isoladamente, não justifica criar uma feature. Atualmente Auth e Checkout são compartilhados; perfil, carteiras, filtros do início e resumo do carrinho pertencem às respectivas páginas.
 Não crie wrappers que apenas repassem props ou dados estáticos a outro componente. O container de uma feature deve concentrar sua composição ou lógica efetiva; não separe um componente de apresentação inteiro só para cumprir a estrutura de pastas. Componentes simples com estado visual local, como PasswordField, podem ser um único arquivo compartilhado. Evite reexports que apenas renomeiem componentes.
 O Footer deve aparecer apenas na página inicial. Para seções recolhíveis, utilize o Accordion do shadcn/ui.
+
+Separe funções e blocos de responsabilidades com linhas em branco para manter a leitura clara.

@@ -55,6 +55,8 @@ export const useWalletsForms = ({
 
   const hasSecondaryWallet = Boolean(secondaryWallet);
   const isEditingSecondary = hasSecondaryWallet || secondaryFormOpened;
+  const mainIsDirty = mainForm.formState.isDirty;
+  const secondaryIsDirty = secondaryForm.formState.isDirty;
 
   useEffect(() => {
     if (previousUserIdRef.current === userId) return;
@@ -67,13 +69,21 @@ export const useWalletsForms = ({
 
   useEffect(() => {
     if (!wallets) return;
-    if (!mainForm.formState.isDirty) {
+    if (!mainIsDirty) {
       mainForm.reset(mainWallet ? toFormValues(mainWallet) : emptyWalletValues);
     }
-    if (secondaryWallet && !secondaryForm.formState.isDirty) {
+    if (secondaryWallet && !secondaryIsDirty) {
       secondaryForm.reset(toFormValues(secondaryWallet));
     }
-  }, [wallets, mainWallet, secondaryWallet, mainForm, secondaryForm]);
+  }, [
+    wallets,
+    mainWallet,
+    secondaryWallet,
+    mainForm,
+    secondaryForm,
+    mainIsDirty,
+    secondaryIsDirty,
+  ]);
 
   const mainValues = useWatch({ control: mainForm.control });
 

@@ -1,3 +1,5 @@
+import type { QuoteNetwork } from "@/data/types/quote";
+import { networkOptions } from "@/data/schemas/wallets";
 import type { Wallet } from "@/data/types/wallets";
 import { Link } from "@tanstack/react-router";
 import { Wallet as WalletIcon } from "lucide-react";
@@ -12,6 +14,7 @@ const providers = [
 ];
 type Props = {
   wallets: Wallet[];
+  network?: QuoteNetwork;
   selectedId?: string;
   connected: boolean;
   disabled: boolean;
@@ -22,6 +25,7 @@ type Props = {
 };
 export const WalletOptions = ({
   wallets,
+  network,
   selectedId,
   connected,
   disabled,
@@ -30,6 +34,9 @@ export const WalletOptions = ({
   onConnect,
   onDisconnect,
 }: Props) => {
+  const networkLabel = networkOptions.find(
+    (option) => option.value === network,
+  )?.label;
   const selected = wallets.find((entry) => entry.id === selectedId);
   return (
     <section className="space-y-4 lg:space-y-5">
@@ -38,8 +45,13 @@ export const WalletOptions = ({
       </h2>
       {!wallets.length && (
         <p className="text-sm text-text-secondary">
-          Cadastre uma carteira para continuar.{" "}
-          <Link to="/carteiras" className="text-primary underline">
+          Cadastre uma carteira{networkLabel ? ` na rede ${networkLabel}` : ""}{" "}
+          para continuar.{" "}
+          <Link
+            to="/carteiras"
+            search={{ returnTo: "/pagamento" }}
+            className="text-primary underline"
+          >
             Gerenciar carteiras
           </Link>
         </p>

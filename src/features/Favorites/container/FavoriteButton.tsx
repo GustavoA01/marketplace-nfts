@@ -34,13 +34,16 @@ export const FavoriteButton = ({
     isPending: sessionPending,
     refetch: refetchSession,
   } = useSession();
+
   const { data, isPending, isFetching, isError, refetch } = useQuery(
     favoritesQueryOptions(user?.id),
   );
+
   const requestLogin = () => {
     if (window.matchMedia("(min-width: 1024px)").matches) setAuthOpen(true);
     else void navigate({ to: "/login", search: { redirect: href } });
   };
+
   const { mutate, isSaving } = useFavoriteMutation(
     nftId,
     user?.id,
@@ -54,20 +57,24 @@ export const FavoriteButton = ({
         toast.error("Não foi possível verificar sua sessão. Tente novamente.");
       return;
     }
+
     if (!user) {
       requestLogin();
       return;
     }
+
     if (isError) {
       const result = await refetch();
       if (result.isError)
         toast.error("Não foi possível carregar os favoritos. Tente novamente.");
       return;
     }
+
     if (isSaving || !data || !isFavoriteOwnerActive(client, user.id)) return;
     const current = client.getQueryData<Favorites>(
       queryKeys.favorites.list(user.id),
     );
+
     mutate({
       nftId,
       ownerId: user.id,

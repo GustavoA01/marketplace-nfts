@@ -49,6 +49,7 @@ Há testes E2E permanentes de favoritos para desktop e mobile. A cobertura dos d
 
 ```bash
 npm run build
+npm run typecheck
 npm run lint
 npm run preview -- --host 127.0.0.1
 npm run test:e2e

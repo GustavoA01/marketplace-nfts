@@ -1,4 +1,4 @@
-import type { FormEventHandler } from "react";
+import type { SubmitEventHandler } from "react";
 import type {
   FieldErrors,
   UseFormRegister,
@@ -20,7 +20,7 @@ type ProfileFormProps = {
   hasAvatar: boolean;
   avatarAlt: string;
   avatarUrl?: string;
-  onSubmit: FormEventHandler<HTMLFormElement>;
+  onSubmit: SubmitEventHandler<HTMLFormElement>;
   onEnsSuffixChange: (value: ".eth" | ".xyz") => void;
   onAvatarChange: (file: File) => void;
   onAvatarRemove: () => void;
@@ -114,7 +114,6 @@ export const ProfileForm = ({
           <FormField
             label="Apelido da carteira"
             htmlFor="walletAlias"
-            required
             error={errors.walletAlias?.message}
           >
             <Input

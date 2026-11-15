@@ -1,5 +1,6 @@
-import type { FormEventHandler } from "react";
+import type { SubmitEventHandler } from "react";
 import type {
+  Control,
   FieldErrors,
   UseFormRegister,
   UseFormWatch,
@@ -15,17 +16,16 @@ type SecondaryWalletSectionProps = {
   isEditing: boolean;
   sameAsMain: boolean;
   hasSecondaryWallet: boolean;
+  control: Control<WalletFormValues>;
   register: UseFormRegister<WalletFormValues>;
   errors: FieldErrors<WalletFormValues>;
   watch: UseFormWatch<WalletFormValues>;
   status: FormStatus;
   submitLabel: string;
   errorMessage?: string;
-  onSubmit: FormEventHandler<HTMLFormElement>;
+  onSubmit: SubmitEventHandler<HTMLFormElement>;
   onAddClick: () => void;
   onSameAsMainChange: (checked: boolean) => void;
-  onNetworkChange: (value: string) => void;
-  onWalletTypeChange: (value: string) => void;
   onEnsSuffixChange: (value: ".eth" | ".xyz") => void;
 };
 
@@ -33,6 +33,7 @@ export const SecondaryWalletSection = ({
   isEditing,
   sameAsMain,
   hasSecondaryWallet,
+  control,
   register,
   errors,
   watch,
@@ -42,8 +43,6 @@ export const SecondaryWalletSection = ({
   onSubmit,
   onAddClick,
   onSameAsMainChange,
-  onNetworkChange,
-  onWalletTypeChange,
   onEnsSuffixChange,
 }: SecondaryWalletSectionProps) => {
   const isSubmitting = status === "submitting";
@@ -98,12 +97,11 @@ export const SecondaryWalletSection = ({
         >
           <WalletFormFields
             idPrefix="secondary-wallet"
+            control={control}
             register={register}
             errors={errors}
             watch={watch}
             disabled={isSubmitting || sameAsMain}
-            onNetworkChange={onNetworkChange}
-            onWalletTypeChange={onWalletTypeChange}
             onEnsSuffixChange={onEnsSuffixChange}
             onEnsNameChange={ensNameRegister.onChange}
             ensNameName={ensNameRegister.name}

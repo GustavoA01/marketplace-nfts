@@ -49,11 +49,13 @@ export const Checkout = () => {
   const loading = cart.isPending || wallets.isPending || profile.isPending;
   const error = cart.error ?? wallets.error ?? profile.error;
 
+  const walletBusy = busy || state.connectionMutation.isPending;
   const walletProps = {
-    wallets: wallets.data ?? [],
+    wallets: state.compatibleWallets,
+    network: state.network,
     selectedId: selected?.id,
     connected,
-    disabled: busy,
+    disabled: walletBusy,
     connecting: state.connectionMutation.isPending,
     onSelect: state.onSelect,
     onConnect: state.onConnect,
@@ -104,19 +106,32 @@ export const Checkout = () => {
     );
   }
 
+  if (state.networkError) {
+    return (
+      <CheckoutShell>
+        <div role="alert" className="space-y-4 py-8">
+          <p>{state.networkError}</p>
+          <Button nativeButton={false} render={<Link to="/carrinho" />}>
+            Revisar carrinho
+          </Button>
+        </div>
+      </CheckoutShell>
+    );
+  }
+
   const collectorForm = (
     <CheckoutForm
       wallet={selected}
-      wallets={wallets.data ?? []}
+      wallets={state.compatibleWallets}
       onWalletChange={state.onSelect}
       register={form.register}
       errors={form.formState.errors}
-      disabled={busy}
+      disabled={walletBusy}
     />
   );
 
   const disableConfirm =
-    busy ||
+    walletBusy ||
     !connected ||
     !quote.data ||
     reviewed !== quote.data.id ||
@@ -198,7 +213,7 @@ export const Checkout = () => {
             wallets={wallets.data ?? []}
             selectedId={selected?.id}
             connected={connected}
-            busy={busy}
+            busy={walletBusy}
             totalLabel={quote.data ? `${quote.data.summary.total} ETH` : "—"}
             collectorForm={collectorForm}
             items={items}

@@ -1,10 +1,5 @@
-import type {
-  Quote,
-  QuoteApiError,
-  QuoteNetwork,
-  QuotePayload,
-} from "@/data/types/quote";
-import { cartSignature } from "@/lib/cart";
+import type { Quote, QuoteApiError, QuotePayload } from "@/data/types/quote";
+import { cartSignature, getCartNetwork } from "@/lib/cart";
 import { ethToWei, weiToEth } from "@/lib/eth";
 import { networkFeeFixtures } from "../fixtures/coupons";
 import { getCart } from "./cart";
@@ -20,6 +15,7 @@ export const createQuote = (
   userId?: string,
 ): QuoteResult => {
   const cart = getCart(userId);
+
   if (payload.cartSignature !== cartSignature(cart))
     return {
       status: 409,
@@ -29,6 +25,7 @@ export const createQuote = (
         cart,
       },
     };
+
   if (!cart.items.length)
     return {
       status: 409,
@@ -38,6 +35,7 @@ export const createQuote = (
         cart,
       },
     };
+
   if (cart.items.some((item) => !item.isAvailable))
     return {
       status: 409,
@@ -47,22 +45,45 @@ export const createQuote = (
         cart,
       },
     };
+
   let percentage = 0;
+
   if (cart.couponCode) {
     const validation = validateCoupon(cart.couponCode);
+
     if ("error" in validation) return { status: 422, error: validation.error };
+
     percentage = validation.percentage;
   }
-  const firstNetwork = cart.items[0].network.toLowerCase();
-  const network: QuoteNetwork =
-    payload.network ??
-    (firstNetwork === "polygon" || firstNetwork === "solana"
-      ? firstNetwork
-      : "ethereum");
+
+  const network = getCartNetwork(cart);
+
+  if (!network)
+    return {
+      status: 409,
+      error: {
+        code: "NETWORK_MISMATCH",
+        message:
+          "Finalize uma rede por vez. Mantenha no carrinho apenas NFTs de uma mesma rede.",
+        cart,
+      },
+    };
+
+  if (payload.network && payload.network !== network)
+    return {
+      status: 409,
+      error: {
+        code: "NETWORK_MISMATCH",
+        message: "A rede da carteira deve ser a mesma dos NFTs do carrinho.",
+        cart,
+      },
+    };
+
   const subtotal = ethToWei(cart.subtotal);
-  const discount = (subtotal * BigInt(percentage)) / 100n;
+  const discount = (subtotal * BigInt(percentage)) / BigInt(100);
   const fee = ethToWei(networkFeeFixtures[network]);
   const now = Date.now();
+
   const quote: Quote = {
     id: crypto.randomUUID(),
     cartSignature: cartSignature(cart),
@@ -78,27 +99,33 @@ export const createQuote = (
       total: weiToEth(subtotal - discount + fee),
     },
   };
-  for (const [id, entry] of quotes)
+
+  for (const [id, entry] of Array.from(quotes))
     if (Date.parse(entry.quote.expiresAt) <= now) quotes.delete(id);
+
   if (quotes.size >= 100) {
     const oldest = quotes.keys().next().value;
     if (oldest) quotes.delete(oldest);
   }
+
   quotes.set(quote.id, {
     ownerId: userId ?? "visitor",
     quote: structuredClone(quote),
   });
+
   return { quote };
 };
 
 export const getQuoteForUser = (id: string, userId?: string) => {
   const entry = quotes.get(id);
+
   if (
     !entry ||
     Date.parse(entry.quote.expiresAt) <= Date.now() ||
     entry.ownerId !== (userId ?? "visitor")
   )
     return undefined;
+
   return structuredClone(entry.quote);
 };
 

@@ -14,7 +14,7 @@ Os endpoints usam o proprietário da sessão, ou o visitante quando não há ses
 
 A assinatura do carrinho é produzida por `cartSignature`, em `src/lib/cart.ts`, e inclui IDs, edições, quantidades, preços, disponibilidade, redes e cupom. A API calcula sua própria assinatura a partir dos dados atuais. Divergência retorna 409 `CART_CHANGED`, com o carrinho atualizado. O cliente substitui o cache daquele proprietário e solicita uma nova cotação.
 
-`network` aceita `ethereum`, `polygon` ou `solana`. Quando omitida, usa a rede do primeiro item. Essa rede é uma estimativa exibida no carrinho; no pagamento, a seleção de carteira/rede deverá solicitar e confirmar a cotação correspondente.
+`network` aceita `ethereum`, `polygon` ou `solana` e precisa corresponder à rede de todos os NFTs do carrinho. Quando omitida, a API determina a rede comum dos itens. Rede divergente ou carrinho com redes diferentes retorna 409 `NETWORK_MISMATCH`, preservando todos os itens. A interface explica que é necessário finalizar uma rede por vez. Não há conversão ou transferência automática entre redes.
 
 `Quote` contém `id`, `cartSignature`, `createdAt`, `expiresAt`, `network`, `couponCode`, snapshot de `items` e `summary`, com `subtotal`, `discount`, `networkFee` e `total`.
 

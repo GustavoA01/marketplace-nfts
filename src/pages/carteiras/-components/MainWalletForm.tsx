@@ -1,5 +1,6 @@
-import type { FormEventHandler } from "react";
+import type { SubmitEventHandler } from "react";
 import type {
+  Control,
   FieldErrors,
   UseFormRegister,
   UseFormWatch,
@@ -11,19 +12,19 @@ import type { FormStatus } from "@/data/types/form-status";
 import { WalletFormFields } from "./WalletFormFields";
 
 type MainWalletFormProps = {
+  control: Control<WalletFormValues>;
   register: UseFormRegister<WalletFormValues>;
   errors: FieldErrors<WalletFormValues>;
   watch: UseFormWatch<WalletFormValues>;
   status: FormStatus;
   submitLabel: string;
   errorMessage?: string;
-  onSubmit: FormEventHandler<HTMLFormElement>;
-  onNetworkChange: (value: string) => void;
-  onWalletTypeChange: (value: string) => void;
+  onSubmit: SubmitEventHandler<HTMLFormElement>;
   onEnsSuffixChange: (value: ".eth" | ".xyz") => void;
 };
 
 export const MainWalletForm = ({
+  control,
   register,
   errors,
   watch,
@@ -31,8 +32,6 @@ export const MainWalletForm = ({
   submitLabel,
   errorMessage,
   onSubmit,
-  onNetworkChange,
-  onWalletTypeChange,
   onEnsSuffixChange,
 }: MainWalletFormProps) => {
   const isSubmitting = status === "submitting";
@@ -56,12 +55,11 @@ export const MainWalletForm = ({
 
       <WalletFormFields
         idPrefix="main-wallet"
+        control={control}
         register={register}
         errors={errors}
         watch={watch}
         disabled={isSubmitting}
-        onNetworkChange={onNetworkChange}
-        onWalletTypeChange={onWalletTypeChange}
         onEnsSuffixChange={onEnsSuffixChange}
         onEnsNameChange={ensNameRegister.onChange}
         ensNameName={ensNameRegister.name}
